@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/genos-app/',
+  base: '/reb-ai-platform/',
   plugins: [react({ include: /\.(jsx?|tsx?)$/ }), tailwindcss()],
   server: {
     host: '0.0.0.0',
@@ -13,11 +13,13 @@ export default defineConfig({
   build: {
     cssMinify: 'esbuild',
     minify: 'esbuild',
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'icons': ['lucide-react'],
+          'charts': ['recharts'],
         },
       },
     },

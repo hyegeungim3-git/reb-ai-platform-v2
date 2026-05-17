@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { createPortal } from "react-dom";
 import {
   Send, Paperclip, Mic, MessageSquare, FileText, Languages, FileCheck,
@@ -24,16 +24,27 @@ import {
 } from "./user/data/constants.js";
 import { AI_RESPONSES, generateDocHTML } from "./user/data/responses.js";
 import AgentHub from "./user/components/agents/AgentHub.jsx";
-import ChatbotAgent from "./user/components/agents/ChatbotAgent.jsx";
-import ReportAgent from "./user/components/agents/ReportAgent.jsx";
-import MeetingMinutesAgent from "./user/components/agents/MeetingMinutesAgent.jsx";
-import InternalRegAgent from "./user/components/agents/InternalRegAgent.jsx";
-import OCRAgent from "./user/components/agents/OCRAgent.jsx";
-import KnowledgeAgent from "./user/components/agents/KnowledgeAgent.jsx";
-import DBQueryAgent from "./user/components/agents/DBQueryAgent.jsx";
-import AddressAgent from "./user/components/agents/AddressAgent.jsx";
-import DataAnalysisAgent from "./user/components/agents/DataAnalysisAgent.jsx";
-import SummaryAgent from "./user/components/agents/SummaryAgent.jsx";
+// 에이전트 코드 스플리팅: 각 에이전트는 클릭 시점에 로드되어 초기 번들 크기를 줄임
+const ChatbotAgent = lazy(() => import("./user/components/agents/ChatbotAgent.jsx"));
+const ReportAgent = lazy(() => import("./user/components/agents/ReportAgent.jsx"));
+const MeetingMinutesAgent = lazy(() => import("./user/components/agents/MeetingMinutesAgent.jsx"));
+const InternalRegAgent = lazy(() => import("./user/components/agents/InternalRegAgent.jsx"));
+const OCRAgent = lazy(() => import("./user/components/agents/OCRAgent.jsx"));
+const KnowledgeAgent = lazy(() => import("./user/components/agents/KnowledgeAgent.jsx"));
+const DBQueryAgent = lazy(() => import("./user/components/agents/DBQueryAgent.jsx"));
+const AddressAgent = lazy(() => import("./user/components/agents/AddressAgent.jsx"));
+const DataAnalysisAgent = lazy(() => import("./user/components/agents/DataAnalysisAgent.jsx"));
+const SummaryAgent = lazy(() => import("./user/components/agents/SummaryAgent.jsx"));
+
+// 에이전트 로딩 폴백
+const AgentLoadingFallback = () => (
+  <div className="flex-1 flex items-center justify-center bg-slate-50">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-10 h-10 border-3 border-[#003087] border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-sm font-bold text-slate-600">에이전트 로딩 중…</p>
+    </div>
+  </div>
+);
 
 
 /* ================================================================== */
@@ -754,20 +765,22 @@ const UserApp = ({ onSwitchToAdmin }) => {
             </div>
           )}
 
-          {/* ── AGENT 탭: 허브 & 개별 에이전트 ── */}
+          {/* ── AGENT 탭: 허브 & 개별 에이전트 (lazy loading) ── */}
           {chatTab === "AGENT" && (
-            activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} /> :
-            activeAgentId === "agent-chatbot"      ? <ChatbotAgent      onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-report"       ? <ReportAgent       onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-internalreg"  ? <InternalRegAgent  onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-ocr"          ? <OCRAgent          onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-knowledge"    ? <KnowledgeAgent    onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-dbquery"      ? <DBQueryAgent      onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-address"      ? <AddressAgent      onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-dataanalysis" ? <DataAnalysisAgent onBack={() => setActiveAgentId(null)} /> :
-            activeAgentId === "agent-summary"      ? <SummaryAgent      onBack={() => setActiveAgentId(null)} /> :
-            <AgentHub onLaunch={setActiveAgentId} />
+            <Suspense fallback={<AgentLoadingFallback />}>
+              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} /> :
+               activeAgentId === "agent-chatbot"      ? <ChatbotAgent      onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-report"       ? <ReportAgent       onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-internalreg"  ? <InternalRegAgent  onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-ocr"          ? <OCRAgent          onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-knowledge"    ? <KnowledgeAgent    onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-dbquery"      ? <DBQueryAgent      onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-address"      ? <AddressAgent      onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-dataanalysis" ? <DataAnalysisAgent onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-summary"      ? <SummaryAgent      onBack={() => setActiveAgentId(null)} /> :
+               <AgentHub onLaunch={setActiveAgentId} />}
+            </Suspense>
           )}
 
           {/* Chat Messages */}

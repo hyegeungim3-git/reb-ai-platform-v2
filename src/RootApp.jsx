@@ -1,12 +1,14 @@
 /**
  * RootApp.jsx
- * 한국가스기술공사 생성형 AI 플랫폼 — 최상위 진입점
+ * 한국부동산원 생성형 AI 플랫폼 — 최상위 진입점
  * 사용자 포털(UserApp) ↔ GenOS 관리자 시스템(App) 전환 관리
  */
-import React, { useState } from "react";
-import UserApp from "./UserApp";
-import GenOSAdmin from "./App";
+import React, { useState, Suspense, lazy } from "react";
 import { Shield, User, ArrowRight, Lock, CheckCircle2 } from "lucide-react";
+
+// 코드 스플리팅: 초기 로드 사이즈 축소
+const UserApp = lazy(() => import("./UserApp"));
+const GenOSAdmin = lazy(() => import("./App"));
 
 function cn(...classes) { return classes.filter(Boolean).join(" "); }
 
@@ -176,16 +178,33 @@ const PortalSelector = ({ onSelectUser, onSelectAdmin }) => {
 /* ------------------------------------------------------------------ */
 /* ROOT APP (View Router)                                              */
 /* ------------------------------------------------------------------ */
+const LoadingFallback = () => (
+  <div className="h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
+    <div className="w-16 h-16 rounded-2xl bg-[#003087] flex items-center justify-center shadow-xl mb-4 animate-pulse">
+      <span className="text-2xl font-black text-white">R</span>
+    </div>
+    <p className="text-slate-500 font-bold text-[14px] tracking-wide">REB · 로딩 중…</p>
+  </div>
+);
+
 const RootApp = () => {
   // "SELECTOR" | "USER" | "ADMIN"
   const [view, setView] = useState("SELECTOR");
 
   if (view === "USER") {
-    return <UserApp onSwitchToAdmin={() => setView("ADMIN")} />;
+    return (
+      <Suspense fallback={<LoadingFallback />}>
+        <UserApp onSwitchToAdmin={() => setView("ADMIN")} />
+      </Suspense>
+    );
   }
 
   if (view === "ADMIN") {
-    return <GenOSAdmin onSwitchToUser={() => setView("USER")} />;
+    return (
+      <Suspense fallback={<LoadingFallback />}>
+        <GenOSAdmin onSwitchToUser={() => setView("USER")} />
+      </Suspense>
+    );
   }
 
   return (

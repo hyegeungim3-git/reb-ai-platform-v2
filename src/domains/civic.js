@@ -2,7 +2,7 @@
  * 도메인 팩 — 공공행정 (한성시청, 가상 지자체)
  * 동일 플랫폼을 지방자치단체 민원·행정 도메인에 맞춰 재구성한 데모 프로파일.
  */
-import { Landmark, Users, ShieldCheck, Search, ScrollText, BookOpen, FileText } from "lucide-react";
+import { Landmark, Users, ShieldCheck, Search, ScrollText, BookOpen, Map } from "lucide-react";
 
 const civic = {
   id: "civic",
@@ -36,7 +36,7 @@ const civic = {
     { icon: Search,     iconBg: "bg-green-50",  iconColor: "text-green-700",  title: "여권 발급 안내",   query: "긴급 여권 발급 요건과 처리 기한, 필요한 구비서류를 알려줘" },
     { icon: ScrollText, iconBg: "bg-blue-50",   iconColor: "text-blue-600",   title: "조례 검색",       query: "옥외광고물 설치 허가 관련 조례 조항과 허가 절차를 요약해줘" },
     { icon: BookOpen,   iconBg: "bg-violet-50", iconColor: "text-violet-600", title: "복무규정 확인",   query: "지방공무원 복무규정상 유연근무 신청 요건을 정리해줘" },
-    { icon: FileText,   iconBg: "bg-orange-50", iconColor: "text-orange-600", title: "민원 통계 조회",  query: "지난달 전입신고 민원 처리 건수와 평균 처리 시간을 알려줘" },
+    { icon: Map,        iconBg: "bg-emerald-50", iconColor: "text-emerald-700", title: "동별 민원 지도",  query: "이번 달 행정동별 민원 접수 현황을 지도로 분석해줘" },
   ],
   modeDesc: {
     GENERAL: "조례·규칙, 민원 처리 절차, 행정 지침에 대해 자유롭게 질문하세요",
@@ -79,6 +79,38 @@ const civic = {
       },
     },
   ],
+  // 지도 인텔리전스 — 행정동별 민원 접수 히트맵 (시뮬레이션)
+  mapIntel: {
+    metricLabel: "민원 접수 건수",
+    unit: "건",
+    regionUnit: "행정동",
+    periodLabel: "2026년 6월 월간 집계",
+    sourceSystem: "새올행정시스템",
+    sourceNote: "※ 출처: 새올행정시스템 민원 통계 월보 (시뮬레이션 데이터)",
+    mapTitle: "한성시 행정동 히트맵",
+    chartTitle: "월별 접수 추이",
+    metricKeywords: ["민원", "접수 건수", "민원량"],
+    wideKeywords: ["동별", "행정동별", "지역별", "전체 동", "지도"],
+    heatLow: "#DCFCE7", heatHigh: "#14532D",
+    avgLabel: "전체 동 평균",
+    seriesLabels: ["1월", "2월", "3월", "4월", "5월", "6월"],
+    avgSeries: [271, 265, 283, 290, 288, 297],
+    grid: { cols: 4, rows: 3 },
+    regions: [
+      { id: "hosu",     name: "호수동",   keywords: ["호수동"],   x: 0, y: 0, value: 264, series: [201, 195, 228, 259, 248, 264], insight: "봄 관광 성수기 진입 후 호수공원 주변 불법 주정차 민원이 전월 대비 21% 증가했습니다." },
+      { id: "bukmun",   name: "북문동",   keywords: ["북문동"],   x: 1, y: 0, value: 205, series: [212, 204, 210, 208, 201, 205], insight: "연중 안정적인 수준으로, 도로 보수 요청이 접수의 대부분을 차지합니다." },
+      { id: "sanseong", name: "산성동",   keywords: ["산성동"],   x: 2, y: 0, value: 152, series: [168, 161, 158, 149, 155, 152], insight: "인구 감소 추세로 전체 동 중 접수가 가장 적으며, 고령층 방문 민원 비중이 높아 찾아가는 민원 서비스 시범 대상입니다." },
+      { id: "hannae",   name: "한내동",   keywords: ["한내동"],   x: 3, y: 0, value: 187, series: [179, 172, 181, 190, 184, 187], insight: "농지 전용·건축 인허가 문의가 꾸준하며 계절 요인 외 특이 동향은 없습니다." },
+      { id: "seomun",   name: "서문동",   keywords: ["서문동"],   x: 0, y: 1, value: 228, series: [235, 228, 231, 224, 230, 228], insight: "전통시장 주변 노점·위생 민원이 중심으로 월별 편차가 작습니다." },
+      { id: "jungang",  name: "중앙동",   keywords: ["중앙동"],   x: 1, y: 1, value: 487, series: [452, 438, 465, 471, 469, 487], insight: "시청 소재지로 여권·전입 등 창구 민원이 전체의 38%를 차지합니다. 대기시간 단축을 위해 무인민원발급기 2대 증설을 검토 중입니다." },
+      { id: "dongmun",  name: "동문동",   keywords: ["동문동"],   x: 2, y: 1, value: 289, series: [271, 266, 280, 285, 282, 289], insight: "재개발 조합 설립 추진에 따라 도시계획 열람·이주 문의가 증가 추세입니다." },
+      { id: "daehak",   name: "대학동",   keywords: ["대학동"],   x: 3, y: 1, value: 342, series: [298, 285, 336, 349, 338, 342], insight: "원룸 밀집 지역으로 3월 개강 이후 전입신고·주정차·소음 민원이 집중됩니다." },
+      { id: "gangbyeon",name: "강변동",   keywords: ["강변동"],   x: 0, y: 2, value: 315, series: [289, 284, 301, 312, 308, 315], insight: "하천 정비 공사 구간의 소음·분진 민원이 공정 진행에 따라 완만히 증가하고 있습니다." },
+      { id: "nammun",   name: "남문동",   keywords: ["남문동"],   x: 1, y: 2, value: 241, series: [244, 239, 246, 238, 243, 241], insight: "생활 민원 중심으로 안정적이며, 쓰레기 무단투기 신고가 소폭 늘어 CCTV 증설을 협의 중입니다." },
+      { id: "sinsigak", name: "신시가동", keywords: ["신시가동", "신시가"], x: 2, y: 2, value: 452, series: [385, 392, 421, 448, 439, 452], insight: "대규모 아파트 입주가 이어지며 전입신고·차량등록 민원이 6개월 새 17% 증가했습니다. 임시 창구 운영을 검토 중입니다." },
+      { id: "gongdan",  name: "공단동",   keywords: ["공단동"],   x: 3, y: 2, value: 398, series: [372, 368, 384, 391, 389, 398], insight: "산업단지 특성상 소음·환경 민원 비중이 높으며, 야간 조업 관련 신고가 여름철에 증가하는 경향이 있습니다." },
+    ],
+  },
   agentCatalog: {
     "agent-chatbot":      { name: "민원 응대 챗봇", shortName: "민원 응대", desc: "민원 처리 절차, 구비서류, 수수료 등을 법령·편람 근거와 함께 즉시 안내합니다." },
     "agent-report":       { name: "보고서·보도자료 에이전트", shortName: "보고서 작성", desc: "시정 실적과 통계를 집계해 내부 보고서와 보도자료 초안을 표준 서식으로 작성합니다." },

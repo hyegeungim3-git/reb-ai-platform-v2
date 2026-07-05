@@ -67,8 +67,9 @@ src/
 - ✅ 2-B: useAgentSimulation 훅(src/user/hooks/)으로 8개 에이전트 시뮬레이션 통합, cn() 14곳 → utils.jsx 단일화
 - ✅ 허브 13종 확장: 미사용이던 Translate·DocReview·SafetyPlan을 재등록 (agent-translate·agent-review·agent-safety, 도메인 팩 3곳 오버라이드 완비)
 - ✅ 2-C: UserApp 2,173줄 → 430줄(상태·핸들러·조립) + layout 5모듈(Sidebar·ChatHeader·ChatMessages·ChatInput·RightPanel) + modals 7모듈 + guardrails.js. 동작 변화 없음(전 회귀 통과). 우측 패널 전용 상태(panelTab·내RAG)는 RightPanel로 이관, 죽은 상태 pilotService 제거. 부수 발견: 이 머신 로컬 빌드가 한글 경로 탓에 7주간 조용히 깨져 있었음(작업 규칙 4 참조) + 락파일에 이전 세션의 rollup 4.59 잔재 정리 + tailwind 4.1.18→4.3.2
+- ✅ 3단계-지도: **지도 인텔리전스** — GENERAL 채팅에서 지역 질의 감지 시 SVG 타일 히트맵+recharts 시계열 카드 삽입. 코어(user/mapIntel.js 매칭·응답 생성 + components/MapIntelCard.jsx lazy 카드) + 팩 3종 mapIntel 데이터(REB 17개 시도 공시지가 변동률 / 한빛정밀 7개 사업장 가동률 / 한성시 12개 행정동 민원 접수). 각 팩 suggestions[3]을 지도 질의로 교체. 매칭 = metricKeywords ∧ (지역명 ∨ wideKeywords). 조사(은/는·으로/로)는 받침 기반 자동 선택. 스키마: DOMAIN-PACK-GUIDE §2-2. ⚠️ 중앙 영역이 좁으면(뷰포트 <~1000) 차트 컬럼 접힘 — 4단계 반응형에서 해소 예정
 - ⬜ 도메인화 잔여(팩으로 미이관): ①에이전트 10종 내부 mock ②관리자 45페이지 콘텐츠 ③REVIEW/TRANSLATE/REPORT 모드 응답·공문서 템플릿(responses.js) ④FILE_DATA 인용 문서 ⑤SECURE_SUGGESTIONS
-- ⬜ 3단계 신규: 지도 인텔리전스, 멀티에이전트 오케스트레이션 시나리오, AI 기본법 대시보드
+- ⬜ 3단계 잔여: 멀티에이전트 오케스트레이션 시나리오, AI 기본법 대시보드
 - ⬜ 4단계 P2: 반응형(고정폭 사이드바), 접근성(aria 0건), 상태 유지, HISTORY 탭 구현
 
 ## 6. 다음 세션 표준 지시문 (사용자가 이 문구로 시작하면 그대로 수행)

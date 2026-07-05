@@ -2,7 +2,7 @@
  * 도메인 팩 — 제조 (한빛정밀 스마트팩토리, 가상 기업)
  * 동일 플랫폼을 제조 도메인에 맞춰 재구성한 데모 프로파일.
  */
-import { Factory, ClipboardCheck, Wrench, Search, Gauge, BookOpen, FileText } from "lucide-react";
+import { Factory, ClipboardCheck, Wrench, Search, Gauge, BookOpen, Map } from "lucide-react";
 
 const manufacturing = {
   id: "manufacturing",
@@ -36,7 +36,7 @@ const manufacturing = {
     { icon: Search,   iconBg: "bg-teal-50",   iconColor: "text-teal-600",   title: "작업표준 검색",     query: "CNC 3라인 가공 공정의 작업표준(SOP) 개정본에서 절삭유 교체 주기를 알려줘" },
     { icon: Gauge,    iconBg: "bg-blue-50",   iconColor: "text-blue-600",   title: "불량률 조회",       query: "이번 주 2공장 프레스 라인 불량률과 전주 대비 변동을 알려줘" },
     { icon: BookOpen, iconBg: "bg-violet-50", iconColor: "text-violet-600", title: "안전규정 확인",     query: "지게차 운행 구역의 산업안전 규정과 보호구 착용 기준을 요약해줘" },
-    { icon: FileText, iconBg: "bg-orange-50", iconColor: "text-orange-600", title: "설비 점검 이력",    query: "5호 사출기의 최근 예지보전 알람과 점검 이력을 정리해줘" },
+    { icon: Map,      iconBg: "bg-emerald-50", iconColor: "text-emerald-600", title: "사업장 가동률 지도", query: "전국 사업장별 설비 가동률 현황을 지도로 분석해줘" },
   ],
   modeDesc: {
     GENERAL: "작업표준(SOP), 품질·안전 규정, 기술 문서에 대해 자유롭게 질문하세요",
@@ -79,6 +79,33 @@ const manufacturing = {
       },
     },
   ],
+  // 지도 인텔리전스 — 사업장별 설비 가동률 히트맵 (시뮬레이션)
+  mapIntel: {
+    metricLabel: "사업장 설비 가동률",
+    unit: "%",
+    regionUnit: "사업장",
+    periodLabel: "2026년 7월 1주차 기준",
+    sourceSystem: "MES 실적 DB",
+    sourceNote: "※ 출처: MES 주간 가동 실적 집계 · 스마트팩토리 통합 대시보드 (시뮬레이션 데이터)",
+    mapTitle: "전국 사업장 히트맵",
+    chartTitle: "월별 가동률 추이",
+    metricKeywords: ["가동률", "가동 현황", "oee", "설비종합효율"],
+    wideKeywords: ["사업장별", "공장별", "전 사업장", "전국", "지도"],
+    heatLow: "#CCFBF1", heatHigh: "#134E4A",
+    avgLabel: "전사 평균",
+    seriesLabels: ["2월", "3월", "4월", "5월", "6월", "7월"],
+    avgSeries: [84.1, 84.9, 85.4, 84.2, 85.8, 86.6],
+    grid: { cols: 4, rows: 5 },
+    regions: [
+      { id: "hwaseong", name: "화성공장",   keywords: ["화성"],            x: 1, y: 1, value: 91.2, series: [88.4, 89.0, 90.1, 89.6, 90.8, 91.2], insight: "신규 CNC 라인 안정화가 완료되어 목표 가동률(90%)을 2개월 연속 초과 달성했습니다." },
+      { id: "asan",     name: "아산공장",   keywords: ["아산"],            x: 0, y: 2, value: 87.6, series: [85.2, 85.9, 86.4, 85.1, 86.8, 87.6], insight: "5월 정기 PM 이후 프레스 라인 사이클타임이 단축되어 회복세가 뚜렷합니다." },
+      { id: "gumi",     name: "구미공장",   keywords: ["구미"],            x: 3, y: 2, value: 88.9, series: [86.0, 86.8, 87.5, 86.9, 88.1, 88.9], insight: "금형 교체 표준시간 단축(SMED) 활동으로 셋업 손실이 전분기 대비 18% 감소했습니다." },
+      { id: "gunsan",   name: "군산공장",   keywords: ["군산"],            x: 0, y: 3, value: 79.4, series: [76.5, 77.2, 78.4, 77.8, 78.9, 79.4], insight: "신규 수주 물량 램프업 구간으로 가동률이 꾸준히 상승 중이며 9월 85% 도달이 목표입니다." },
+      { id: "ulsan",    name: "울산공장",   keywords: ["울산"],            x: 3, y: 3, value: 84.7, series: [83.9, 84.5, 85.2, 82.4, 83.8, 84.7], insight: "5월 프레스 금형 크랙으로 일시 하락했으나 예비 금형 투입으로 정상 수준을 회복했습니다." },
+      { id: "changwon2",name: "창원2공장",  keywords: ["창원2", "2공장"],  x: 1, y: 4, value: 81.3, series: [80.1, 81.0, 82.2, 80.6, 80.9, 81.3], insight: "노후 사출기 6대 교체가 진행 중으로, 설비 입고가 완료되는 4분기부터 개선이 전망됩니다." },
+      { id: "changwon1",name: "창원본사공장",keywords: ["창원", "본사"],   x: 2, y: 4, value: 93.1, series: [90.2, 91.5, 92.0, 91.1, 92.4, 93.1], insight: "3월 예지보전 시스템 도입 후 비계획 정지가 42% 감소해 전 사업장 최고 가동률을 유지하고 있습니다." },
+    ],
+  },
   agentCatalog: {
     "agent-chatbot":      { name: "현장 Q&A 챗봇", shortName: "현장 Q&A", desc: "작업표준(SOP), 품질 기준, 안전 수칙 등 현장 궁금증을 RAG 기반으로 근거와 함께 즉시 답변합니다." },
     "agent-report":       { name: "생산일보 작성 에이전트", shortName: "생산일보", desc: "MES 실적 데이터를 집계해 생산일보·주간 생산 보고서를 표준 양식으로 자동 작성합니다." },

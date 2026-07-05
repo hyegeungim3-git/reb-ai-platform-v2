@@ -67,6 +67,31 @@ const template = {
   modeDesc: {
     GENERAL: "도메인 규정, 업무 절차, 지침에 대해 자유롭게 질문하세요",
   },
+  // 지도 인텔리전스 — GENERAL 채팅에서 지역 질의 시 히트맵+시계열 카드 삽입 (생략 시 기능 비활성).
+  // 매칭 규칙: metricKeywords 중 1개 + (regions[].keywords 또는 wideKeywords 중 1개) 동시 포함.
+  // suggestions 4번째를 지도 질의로 구성하는 것이 관례 (클릭 시 바로 시연 가능해야 함).
+  mapIntel: {
+    metricLabel: "○○ 지표명",           // 예: "표준지 공시지가 변동률"
+    unit: "%",                           // 값 단위 (%, 건 등)
+    regionUnit: "지역",                  // 지역 단위 명칭 (시도/사업장/행정동)
+    periodLabel: "2026년 ○월 기준",
+    sourceSystem: "○○ 시스템",          // 처리 단계에 표기될 집계 시스템명 (도메인 시스템 재사용)
+    sourceNote: "※ 출처: ○○ 통계 (시뮬레이션 데이터)",   // '시뮬레이션' 표기는 유지할 것
+    mapTitle: "○○ 히트맵",
+    chartTitle: "월별 추이",
+    metricKeywords: ["지표어1", "지표어2"],          // 소문자 (질의가 toLowerCase()로 비교됨)
+    wideKeywords: ["지역별", "전체", "지도"],        // 전체(광역) 질의 트리거
+    heatLow: "#E2E8F0", heatHigh: "#0F172A",         // 밝은색→어두운색 (어두운 타일엔 흰 글자 자동 적용)
+    avgLabel: "전체 평균",
+    seriesLabels: ["1월", "2월", "3월"],             // 시계열 X축 라벨 (모든 series와 길이 일치)
+    avgSeries: [0, 0, 0],                            // 평균선 — 마지막 값 ≈ regions value 평균이어야 자연스럽다
+    grid: { cols: 4, rows: 3 },                      // 타일 좌표계 크기
+    regions: [
+      // 7~17개. x/y는 실제 지리 배치를 근사한 타일 좌표 (0-based, grid 범위 내)
+      { id: "r1", name: "지역명", keywords: ["지역명"], x: 0, y: 0, value: 0,
+        series: [0, 0, 0], insight: "이 지역의 수치를 설명하는 도메인 언어 1~2문장 (원인·전망 포함)." },
+    ],
+  },
   agentCatalog: {
     // 10개 전부 작성. key 오타는 조용히 무시되므로 아래 목록에서 복사할 것.
     "agent-chatbot":      { name: "업무 Q&A 챗봇", shortName: "업무 Q&A", desc: "…을 RAG 기반으로 근거와 함께 즉시 답변합니다." },

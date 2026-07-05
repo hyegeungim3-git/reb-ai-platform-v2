@@ -23,6 +23,7 @@
 | orgName | RootApp, UserApp(좌상단 로고), AgentHub(부제), App.jsx(사이드바 하단) | 전 화면 조직 표기 |
 | user, workspaces, llmModels (필수) | UserApp.jsx 컴포넌트 상단 주입부 | 사용자 포털 전체 |
 | suggestions, sampleAnswers, docs, history, modeDesc, agentFeed, agentCatalog (선택 — 생략 시 REB 기본값) | UserApp.jsx 주입부 및 getAIResponse | 사용자 포털 전체 |
+| mapIntel (선택 — 생략 시 지도 기능 비활성) | UserApp getAIResponse → user/mapIntel.js → MapIntelCard.jsx | GENERAL 채팅 지역 질의 응답 (히트맵+시계열) |
 
 ## 2. 스키마 레퍼런스
 
@@ -87,6 +88,33 @@ agentFeed: { // 에이전트 탭 우측 활동 피드
     result: "<접두>-회의록-0312.hwp 생성" } ],   // agentId는 위 고정 목록 중에서
   recommendTitle: "…기한 N일 전",  recommendBody: "…확인하시겠습니까?",
   pendingBody: "2026-03-17 <부서> …회의 녹음이 미처리 상태입니다.",
+},
+```
+
+```js
+// 지도 인텔리전스 (3단계) — GENERAL 채팅에서 지역 질의 시 히트맵+시계열 카드 삽입. 생략하면 기능 자체가 비활성.
+// 매칭 규칙: 질의에 metricKeywords 중 1개 + (regions[].keywords 또는 wideKeywords 중 1개)가 동시 포함될 때만 발동.
+// suggestions 4번째를 지도 질의로 구성하는 것이 관례 (클릭 시 바로 시연되어야 함 — 검수 B-3 항목).
+mapIntel: {
+  metricLabel: "표준지 공시지가 변동률",  // 응답 본문·카드 헤더에 쓰이는 지표명
+  unit: "%",                              // 값 단위 (%, 건 …) — 조사(은/는·으로/로)는 코어가 받침 보고 자동 선택
+  regionUnit: "시도",                      // 지역 단위 명칭 (시도/사업장/행정동)
+  periodLabel: "2026년 정기공시 기준",
+  sourceSystem: "부동산통계정보시스템(R-ONE)",  // 처리 단계 표기용 — 그 도메인의 실제 시스템명 재사용
+  sourceNote: "※ 출처: … (시뮬레이션 데이터)",   // '시뮬레이션 데이터' 표기는 반드시 유지
+  mapTitle: "전국 시도별 히트맵", chartTitle: "연도별 변동률 추이",
+  metricKeywords: ["공시지가", "변동률"],   // 소문자 (질의가 toLowerCase()로 비교됨)
+  wideKeywords: ["시도별", "지역별", "전국", "지도"],  // 특정 지역 없이 전체를 묻는 질의 트리거
+  heatLow: "#DBEAFE", heatHigh: "#1E3A8A", // 밝은색→어두운색 순서 필수 (어두운 타일엔 흰 글자 자동)
+  avgLabel: "전국 평균",
+  seriesLabels: ["'22", "'23", "'24", "'25", "'26"],  // 모든 series·avgSeries와 길이 일치
+  avgSeries: [10.17, -5.92, 1.10, 1.42, 1.65],        // 마지막 값 ≈ regions value 평균이어야 자연스럽다
+  grid: { cols: 4, rows: 6 },              // 타일 좌표계 (x/y는 이 범위 내 0-based)
+  regions: [  // 7~17개. x/y는 실제 지리 배치를 근사한 타일 좌표. keywords 겹침 주의(먼저 선언된 지역이 이김)
+    { id: "seoul", name: "서울", keywords: ["서울"], x: 1, y: 0, value: 3.92,
+      series: [11.21, -5.86, 1.87, 3.10, 3.92],
+      insight: "지역 수치의 원인·전망을 담은 도메인 언어 1~2문장." },
+  ],
 },
 ```
 

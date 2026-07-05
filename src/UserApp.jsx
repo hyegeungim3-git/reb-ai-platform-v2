@@ -9,6 +9,7 @@ import {
 } from "./user/data/constants.js";
 import { AI_RESPONSES, generateDocHTML } from "./user/data/responses.js";
 import { checkInputFilter, applyOutputGuardrails } from "./user/guardrails.js";
+import { matchMapIntel, buildMapIntelResponse } from "./user/mapIntel.js";
 import rebDomain from "./domains/reb.js";
 import { mergeAgentTeams } from "./domains/index.js";
 
@@ -168,6 +169,9 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
       return AI_RESPONSES.AGENT3;
     }
     if (mode === "GENERAL") {
+      // 지도 인텔리전스: 지역 질의 감지 시 히트맵+시계열 응답 (팩 mapIntel 공급, 샘플 응답보다 우선)
+      const mapHit = matchMapIntel(q, domain.mapIntel);
+      if (mapHit) return buildMapIntelResponse(domain.mapIntel, mapHit.region);
       // 도메인 팩이 자체 샘플 응답을 제공하면 우선 매칭
       if (domain.sampleAnswers) {
         const hit = domain.sampleAnswers.find(sa => sa.keywords.some(k => q.includes(k)));

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import {
   ShieldCheck, ShieldAlert, EyeOff, Server, History, Bot, Workflow,
   FileCheck, Languages, FileText, Search, Sparkles, Clock, Star,
@@ -7,6 +7,9 @@ import {
 } from "lucide-react";
 import { cn, SecurityBadge } from "../../utils.jsx";
 import { SECURE_SUGGESTIONS } from "../../data/constants.js";
+
+// 지도 인텔리전스 카드: recharts 포함 — 지역 질의 응답 시점에만 로드 (초기 번들 분리)
+const MapIntelCard = lazy(() => import("../MapIntelCard.jsx"));
 
 /* ================================================================== */
 /* 중앙 채팅 영역 — 빈 상태(탭별) · 메시지 목록 · 타이핑 인디케이터     */
@@ -263,7 +266,8 @@ const ChatMessages = ({
 
           return (
           <div key={msg.id} className={cn("flex mb-5", msg.role === "user" ? "justify-end" : "justify-start animate-in slide-in-from-bottom-2 fade-in duration-300")}>
-            <div className={cn("flex max-w-[88%] gap-4", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
+            {/* mapIntel 메시지는 w-full: flex-1 컬럼이 내재 폭에 0으로 기여해 차트 컬럼이 붕괴하는 것 방지 */}
+            <div className={cn("flex max-w-[88%] gap-4", msg.role === "user" ? "flex-row-reverse" : "flex-row", msg.mapIntel && "w-full")}>
               <div className={cn("w-9 h-9 rounded-2xl flex items-center justify-center shrink-0 mt-1 border-2 shadow-sm",
                 msg.role === "user" ? (isSecure ? "bg-slate-800 border-slate-700 text-slate-300" : "bg-slate-100 border-slate-200 text-slate-500")
                 : isSecure ? "bg-[#0a0f1c] text-blue-400 border-slate-700" : isAgent ? "bg-indigo-600 text-white border-transparent" : cn(mc.colors.active, "border-transparent"))}>
@@ -332,6 +336,16 @@ const ChatMessages = ({
                     : cn("px-5 py-4", th.chatBg))}>
                   {msg.content}
                 </div>
+                {/* ── 지도 인텔리전스 카드 (히트맵 + 시계열, 시뮬레이션) ── */}
+                {msg.role === "assistant" && msg.mapIntel && (
+                  <Suspense fallback={
+                    <div className="mt-2 p-6 rounded-2xl border-2 border-slate-100 bg-slate-50 flex items-center gap-2 text-[12px] font-bold text-slate-400">
+                      <Loader2 className="w-4 h-4 animate-spin" /> 지도 시각화 로딩 중…
+                    </div>
+                  }>
+                    <MapIntelCard data={msg.mapIntel} />
+                  </Suspense>
+                )}
                 {/* 액션 버튼 */}
                 {msg.role === "assistant" && (
                   <div className="flex items-center gap-1.5 mt-0.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity">

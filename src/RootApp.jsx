@@ -1,10 +1,11 @@
 /**
  * RootApp.jsx
- * 한국부동산원 생성형 AI 플랫폼 — 최상위 진입점
- * 사용자 포털(UserApp) ↔ GenOS 관리자 시스템(App) 전환 관리
+ * GenOS 생성형 AI 플랫폼 — 최상위 진입점 (도메인 중립 코어)
+ * 사용자 포털(UserApp) ↔ GenOS 관리자 시스템(App) 전환 + 도메인 팩 선택 관리
  */
-import React, { useState, Suspense, lazy } from "react";
-import { Shield, User, ArrowRight, Lock, CheckCircle2 } from "lucide-react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
+import { Shield, User, ArrowRight, Lock, CheckCircle2, Layers } from "lucide-react";
+import { DOMAINS, DOMAIN_LIST, getActiveDomainId, setActiveDomainId } from "./domains/index.js";
 
 // 코드 스플리팅: 초기 로드 사이즈 축소
 const UserApp = lazy(() => import("./UserApp"));
@@ -13,9 +14,34 @@ const GenOSAdmin = lazy(() => import("./App"));
 function cn(...classes) { return classes.filter(Boolean).join(" "); }
 
 /* ------------------------------------------------------------------ */
+/* DOMAIN SWITCHER (데모 도메인 전환)                                   */
+/* ------------------------------------------------------------------ */
+const DomainSwitcher = ({ domain, onChange }) => (
+  <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/80 border border-slate-200 shadow-sm backdrop-blur">
+    <Layers className="w-4 h-4 text-slate-400 shrink-0" />
+    <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider shrink-0">데모 도메인</span>
+    <div className="flex items-center gap-1">
+      {DOMAIN_LIST.map(d => (
+        <button
+          key={d.id}
+          onClick={() => onChange(d.id)}
+          className={cn(
+            "px-3 py-1.5 rounded-xl text-[12px] font-bold transition-all",
+            domain.id === d.id ? "text-white shadow-sm" : "text-slate-500 hover:bg-slate-100"
+          )}
+          style={domain.id === d.id ? { backgroundColor: d.brandColor } : undefined}
+        >
+          {d.orgName}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+/* ------------------------------------------------------------------ */
 /* PORTAL SELECTOR (최초 진입 화면)                                    */
 /* ------------------------------------------------------------------ */
-const PortalSelector = ({ onSelectUser, onSelectAdmin }) => {
+const PortalSelector = ({ domain, onChangeDomain, onSelectUser, onSelectAdmin }) => {
   const [hovered, setHovered] = useState(null);
 
   return (
@@ -30,36 +56,36 @@ const PortalSelector = ({ onSelectUser, onSelectAdmin }) => {
         <div className="absolute top-1/3 left-1/4 w-64 h-64 bg-slate-100/60 rounded-full blur-2xl"></div>
       </div>
 
+      {/* Domain switcher — 우상단 고정 */}
+      <div className="absolute top-6 right-6 z-20">
+        <DomainSwitcher domain={domain} onChange={onChangeDomain} />
+      </div>
+
       <div className="relative z-10 w-full max-w-3xl px-6 flex flex-col items-center">
         {/* Logo & Title */}
         <div className="flex flex-col items-center mb-16 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-[#003087] flex items-center justify-center shadow-2xl mb-6 border-4 border-[#003087]/20">
-            {/* REB 스타일 지구본 로고 */}
+          <div className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl mb-6 border-4" style={{ backgroundColor: domain.brandColor, borderColor: `${domain.brandColor}33` }}>
+            {/* 지구본 로고 (도메인 중립) */}
             <svg viewBox="0 0 28 28" fill="none" className="w-12 h-12">
-              {/* 외부 원 */}
               <circle cx="14" cy="14" r="10.5" stroke="white" strokeWidth="1.8" fill="none"/>
-              {/* 수직 경선 */}
               <path d="M14 3.5 Q10 14 14 24.5" stroke="white" strokeWidth="1.1" fill="none" opacity="0.65"/>
               <path d="M14 3.5 Q18 14 14 24.5" stroke="white" strokeWidth="1.1" fill="none" opacity="0.65"/>
-              {/* 적도 */}
               <path d="M3.5 14 Q14 11 24.5 14" stroke="white" strokeWidth="1.1" fill="none" opacity="0.65"/>
-              {/* 상위 위선 */}
               <path d="M6 9 Q14 7 22 9" stroke="white" strokeWidth="0.7" fill="none" opacity="0.4"/>
-              {/* 하위 위선 */}
               <path d="M6 19 Q14 21 22 19" stroke="white" strokeWidth="0.7" fill="none" opacity="0.4"/>
             </svg>
           </div>
           <div className="flex items-baseline gap-3 mb-3">
-            <span className="text-4xl font-black text-[#003087] tracking-[0.15em]">REB</span>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">한국부동산원 AI 플랫폼</h1>
+            <span className="text-4xl font-black tracking-[0.15em]" style={{ color: domain.brandColor }}>{domain.orgShort}</span>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">{domain.platformTitle}</h1>
           </div>
           <p className="text-[16px] text-slate-500 font-medium max-w-md leading-relaxed">
-            한국부동산원 생성형 AI 플랫폼에 오신 것을 환영합니다.<br />
+            {domain.welcome}<br />
             접속 유형을 선택해 주세요.
           </p>
           <div className="flex items-center gap-2 mt-4 px-4 py-2 rounded-full bg-green-50 border border-green-200">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-[12px] font-bold text-green-700">시스템 정상 가동 중 · 로컬 LLM · 내부망 전용 · 망분리 적용</span>
+            <span className="text-[12px] font-bold text-green-700">{domain.statusBadge}</span>
           </div>
         </div>
 
@@ -96,7 +122,7 @@ const PortalSelector = ({ onSelectUser, onSelectAdmin }) => {
             </p>
 
             <div className="space-y-2 mb-6">
-              {["일반 질의 (RAG 기반 지식 검색)", "문서 사전 검토 (사규 자동 대조)", "번역·요약 (한/영/중/일 지원)", "보고서 자동 작성 (표준 양식)"].map((item, i) => (
+              {domain.userFeatures.map((item, i) => (
                 <div key={i} className="flex items-center gap-2 text-[13px] text-slate-600 font-medium">
                   <CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" />
                   <span>{item}</span>
@@ -166,7 +192,7 @@ const PortalSelector = ({ onSelectUser, onSelectAdmin }) => {
         {/* Footer note */}
         <div className="mt-10 text-center">
           <p className="text-[12px] text-slate-400 font-medium">
-            한국부동산원 생성형 AI 플랫폼 구축 사업 (SFR-006, SFR-011, SFR-013 반영)<br />
+            {domain.footerNote}<br />
             모든 데이터는 내부망에서만 처리되며 외부로 전송되지 않습니다.
           </p>
         </div>
@@ -178,37 +204,50 @@ const PortalSelector = ({ onSelectUser, onSelectAdmin }) => {
 /* ------------------------------------------------------------------ */
 /* ROOT APP (View Router)                                              */
 /* ------------------------------------------------------------------ */
-const LoadingFallback = () => (
+const LoadingFallback = ({ domain }) => (
   <div className="h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
-    <div className="w-16 h-16 rounded-2xl bg-[#003087] flex items-center justify-center shadow-xl mb-4 animate-pulse">
-      <span className="text-2xl font-black text-white">R</span>
+    <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl mb-4 animate-pulse" style={{ backgroundColor: domain?.brandColor || "#003087" }}>
+      <span className="text-2xl font-black text-white">{(domain?.orgShort || "G")[0]}</span>
     </div>
-    <p className="text-slate-500 font-bold text-[14px] tracking-wide">REB · 로딩 중…</p>
+    <p className="text-slate-500 font-bold text-[14px] tracking-wide">{domain?.orgShort || "GenOS"} · 로딩 중…</p>
   </div>
 );
 
 const RootApp = () => {
   // "SELECTOR" | "USER" | "ADMIN"
   const [view, setView] = useState("SELECTOR");
+  const [domainId, setDomainId] = useState(getActiveDomainId());
+  const domain = DOMAINS[domainId];
+
+  useEffect(() => {
+    document.title = `${domain.platformTitle} · ${domain.orgShort} GenOS`;
+  }, [domain]);
+
+  const handleChangeDomain = (id) => {
+    setDomainId(id);
+    setActiveDomainId(id);
+  };
 
   if (view === "USER") {
     return (
-      <Suspense fallback={<LoadingFallback />}>
-        <UserApp onSwitchToAdmin={() => setView("ADMIN")} />
+      <Suspense fallback={<LoadingFallback domain={domain} />}>
+        <UserApp key={domainId} domain={domain} onSwitchToAdmin={() => setView("ADMIN")} />
       </Suspense>
     );
   }
 
   if (view === "ADMIN") {
     return (
-      <Suspense fallback={<LoadingFallback />}>
-        <GenOSAdmin onSwitchToUser={() => setView("USER")} />
+      <Suspense fallback={<LoadingFallback domain={domain} />}>
+        <GenOSAdmin domain={domain} onSwitchToUser={() => setView("USER")} />
       </Suspense>
     );
   }
 
   return (
     <PortalSelector
+      domain={domain}
+      onChangeDomain={handleChangeDomain}
       onSelectUser={() => setView("USER")}
       onSelectAdmin={() => setView("ADMIN")}
     />

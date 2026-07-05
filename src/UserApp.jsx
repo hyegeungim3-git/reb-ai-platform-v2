@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
+﻿import React, { useState, useEffect, useMemo, useRef, Suspense, lazy } from "react";
 import { createPortal } from "react-dom";
 import {
   Send, Paperclip, Mic, MessageSquare, FileText, Languages, FileCheck,
@@ -18,11 +18,14 @@ import {
 import { cn, SECURITY_LEVELS, SecurityBadge } from "./user/utils.jsx";
 import Toast from "./user/components/Toast.jsx";
 import {
-  USER_INFO, MOCK_NOTICES_USER, MOCK_FAQ, WORKSPACES, LLM_MODELS, MODES,
-  SECURE_SUGGESTIONS, HISTORY, DOCS, FILE_DATA, SUGGESTIONS, AGENT_TEAMS,
+  MOCK_NOTICES_USER, MOCK_FAQ, MODES as BASE_MODES,
+  SECURE_SUGGESTIONS, HISTORY as BASE_HISTORY, DOCS as BASE_DOCS, FILE_DATA,
+  SUGGESTIONS as BASE_SUGGESTIONS, AGENT_TEAMS as BASE_AGENT_TEAMS,
   MCP_TOOLS, MY_RAG_INIT, MY_RAG_DOCS_INIT,
 } from "./user/data/constants.js";
 import { AI_RESPONSES, generateDocHTML } from "./user/data/responses.js";
+import rebDomain from "./domains/reb.js";
+import { mergeAgentTeams } from "./domains/index.js";
 import AgentHub from "./user/components/agents/AgentHub.jsx";
 // 에이전트 코드 스플리팅: 각 에이전트는 클릭 시점에 로드되어 초기 번들 크기를 줄임
 const ChatbotAgent = lazy(() => import("./user/components/agents/ChatbotAgent.jsx"));
@@ -50,7 +53,25 @@ const AgentLoadingFallback = () => (
 /* ================================================================== */
 /* MAIN USER APP COMPONENT                                             */
 /* ================================================================== */
-const UserApp = ({ onSwitchToAdmin }) => {
+const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
+  // ── 도메인 팩 주입: 조직·사용자·워크스페이스·LLM·에이전트 카탈로그는 팩에서 공급 ──
+  const USER_INFO = domain.user;
+  const WORKSPACES = domain.workspaces;
+  const LLM_MODELS = domain.llmModels;
+  const AGENT_TEAMS = useMemo(() => mergeAgentTeams(BASE_AGENT_TEAMS, domain), [domain]);
+  const HISTORY = domain.history || BASE_HISTORY;
+  const DOCS = domain.docs || BASE_DOCS;
+  const MODES = useMemo(() => {
+    if (!domain.modeDesc) return BASE_MODES;
+    const merged = { ...BASE_MODES };
+    for (const k of Object.keys(domain.modeDesc)) merged[k] = { ...merged[k], desc: domain.modeDesc[k] };
+    return merged;
+  }, [domain]);
+  const SUGGESTIONS = useMemo(
+    () => (domain.suggestions ? { ...BASE_SUGGESTIONS, GENERAL: domain.suggestions } : BASE_SUGGESTIONS),
+    [domain]
+  );
+
   const [chatTab, setChatTab] = useState("GENERAL");   // GENERAL | AGENT | SECURE
   const [mode, setMode] = useState("GENERAL");          // GENERAL 탭 서브모드
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -128,10 +149,11 @@ const UserApp = ({ onSwitchToAdmin }) => {
     }
   }, [panelView, activeCitation]);
   useEffect(() => {
-    // 보안 탭 진입 시 클라우드 모델 자동 전환
-    if (isSecure && activeLLM.security === "low") {
-      setActiveLLM(LLM_MODELS[0]);
-      setToast({ message: "보안 채팅: 로컬 LLM(GPT-OSS 120B)으로 자동 전환 — 외부 전송 없음" });
+    // 보안 탭 진입 시 클라우드·게이트웨이 모델 → 구축형(로컬) 모델 자동 전환
+    if (isSecure && activeLLM.type !== "구축형") {
+      const localModel = LLM_MODELS.find(m => m.type === "구축형" && m.status === "running") || LLM_MODELS[0];
+      setActiveLLM(localModel);
+      setToast({ message: `보안 채팅: 로컬 LLM(${localModel.name})으로 자동 전환 — 외부 전송 없음` });
     }
   }, [isSecure]);
   useEffect(() => {
@@ -245,8 +267,15 @@ const UserApp = ({ onSwitchToAdmin }) => {
       return AI_RESPONSES.AGENT3;
     }
     if (mode === "GENERAL") {
-      if (q.includes("psv") || q.includes("안전밸브") || q.includes("점검") || q.includes("주기") || q.includes("정비")) return AI_RESPONSES.GENERAL_PSV;
-      if (q.includes("예산") || q.includes("과업") || q.includes("사업비") || q.includes("금액") || q.includes("기간")) return AI_RESPONSES.GENERAL_BUDGET;
+      // 도메인 팩이 자체 샘플 응답을 제공하면 우선 매칭
+      if (domain.sampleAnswers) {
+        const hit = domain.sampleAnswers.find(sa => sa.keywords.some(k => q.includes(k)));
+        if (hit) return { ...hit.answer };
+      }
+      if (domain.id === "reb") {
+        if (q.includes("표준지") || q.includes("공시") || q.includes("기준일") || q.includes("조사") || q.includes("주기")) return AI_RESPONSES.GENERAL_PSV;
+        if (q.includes("예산") || q.includes("과업") || q.includes("사업비") || q.includes("금액") || q.includes("기간")) return AI_RESPONSES.GENERAL_BUDGET;
+      }
     }
     if (mode === "REVIEW") return AI_RESPONSES.REVIEW_DEFAULT;
     if (mode === "TRANSLATE") return AI_RESPONSES.TRANSLATE_DEFAULT;
@@ -427,7 +456,7 @@ const UserApp = ({ onSwitchToAdmin }) => {
               <div className="ml-3 animate-in fade-in duration-200 min-w-0">
                 <div className="flex items-baseline gap-1.5">
                   <span className={cn("text-[13px] font-black tracking-[0.12em]", isSecure ? "text-white" : "text-[#003087]")}>REB</span>
-                  <span className={cn("text-[12px] font-bold tracking-tight leading-tight truncate", th.text)}>한국부동산원</span>
+                  <span className={cn("text-[12px] font-bold tracking-tight leading-tight truncate", th.text)}>{domain.orgName}</span>
                 </div>
                 <div className={cn("text-[10px] font-bold tracking-widest uppercase", isSecure ? "text-blue-400" : isAgent ? "text-indigo-500" : "text-[#003087]/70")}>
                   {isSecure ? "보안 채팅" : isAgent ? "에이전트 모드" : "AI 플랫폼"}
@@ -734,7 +763,7 @@ const UserApp = ({ onSwitchToAdmin }) => {
                   </span>
                 </h2>
                 <p className={cn("text-[12px] font-medium leading-tight truncate", th.subtext)}>
-                  {isSecure ? "무저장 · 로컬 LLM · 망분리 — 강화된 보안 환경에서 처리됩니다" : isAgent ? (activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.desc ?? "") : "한국부동산원 멀티 에이전트 — SFR-006/011/013") : mc.desc}
+                  {isSecure ? "무저장 · 로컬 LLM · 망분리 — 강화된 보안 환경에서 처리됩니다" : isAgent ? (activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.desc ?? "") : `${domain.orgName} 멀티 에이전트 — SFR-006/011/013`) : mc.desc}
                 </p>
               </div>
             </div>
@@ -768,7 +797,7 @@ const UserApp = ({ onSwitchToAdmin }) => {
           {/* ── AGENT 탭: 허브 & 개별 에이전트 (lazy loading) ── */}
           {chatTab === "AGENT" && (
             <Suspense fallback={<AgentLoadingFallback />}>
-              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} /> :
+              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} /> :
                activeAgentId === "agent-chatbot"      ? <ChatbotAgent      onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-report"       ? <ReportAgent       onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent onBack={() => setActiveAgentId(null)} /> :
@@ -779,7 +808,7 @@ const UserApp = ({ onSwitchToAdmin }) => {
                activeAgentId === "agent-address"      ? <AddressAgent      onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-dataanalysis" ? <DataAnalysisAgent onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-summary"      ? <SummaryAgent      onBack={() => setActiveAgentId(null)} /> :
-               <AgentHub onLaunch={setActiveAgentId} />}
+               <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} />}
             </Suspense>
           )}
 
@@ -1426,11 +1455,11 @@ const UserApp = ({ onSwitchToAdmin }) => {
                     <span className="font-medium normal-case">이번 주 8회 실행</span>
                   </div>
                   <div className="space-y-2">
-                    {[
+                    {(domain.agentFeed?.recent || [
                       { agentId: 'agent-meeting',      agentName: '회의록 작성',  time: '오늘 14:32', result: 'KREA-2026-031.hwp 생성' },
                       { agentId: 'agent-knowledge',    agentName: '지식 검색',    time: '오늘 10:15', result: '표준지 조사 기준 5건 검색' },
                       { agentId: 'agent-dataanalysis', agentName: '데이터 분석',  time: '어제 16:44', result: '공시지가 변동현황 분석 완료' },
-                    ].map((task, i) => (
+                    ]).map((task, i) => (
                       <div key={i} className={cn("p-3 rounded-xl border cursor-pointer transition-all group",
                         isSecure ? "bg-[#0a0f1c]/80 border-slate-800 hover:border-slate-600"
                                  : "bg-white border-slate-100 shadow-sm hover:border-indigo-200")}>
@@ -1464,10 +1493,10 @@ const UserApp = ({ onSwitchToAdmin }) => {
                   <div className={cn("p-3 rounded-xl border-2 mb-2",
                     isSecure ? "bg-indigo-900/20 border-indigo-800/40" : "bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-100")}>
                     <div className={cn("text-[13px] font-black mb-1", isSecure ? "text-indigo-300" : "text-indigo-800")}>
-                      표준지공시지가 조사 마감 12일 전
+                      {domain.agentFeed?.recommendTitle || "표준지공시지가 조사 마감 12일 전"}
                     </div>
                     <p className={cn("text-[13px] leading-relaxed mb-2.5", isSecure ? "text-indigo-400" : "text-indigo-700")}>
-                      지난 조사 보고서와 현행 지침을 대조 검토하여 변경사항을 확인하시겠습니까?
+                      {domain.agentFeed?.recommendBody || "지난 조사 보고서와 현행 지침을 대조 검토하여 변경사항을 확인하시겠습니까?"}
                     </p>
                     <button onClick={() => setActiveAgentId('agent-knowledge')}
                       className={cn("w-full flex items-center justify-center gap-1.5 h-7 rounded-lg text-[13px] font-bold transition-all",
@@ -1479,7 +1508,7 @@ const UserApp = ({ onSwitchToAdmin }) => {
                     isSecure ? "bg-[#0a0f1c]/80 border-slate-800" : "bg-white border-slate-100 shadow-sm")}>
                     <div className={cn("text-[13px] font-black mb-1", th.text)}>미처리 회의 녹음 파일</div>
                     <p className={cn("text-[13px] leading-relaxed mb-2", th.subtext)}>
-                      2026-03-17 부동산공시처 정례회의 녹음이 미처리 상태입니다.
+                      {domain.agentFeed?.pendingBody || "2026-03-17 부동산공시처 정례회의 녹음이 미처리 상태입니다."}
                     </p>
                     <button onClick={() => setActiveAgentId('agent-meeting')}
                       className={cn("text-[13px] font-bold flex items-center gap-1 transition-colors",

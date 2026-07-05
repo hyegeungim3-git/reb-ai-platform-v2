@@ -5725,7 +5725,8 @@ const RagPipelinePage = () => {
 };
 
 // ==================== MAIN APP ====================
-const App = ({ onSwitchToUser }) => {
+const App = ({ onSwitchToUser, domain }) => {
+  const orgName = domain?.orgName || '한국부동산원';
   const [activeId,setActiveId]=useState('dashboard.system');
 
   const menu = [
@@ -5895,7 +5896,7 @@ const App = ({ onSwitchToUser }) => {
         <div className="p-3 border-t">
           <div className="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-xs font-bold shadow-sm">김</div>
-            <div className="flex-1 min-w-0"><div className="text-sm font-bold truncate">김영빈·관리자</div><div className="text-xs text-gray-400 truncate">한국부동산원</div></div>
+            <div className="flex-1 min-w-0"><div className="text-sm font-bold truncate">김영빈·관리자</div><div className="text-xs text-gray-400 truncate">{orgName}</div></div>
           </div>
         </div>
       </div>

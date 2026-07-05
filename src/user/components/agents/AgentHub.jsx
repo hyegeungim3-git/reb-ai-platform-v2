@@ -28,7 +28,7 @@ const USAGE_COUNTS = {
   'agent-dbquery':12,'agent-address':4,'agent-dataanalysis':3,'agent-summary':9,
 };
 
-const AgentHub = ({ onLaunch }) => {
+const AgentHub = ({ onLaunch, agents = AGENT_TEAMS, orgName = "한국부동산원" }) => {
   const [search, setSearch] = useState("");
   const [hovered, setHovered] = useState(null);
   const [recentIds, setRecentIds] = useState(['agent-dbquery','agent-chatbot','agent-ocr']);
@@ -46,7 +46,7 @@ const AgentHub = ({ onLaunch }) => {
     onLaunch(id);
   };
 
-  const filtered = AGENT_TEAMS.filter(ag => {
+  const filtered = agents.filter(ag => {
     if (favFilter && !favorites.has(ag.id)) return false;
     return !search || ag.name.includes(search) || ag.shortName.includes(search) ||
       (ag.tech || []).some(t => t.includes(search));
@@ -64,15 +64,15 @@ const AgentHub = ({ onLaunch }) => {
               </div>
               <div>
                 <h2 className="text-[22px] font-black text-slate-900 tracking-tight">AI 에이전트 허브</h2>
-                <p className="text-[12px] text-slate-500 font-medium">한국부동산원 생성형 AI 플랫폼 — 멀티 에이전트 서비스</p>
+                <p className="text-[12px] text-slate-500 font-medium">{orgName} 생성형 AI 플랫폼 — 멀티 에이전트 서비스</p>
               </div>
             </div>
           </div>
           {/* Stats */}
           <div className="flex items-center gap-5 shrink-0">
             {[
-              { label: "에이전트", value: String(AGENT_TEAMS.length), color: "text-indigo-600", icon: Cpu },
-              { label: "가동 중", value: String(AGENT_TEAMS.length), color: "text-emerald-600", icon: CheckCircle2 },
+              { label: "에이전트", value: String(agents.length), color: "text-indigo-600", icon: Cpu },
+              { label: "가동 중", value: String(agents.length), color: "text-emerald-600", icon: CheckCircle2 },
               { label: "MCP 도구", value: String(MCP_TOOLS.length), color: "text-blue-600", icon: Network },
             ].map(s => {
               const SIcon = s.icon;
@@ -125,7 +125,7 @@ const AgentHub = ({ onLaunch }) => {
             </div>
             <div className="flex gap-2 flex-wrap">
               {recentIds.slice(0,5).map(id => {
-                const ag = AGENT_TEAMS.find(a => a.id === id);
+                const ag = agents.find(a => a.id === id);
                 if (!ag) return null;
                 const c = COLOR_MAP[ag.color] || COLOR_MAP.indigo;
                 const AgIcon = ag.icon;

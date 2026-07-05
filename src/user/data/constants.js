@@ -127,7 +127,7 @@ export const AGENT_TEAMS = [
     icon: MessageCircle, color: "indigo", tech: ["RAG", "sLLM", "대화형"],
     workflow: [
       { step: 1, role: "의도 파악",   name: "의도 파악 에이전트",  prompt: "사용자 질의의 핵심 의도와 필요한 정보 범주를 파악하십시오.",              tool: "GPT-OSS 120B" },
-      { step: 2, role: "문서 검색",   name: "RAG 검색 에이전트",   prompt: "관련 문서·규정을 벡터 검색으로 상위 5건 추출하십시오.",                   tool: "부동산원_사내_지식_검색망" },
+      { step: 2, role: "문서 검색",   name: "RAG 검색 에이전트",   prompt: "관련 문서·규정을 벡터 검색으로 상위 5건 추출하십시오.",                   tool: "사내_지식_검색망" },
       { step: 3, role: "답변 생성",   name: "답변 생성 에이전트",  prompt: "검색 결과를 근거로 명확하고 정확한 답변을 작성하십시오.",                  tool: "GPT-OSS 120B" },
     ]
   },
@@ -136,7 +136,7 @@ export const AGENT_TEAMS = [
     desc: "단순 텍스트를 사내 표준 양식(주간실적·현장조사 등)에 맞춰 완성된 공문서로 자동 생성합니다.",
     icon: FileText, color: "emerald", tech: ["sLLM", "템플릿", "공문서"],
     workflow: [
-      { step: 1, role: "양식 로드",   name: "템플릿 검색기",       prompt: "요청 보고서 종류에 맞는 사내 표준 템플릿 구조를 불러오십시오.",             tool: "부동산원_사내_지식_검색망" },
+      { step: 1, role: "양식 로드",   name: "템플릿 검색기",       prompt: "요청 보고서 종류에 맞는 사내 표준 템플릿 구조를 불러오십시오.",             tool: "사내_지식_검색망" },
       { step: 2, role: "정보 매핑",   name: "데이터 정제기",       prompt: "입력 데이터를 분석하여 템플릿 각 목차에 알맞게 배치하십시오.",              tool: "해당 없음" },
       { step: 3, role: "최종 생성",   name: "보고서 포맷터",       prompt: "매핑 데이터를 공문서 개조식 문장으로 다듬어 출력하십시오.",                  tool: "GPT-OSS 120B" },
     ]
@@ -157,7 +157,7 @@ export const AGENT_TEAMS = [
     icon: Search, color: "violet", tech: ["RAG", "벡터DB", "시맨틱"],
     workflow: [
       { step: 1, role: "질의 임베딩",  name: "임베딩 에이전트",    prompt: "자연어 질의를 고차원 벡터로 변환하십시오.",                                    tool: "EXAONE 3.0 78B" },
-      { step: 2, role: "시맨틱 검색",  name: "벡터 검색 에이전트", prompt: "임베딩 벡터로 지식 DB 내 유사 문서를 최대 10건 검색하십시오.",                 tool: "부동산원_사내_지식_검색망" },
+      { step: 2, role: "시맨틱 검색",  name: "벡터 검색 에이전트", prompt: "임베딩 벡터로 지식 DB 내 유사 문서를 최대 10건 검색하십시오.",                 tool: "사내_지식_검색망" },
       { step: 3, role: "결과 랭킹",    name: "랭킹 에이전트",       prompt: "검색 결과를 관련성 점수로 재정렬하고 핵심 발췌문을 추출하십시오.",              tool: "GPT-OSS 120B" },
     ]
   },
@@ -167,7 +167,7 @@ export const AGENT_TEAMS = [
     icon: BookOpen, color: "blue", tech: ["RAG", "지식DB", "인용"],
     workflow: [
       { step: 1, role: "질의 분석",   name: "의도 파악 에이전트",  prompt: "사용자 질의의 핵심 의도와 관련 규정 범주를 파악하십시오.",                    tool: "GPT-OSS 120B" },
-      { step: 2, role: "문서 검색",   name: "RAG 검색 에이전트",   prompt: "관련 내규 조항을 벡터 검색으로 상위 5건 추출하십시오.",                       tool: "부동산원_사내_지식_검색망" },
+      { step: 2, role: "문서 검색",   name: "RAG 검색 에이전트",   prompt: "관련 내규 조항을 벡터 검색으로 상위 5건 추출하십시오.",                       tool: "사내_지식_검색망" },
       { step: 3, role: "답변 생성",   name: "답변 작성 에이전트",  prompt: "검색된 조항을 인용하여 명확하고 구체적인 답변을 작성하십시오.",                tool: "EXAONE 3.0 78B" },
     ]
   },
@@ -224,7 +224,7 @@ export const AGENT_TEAMS = [
 ];
 
 export const MCP_TOOLS = [
-  { id: "t1",  name: "부동산원_사내_지식_검색망", type: "벡터 DB",    endpoint: "grpc://10.10.1.11:7001", latency: 38,   desc: "원내 내부 규정(사규, 업무지침 등) 시맨틱 검색 엔진",           status: "활성" },
+  { id: "t1",  name: "사내_지식_검색망", type: "벡터 DB",    endpoint: "grpc://10.10.1.11:7001", latency: 38,   desc: "원내 내부 규정(사규, 업무지침 등) 시맨틱 검색 엔진",           status: "활성" },
   { id: "t2",  name: "DRM_자동_복호화_모듈",      type: "보안 모듈",  endpoint: "grpc://10.10.1.12:7002", latency: 15,   desc: "업로드 문서 파싱 전 암호화 해제 (원내 SSO/EAM 연동)",          status: "활성" },
   { id: "t3",  name: "Vision_OCR_엔진",           type: "OCR 모듈",   endpoint: "http://10.10.1.13:8080", latency: 220,  desc: "스캔된 PDF 및 이미지 내 텍스트·표 데이터 추출",                status: "활성" },
   { id: "t4",  name: "도로명주소_DB",             type: "주소 DB",    endpoint: "grpc://10.10.1.14:7004", latency: 12,   desc: "행정안전부 도로명주소 공식 DB (실시간 연동)",                   status: "활성" },

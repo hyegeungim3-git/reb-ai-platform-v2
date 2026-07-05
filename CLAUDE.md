@@ -69,8 +69,8 @@ src/
 - ✅ 2-C: UserApp 2,173줄 → 430줄(상태·핸들러·조립) + layout 5모듈(Sidebar·ChatHeader·ChatMessages·ChatInput·RightPanel) + modals 7모듈 + guardrails.js. 동작 변화 없음(전 회귀 통과). 우측 패널 전용 상태(panelTab·내RAG)는 RightPanel로 이관, 죽은 상태 pilotService 제거. 부수 발견: 이 머신 로컬 빌드가 한글 경로 탓에 7주간 조용히 깨져 있었음(작업 규칙 4 참조) + 락파일에 이전 세션의 rollup 4.59 잔재 정리 + tailwind 4.1.18→4.3.2
 - ✅ 3단계-지도: **지도 인텔리전스** — GENERAL 채팅에서 지역 질의 감지 시 SVG 타일 히트맵+recharts 시계열 카드 삽입. 코어(user/mapIntel.js 매칭·응답 생성 + components/MapIntelCard.jsx lazy 카드) + 팩 3종 mapIntel 데이터(REB 17개 시도 공시지가 변동률 / 한빛정밀 7개 사업장 가동률 / 한성시 12개 행정동 민원 접수). 각 팩 suggestions[3]을 지도 질의로 교체. 매칭 = metricKeywords ∧ (지역명 ∨ wideKeywords). 조사(은/는·으로/로)는 받침 기반 자동 선택. 스키마: DOMAIN-PACK-GUIDE §2-2. ⚠️ 중앙 영역이 좁으면(뷰포트 <~1000) 차트 컬럼 접힘 — 4단계 반응형에서 해소 예정
 - ✅ 3단계-오케스트레이션: **복합 업무 오케스트레이션** — 허브 상단 시나리오 카드에서 요청 1건이 OCR→주소/기준정보 표준화→DB조회→보고서 4개 에이전트를 릴레이하는 자동화 데모. 코어(components/agents/OrchestrationScenario.jsx lazy + AgentHub 카드 + ChatHeader 타이틀 폴백, useAgentSimulation 재사용) + 팩 3종 orchestration 필드(REB 이의신청 일괄 처리 KREA-…-041 / 한빛정밀 검사성적서 판정 HBP-품질-088 / 한성시 옥외광고물 허가 HSC-…-052). 팩에서 생략하면 카드 자체가 비노출. 스키마: DOMAIN-PACK-GUIDE §2-2, 검수: QUALITY-CHECKLIST B-3. 부수 발견: 체크리스트 robocopy `/XD dist`(상대명)가 node_modules\vite\dist까지 제외해 ASCII 복사 빌드가 깨지는 버그 → 절대경로로 수정(작업 규칙 4 반영)
-- ⬜ 도메인화 잔여(팩으로 미이관): ①에이전트 10종 내부 mock ②관리자 45페이지 콘텐츠 ③REVIEW/TRANSLATE/REPORT 모드 응답·공문서 템플릿(responses.js) ④FILE_DATA 인용 문서 ⑤SECURE_SUGGESTIONS
-- ⬜ 3단계 잔여: AI 기본법 대시보드
+- ✅ 3단계-AI기본법: **AI 기본법 대응 대시보드** — 관리자 사이드바 'AI 서비스' 섹션에 단독 메뉴(id 'aiact', Scale 아이콘). admin/pages/compliance.jsx(AiActCompliancePage) + mocks.js MOCK_AIACT_SYSTEMS(6개 시스템)·MOCK_AIACT_LABELING(6개 표시 규칙)·MOCK_AIACT_ASSESSMENTS(3건 평가). 구성: 법령 근거 배너(제31·33·34·35조) + 지표 카드 4종 + 3탭(고영향 AI 관리: 판정 필터·제34조 책무 체크리스트 모달 / 생성물 표시: 규칙 토글·적용률 바·고지문 미리보기 / 영향평가 현황: 항목별 점수 바·지적사항 조치). 콘텐츠는 관리자 관례대로 REB 고정(mocks.js) — 추후 도메인 이관 대상에 포함
+- ⬜ 도메인화 잔여(팩으로 미이관): ①에이전트 10종 내부 mock ②관리자 45페이지 콘텐츠(AI 기본법 대시보드 포함) ③REVIEW/TRANSLATE/REPORT 모드 응답·공문서 템플릿(responses.js) ④FILE_DATA 인용 문서 ⑤SECURE_SUGGESTIONS
 - ⬜ 4단계 P2: 반응형(고정폭 사이드바), 접근성(aria 0건), 상태 유지, HISTORY 탭 구현
 
 ## 6. 다음 세션 표준 지시문 (사용자가 이 문구로 시작하면 그대로 수행)

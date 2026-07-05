@@ -598,3 +598,93 @@ export const UPSTAGE_PARSE_MOCK = {
   }
 };
 
+// ── AI 기본법 대응 (「인공지능 발전과 신뢰 기반 조성 등에 관한 기본법」 2026-01-22 시행) ──
+export const MOCK_AIACT_SYSTEMS = [
+  {id:'hi-001',name:'공시가격 산정지원 AI',dept:'부동산공시처',status:'고영향 확인',confirmedAt:'2026-02-10',manager:'고성민 부장',
+   purpose:'표준지공시지가·공동주택가격 산정 검증 및 비교 표준지 추천 지원',
+   basis:'공공서비스 영역 — 공시가격은 조세·부담금 산정의 기초로 국민의 권리·의무에 중대한 영향',
+   measures:[
+     {k:'위험관리 방안 수립·운영',done:true},
+     {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+     {k:'이용자 보호 방안 수립·운영',done:true},
+     {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+     {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+   ]},
+  {id:'hi-002',name:'토지보상 평가 검토 AI',dept:'토지공시부',status:'고영향 확인',confirmedAt:'2026-02-18',manager:'이준호 팀장',
+   purpose:'공익사업 토지보상 평가서의 산정 논리·비교사례 적정성 검토 지원',
+   basis:'개인의 재산권 등 권리·의무 관계에 중대한 영향 — 보상액 산정 과정에 직접 관여',
+   measures:[
+     {k:'위험관리 방안 수립·운영',done:true},
+     {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+     {k:'이용자 보호 방안 수립·운영',done:false},
+     {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+     {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+   ]},
+  {id:'hi-003',name:'청약자격 사전확인 챗봇',dept:'청약운영부',status:'검토 중',confirmedAt:'-',manager:'박지현 과장',
+   purpose:'청약홈 이용자의 청약 자격요건 사전 안내 및 가점 계산 지원',
+   basis:'공공서비스 제공에 필요한 자격 확인·판단 해당 여부 검토 중 (과기정통부 확인 요청 검토)',
+   measures:[
+     {k:'위험관리 방안 수립·운영',done:false},
+     {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+     {k:'이용자 보호 방안 수립·운영',done:true},
+     {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:false},
+     {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+   ]},
+  {id:'hi-004',name:'시장동향 분석 리포트 모델',dept:'부동산분석처',status:'검토 중',confirmedAt:'-',manager:'최유진 차장',
+   purpose:'주간·월간 부동산 시장동향 리포트 초안 생성 및 통계 요약',
+   basis:'통계 기반 시장 전망 제공 — 개인 권리·의무에 대한 직접 영향 여부 판단 진행 중',
+   measures:[
+     {k:'위험관리 방안 수립·운영',done:false},
+     {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+     {k:'이용자 보호 방안 수립·운영',done:false},
+     {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+     {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+   ]},
+  {id:'hi-005',name:'GenOS 업무지원 챗봇',dept:'AI활용 업무혁신 TF',status:'비해당',confirmedAt:'2026-01-28',manager:'김영빈 팀장',
+   purpose:'임직원 내부 업무 질의응답·문서 초안 작성 보조',
+   basis:'내부 업무 보조 목적 — 국민의 생명·신체·기본권에 미치는 영향 없음',
+   measures:[
+     {k:'위험관리 방안 수립·운영',done:true},
+     {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+     {k:'이용자 보호 방안 수립·운영',done:true},
+     {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+     {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:true},
+   ]},
+  {id:'hi-006',name:'문서 OCR·마스킹 에이전트',dept:'경영지원팀',status:'비해당',confirmedAt:'2026-01-28',manager:'한서윤 대리',
+   purpose:'스캔 문서 텍스트 추출 및 개인정보 자동 마스킹',
+   basis:'문서 전처리 도구 — 의사결정에 관여하지 않아 고영향 요건 미충족',
+   measures:[
+     {k:'위험관리 방안 수립·운영',done:true},
+     {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+     {k:'이용자 보호 방안 수립·운영',done:true},
+     {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+     {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:true},
+   ]},
+];
+
+export const MOCK_AIACT_LABELING = [
+  {id:'lb-01',target:'GenOS 채팅 응답',type:'텍스트',method:'응답 하단 고지문 자동 삽입',enabled:true,coverage:100,weekly:12840},
+  {id:'lb-02',target:'보고서 생성 에이전트 산출물',type:'문서',method:'표지 고지문 + 문서 속성 메타데이터 기록',enabled:true,coverage:100,weekly:342},
+  {id:'lb-03',target:'회의록 초안',type:'문서',method:'머리말(헤더) 고지문 삽입',enabled:true,coverage:98.2,weekly:156},
+  {id:'lb-04',target:'데이터 분석 차트 이미지',type:'이미지',method:'비가시성 워터마크(C2PA 메타데이터)',enabled:true,coverage:94.6,weekly:88},
+  {id:'lb-05',target:'번역·요약 결과물',type:'텍스트',method:'결과 상단 AI 생성 배지 표시',enabled:true,coverage:100,weekly:1204},
+  {id:'lb-06',target:'대외 발송 공문 초안',type:'문서',method:'초안 단계 고지 → 담당자 검토 확인 시 최종본 전환',enabled:false,coverage:0,weekly:0,note:'법무팀 표시 문구 검토 중 — 2026-03 적용 예정'},
+];
+
+export const MOCK_AIACT_ASSESSMENTS = [
+  {id:'ia-001',system:'공시가격 산정지원 AI',round:'2026 상반기 정기 영향평가',status:'완료',date:'2026-02-14',assessor:'외부 전문기관 합동평가',grade:'적합',
+   scores:[['기본권 영향 관리',88],['안전성',92],['편향성 관리',85],['투명성·설명가능성',90],['책무성',86]],
+   findings:[
+     {text:'산정 근거 설명문에 비교 표준지 선정 사유 보강 필요',status:'조치 완료'},
+     {text:'연 1회 편향성 재검증 주기의 내부 규정 문서화',status:'조치 완료'},
+   ]},
+  {id:'ia-002',system:'토지보상 평가 검토 AI',round:'2026 상반기 정기 영향평가',status:'진행 중',progress:65,date:'2026-03-20 완료 예정',assessor:'AI활용 업무혁신 TF 자체평가',grade:'-',
+   scores:[['기본권 영향 관리',82],['안전성',88],['편향성 관리',null],['투명성·설명가능성',null],['책무성',null]],
+   findings:[
+     {text:'이의신청 다수 발생 지역 표본의 편향성 검증 진행 중',status:'진행 중'},
+   ]},
+  {id:'ia-003',system:'청약자격 사전확인 챗봇',round:'고영향 해당 여부 사전검토',status:'예정',date:'2026-04-06 착수 예정',assessor:'AI활용 업무혁신 TF',grade:'-',
+   scores:[],
+   findings:[]},
+];
+

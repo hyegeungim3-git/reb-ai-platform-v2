@@ -3,7 +3,7 @@ import {
   MessageCircle, FileText, ClipboardList,
   BookOpen, ScanLine, Database, MapPin, AlignLeft, Search, BarChart2,
   Bot, Zap, ChevronRight, CheckCircle2, Network, Cpu,
-  Star, Clock, TrendingUp
+  Star, Clock, TrendingUp, Workflow, Play
 } from "lucide-react";
 import { AGENT_TEAMS, MCP_TOOLS } from "../../data/constants.js";
 import { cn } from "../../utils.jsx";
@@ -29,7 +29,7 @@ const USAGE_COUNTS = {
   'agent-translate':5,'agent-review':7,'agent-safety':4,
 };
 
-const AgentHub = ({ onLaunch, agents = AGENT_TEAMS, orgName = "한국부동산원" }) => {
+const AgentHub = ({ onLaunch, agents = AGENT_TEAMS, orgName = "한국부동산원", orchestration = null }) => {
   const [search, setSearch] = useState("");
   const [hovered, setHovered] = useState(null);
   const [recentIds, setRecentIds] = useState(['agent-dbquery','agent-chatbot','agent-ocr']);
@@ -117,6 +117,52 @@ const AgentHub = ({ onLaunch, agents = AGENT_TEAMS, orgName = "한국부동산�
             />
           </div>
         </div>
+
+        {/* 복합 업무 오케스트레이션 시나리오 카드 — 도메인 팩 orchestration 필드 공급 시에만 노출 */}
+        {orchestration && !favFilter && !search && (
+          <div className="mb-5 rounded-2xl overflow-hidden border-2 border-indigo-300 shadow-md">
+            <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-700 px-5 py-4">
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className="w-11 h-11 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center shrink-0">
+                  <Workflow className="w-5.5 h-5.5 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-[9px] px-2 py-0.5 bg-white/15 border border-white/25 text-indigo-100 rounded-full font-black uppercase tracking-wider">복합 업무 오케스트레이션</span>
+                    <span className="text-[9px] text-indigo-200 font-bold">요청 1건 → 에이전트 {orchestration.stages.length}개 자동 릴레이</span>
+                  </div>
+                  <div className="text-[16px] font-black text-white leading-tight truncate">{orchestration.title}</div>
+                  <div className="text-[11px] text-indigo-200 font-medium truncate mt-0.5">{orchestration.brief}</div>
+                </div>
+                <button onClick={() => onLaunch("orchestration")}
+                  className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-indigo-700 text-[12px] font-black shadow-sm hover:bg-indigo-50 transition-colors">
+                  <Play className="w-3.5 h-3.5" /> 시나리오 실행
+                </button>
+              </div>
+            </div>
+            {/* 릴레이 체인 미리보기 */}
+            <div className="bg-white px-5 py-2.5 flex items-center gap-1.5 flex-wrap">
+              {orchestration.stages.map((st, i) => {
+                const ag = agents.find(a => a.id === st.agentId);
+                if (!ag) return null;
+                const c = COLOR_MAP[ag.color] || COLOR_MAP.indigo;
+                const AgIcon = ag.icon;
+                return (
+                  <React.Fragment key={st.agentId}>
+                    <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-lg border", c.border, c.light)}>
+                      <div className={cn("w-4 h-4 rounded flex items-center justify-center shrink-0", c.bg)}>
+                        <AgIcon className="w-2.5 h-2.5 text-white" />
+                      </div>
+                      <span className={cn("text-[10px] font-black whitespace-nowrap", c.text)}>{ag.shortName}</span>
+                    </div>
+                    {i < orchestration.stages.length - 1 && <ChevronRight className="w-3 h-3 text-slate-300 shrink-0" />}
+                  </React.Fragment>
+                );
+              })}
+              <span className="ml-auto text-[9px] text-slate-400 font-bold whitespace-nowrap">중간 산출물 자동 인계 · 무개입 완주</span>
+            </div>
+          </div>
+        )}
 
         {/* Recently Used strip */}
         {recentIds.length > 0 && !favFilter && !search && (

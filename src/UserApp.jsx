@@ -44,6 +44,7 @@ const SummaryAgent = lazy(() => import("./user/components/agents/SummaryAgent.js
 const TranslateAgent = lazy(() => import("./user/components/agents/TranslateAgent.jsx"));
 const DocReviewAgent = lazy(() => import("./user/components/agents/DocReviewAgent.jsx"));
 const SafetyPlanAgent = lazy(() => import("./user/components/agents/SafetyPlanAgent.jsx"));
+const OrchestrationScenario = lazy(() => import("./user/components/agents/OrchestrationScenario.jsx"));
 
 // 에이전트 로딩 폴백
 const AgentLoadingFallback = () => (
@@ -337,7 +338,9 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
           {/* ── AGENT 탭: 허브 & 개별 에이전트 (lazy loading) ── */}
           {chatTab === "AGENT" && (
             <Suspense fallback={<AgentLoadingFallback />}>
-              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} /> :
+              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} /> :
+               activeAgentId === "orchestration" && domain.orchestration
+                                                      ? <OrchestrationScenario scenario={domain.orchestration} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-chatbot"      ? <ChatbotAgent      onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-report"       ? <ReportAgent       onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent onBack={() => setActiveAgentId(null)} /> :
@@ -351,7 +354,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
                activeAgentId === "agent-translate"    ? <TranslateAgent    onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-review"       ? <DocReviewAgent    onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-safety"       ? <SafetyPlanAgent   onBack={() => setActiveAgentId(null)} /> :
-               <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} />}
+               <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} />}
             </Suspense>
           )}
 

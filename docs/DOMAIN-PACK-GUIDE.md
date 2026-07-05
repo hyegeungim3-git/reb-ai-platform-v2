@@ -24,6 +24,7 @@
 | user, workspaces, llmModels (필수) | UserApp.jsx 컴포넌트 상단 주입부 | 사용자 포털 전체 |
 | suggestions, sampleAnswers, docs, history, modeDesc, agentFeed, agentCatalog (선택 — 생략 시 REB 기본값) | UserApp.jsx 주입부 및 getAIResponse | 사용자 포털 전체 |
 | mapIntel (선택 — 생략 시 지도 기능 비활성) | UserApp getAIResponse → user/mapIntel.js → MapIntelCard.jsx | GENERAL 채팅 지역 질의 응답 (히트맵+시계열) |
+| orchestration (선택 — 생략 시 시나리오 카드 비노출) | AgentHub.jsx(허브 상단 카드) → OrchestrationScenario.jsx | 에이전트 허브 오케스트레이션 시나리오 (4개 에이전트 릴레이 데모) |
 
 ## 2. 스키마 레퍼런스
 
@@ -115,6 +116,22 @@ mapIntel: {
       series: [11.21, -5.86, 1.87, 3.10, 3.92],
       insight: "지역 수치의 원인·전망을 담은 도메인 언어 1~2문장." },
   ],
+},
+```
+
+```js
+// 복합 업무 오케스트레이션 (3단계) — 허브 상단 시나리오 카드 + "요청 1건 → 에이전트 4개 릴레이" 실행 데모. 생략하면 카드 자체가 숨겨짐.
+// stages[].agentId는 아래 고정 목록에서. 4단계(OCR→표준화→DB조회→보고서)가 관례이나 개수·순서는 자유.
+// 각 스테이지의 output은 "다음 에이전트의 입력"이 되도록 쓰고, handoff에 무엇을 넘기는지 명시(마지막은 null).
+orchestration: {
+  title: "공시지가 이의신청 서류 일괄 처리",   // 그 도메인의 실제 반복 업무명
+  brief: "허브 카드·헤더에 표시될 1문장 설명",
+  request: "사용자가 입력할 법한 자연어 요청 1문장",
+  attachment: { name: "스캔파일.pdf", pages: 18, size: "12.4 MB" },
+  stages: [ // { agentId, ms(연출 시간), task(1문장), logs(3~5줄 — 시스템명·수치 포함), output:{label, items[]}, handoff }
+    { agentId: "agent-ocr", ms: 3200, task: "…", logs: ["…"], output: { label: "OCR 추출 결과", items: ["…"] }, handoff: "추출 지번 12건을 …로 전달" },
+  ],
+  result: { docNo: "KREA-…-2026-NNN", docTitle: "…검토 보고서", summary: ["…3줄"], metrics: [{ label: "처리 건수", value: "12건" } /* 4개 */] },
 },
 ```
 

@@ -52,7 +52,7 @@ src/
 3. Bash 도구의 상대경로는 매 호출 초기화됨 — `cd /c/한국부동산원/genos-app && ...` 형태로.
 4. **완료 = 빌드 통과 + 브라우저 DOM 검증 + 증거 제시.** "될 겁니다" 금지.
    - **⚠️ 이 머신에서 `npx vite build`는 한글 경로(C:\한국부동산원) 때문에 "✓ N modules transformed" 직후 네이티브 크래시(0xC0000409)로 조용히 죽는다** (Tailwind v4 네이티브 모듈 × 한글 cwd, 2026-07-05 진단). "transformed" 라인만 보고 통과 판정 금지 — **종료 코드 0 + "✓ built in Xs" + dist/ 타임스탬프 갱신**까지 확인할 것.
-   - 로컬 빌드 검증법: 프로젝트를 ASCII 경로로 복사 후 빌드 — `robocopy C:\한국부동산원\genos-app %TEMP%\genos-build /E /XD .git dist` → 그 폴더에서 `node node_modules\vite\bin\vite.js build` (약 5초, EXIT 0 확인) → 복사본 삭제. 또는 push 후 CI 빌드(`gh run watch`)로 갈음.
+   - 로컬 빌드 검증법: 프로젝트를 ASCII 경로로 복사 후 빌드 — `robocopy C:\한국부동산원\genos-app %TEMP%\genos-build /E /XD C:\한국부동산원\genos-app\.git C:\한국부동산원\genos-app\dist` (⚠️ /XD에 상대명 `dist`를 쓰면 node_modules\vite\dist까지 제외돼 빌드가 깨진다 — 절대경로 필수) → 그 폴더에서 `node node_modules\vite\bin\vite.js build` (약 5초, EXIT 0 확인) → 복사본 삭제. 또는 push 후 CI 빌드(`gh run watch`)로 갈음.
    - 빌드: `npx vite build` (2,411 모듈 기준, 2-C 이후)
    - 실행: 프리뷰 서버(.claude/launch.json `genos-app`). 포트는 launch.json상 5174이나 점유 시 다른 포트로 배정되므로 **시작 로그의 실제 포트를 따를 것**. 다른 세션의 dev 서버가 점유 중이면 `PORT=<빈포트> npm run dev`를 백그라운드로 직접 기동.
    - DOM 검증이 스크린샷보다 우선. 검증 스크립트는 QUALITY-CHECKLIST.md 참조. Chrome 확장 미연결 시 puppeteer-core(스크래치패드에 설치) + 로컬 Chrome headless로 검증 가능.
@@ -68,8 +68,9 @@ src/
 - ✅ 허브 13종 확장: 미사용이던 Translate·DocReview·SafetyPlan을 재등록 (agent-translate·agent-review·agent-safety, 도메인 팩 3곳 오버라이드 완비)
 - ✅ 2-C: UserApp 2,173줄 → 430줄(상태·핸들러·조립) + layout 5모듈(Sidebar·ChatHeader·ChatMessages·ChatInput·RightPanel) + modals 7모듈 + guardrails.js. 동작 변화 없음(전 회귀 통과). 우측 패널 전용 상태(panelTab·내RAG)는 RightPanel로 이관, 죽은 상태 pilotService 제거. 부수 발견: 이 머신 로컬 빌드가 한글 경로 탓에 7주간 조용히 깨져 있었음(작업 규칙 4 참조) + 락파일에 이전 세션의 rollup 4.59 잔재 정리 + tailwind 4.1.18→4.3.2
 - ✅ 3단계-지도: **지도 인텔리전스** — GENERAL 채팅에서 지역 질의 감지 시 SVG 타일 히트맵+recharts 시계열 카드 삽입. 코어(user/mapIntel.js 매칭·응답 생성 + components/MapIntelCard.jsx lazy 카드) + 팩 3종 mapIntel 데이터(REB 17개 시도 공시지가 변동률 / 한빛정밀 7개 사업장 가동률 / 한성시 12개 행정동 민원 접수). 각 팩 suggestions[3]을 지도 질의로 교체. 매칭 = metricKeywords ∧ (지역명 ∨ wideKeywords). 조사(은/는·으로/로)는 받침 기반 자동 선택. 스키마: DOMAIN-PACK-GUIDE §2-2. ⚠️ 중앙 영역이 좁으면(뷰포트 <~1000) 차트 컬럼 접힘 — 4단계 반응형에서 해소 예정
+- ✅ 3단계-오케스트레이션: **복합 업무 오케스트레이션** — 허브 상단 시나리오 카드에서 요청 1건이 OCR→주소/기준정보 표준화→DB조회→보고서 4개 에이전트를 릴레이하는 자동화 데모. 코어(components/agents/OrchestrationScenario.jsx lazy + AgentHub 카드 + ChatHeader 타이틀 폴백, useAgentSimulation 재사용) + 팩 3종 orchestration 필드(REB 이의신청 일괄 처리 KREA-…-041 / 한빛정밀 검사성적서 판정 HBP-품질-088 / 한성시 옥외광고물 허가 HSC-…-052). 팩에서 생략하면 카드 자체가 비노출. 스키마: DOMAIN-PACK-GUIDE §2-2, 검수: QUALITY-CHECKLIST B-3. 부수 발견: 체크리스트 robocopy `/XD dist`(상대명)가 node_modules\vite\dist까지 제외해 ASCII 복사 빌드가 깨지는 버그 → 절대경로로 수정(작업 규칙 4 반영)
 - ⬜ 도메인화 잔여(팩으로 미이관): ①에이전트 10종 내부 mock ②관리자 45페이지 콘텐츠 ③REVIEW/TRANSLATE/REPORT 모드 응답·공문서 템플릿(responses.js) ④FILE_DATA 인용 문서 ⑤SECURE_SUGGESTIONS
-- ⬜ 3단계 잔여: 멀티에이전트 오케스트레이션 시나리오, AI 기본법 대시보드
+- ⬜ 3단계 잔여: AI 기본법 대시보드
 - ⬜ 4단계 P2: 반응형(고정폭 사이드바), 접근성(aria 0건), 상태 유지, HISTORY 탭 구현
 
 ## 6. 다음 세션 표준 지시문 (사용자가 이 문구로 시작하면 그대로 수행)

@@ -92,6 +92,37 @@ const template = {
         series: [0, 0, 0], insight: "이 지역의 수치를 설명하는 도메인 언어 1~2문장 (원인·전망 포함)." },
     ],
   },
+  // 복합 업무 오케스트레이션 — 허브 상단 시나리오 카드 + 에이전트 릴레이 데모 (생략 시 카드 자체가 숨겨짐).
+  // stages는 4개 관례(OCR→표준화→DB조회→보고서). agentId는 고정 ID 목록에서, 콘텐츠는 전부 도메인 언어로.
+  orchestration: {
+    title: "○○ 서류 일괄 처리",                       // 시나리오명 — 그 도메인의 실제 반복 업무
+    brief: "서류 1묶음이 OCR → ○○ 표준화 → ○○ 조회 → 보고서로 자동 릴레이됩니다.",
+    request: "사용자가 실제로 입력할 법한 자연어 요청 1문장 (첨부 처리→조회→보고서까지).",
+    attachment: { name: "○○_스캔_0305.pdf", pages: 18, size: "12.4 MB" },
+    stages: [
+      // 각 스테이지: agentId(고정 목록) / ms(연출 시간) / task(1문장) / logs(3~5줄, 시스템명·수치 포함)
+      // / output(중간 산출물 — 다음 단계의 입력이 되는 것을 명시) / handoff(다음 에이전트로 무엇을 넘기는지, 마지막은 null)
+      {
+        agentId: "agent-ocr", ms: 3200,
+        task: "스캔 서류에서 ○○·○○를 추출합니다.",
+        logs: ["Vision_OCR_엔진 호출 — N면 판독", "서류 N건 인식 · 평균 신뢰도 9X.X%", "○○ N건 추출"],
+        output: { label: "OCR 추출 결과", items: ["서류 N건 구조화 (핵심 필드 나열)"] },
+        handoff: "추출한 ○○ N건을 다음 에이전트로 전달",
+      },
+      { agentId: "agent-address", ms: 2400, task: "…", logs: ["…"], output: { label: "표준화 결과", items: ["…"] }, handoff: "…" },
+      { agentId: "agent-dbquery", ms: 2800, task: "…", logs: ["…"], output: { label: "조회 결과", items: ["…"] }, handoff: "…" },
+      { agentId: "agent-report",  ms: 3000, task: "…", logs: ["…", "문서번호 채번 — ORG-부서-2026-NNN"], output: { label: "보고서 생성", items: ["…"] }, handoff: null },
+    ],
+    result: {
+      docNo: "ORG-부서-2026-NNN",                     // 팩의 문서번호 접두 체계 재사용
+      docTitle: "○○(N건) 검토 보고서",
+      summary: ["핵심 판정 1", "예외·후속 조치 1", "제안 1"],   // 3줄 관례 — 수치·근거 포함
+      metrics: [
+        { label: "처리 건수", value: "N건" }, { label: "○○", value: "N건" },
+        { label: "릴레이 에이전트", value: "4개" }, { label: "총 소요", value: "약 12초" },
+      ],
+    },
+  },
   agentCatalog: {
     // 10개 전부 작성. key 오타는 조용히 무시되므로 아래 목록에서 복사할 것.
     "agent-chatbot":      { name: "업무 Q&A 챗봇", shortName: "업무 Q&A", desc: "…을 RAG 기반으로 근거와 함께 즉시 답변합니다." },

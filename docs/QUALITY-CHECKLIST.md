@@ -7,7 +7,8 @@
 
 - [ ] 빌드 통과 확인 — **"transformed" 라인이 아니라 종료 코드로 판정할 것.** 이 머신은 한글 경로 탓에 transform 직후 조용히 크래시한다(CLAUDE.md 작업 규칙 4).
   ```powershell
-  robocopy C:\한국부동산원\genos-app $env:TEMP\genos-build /E /XD .git dist | Out-Null
+  # ⚠️ /XD에 상대명 dist를 쓰면 node_modules\vite\dist까지 제외되어 빌드가 ERR_MODULE_NOT_FOUND로 깨진다 — 반드시 절대경로로
+  robocopy C:\한국부동산원\genos-app $env:TEMP\genos-build /E /XD C:\한국부동산원\genos-app\.git C:\한국부동산원\genos-app\dist | Out-Null
   cd $env:TEMP\genos-build; node node_modules\vite\bin\vite.js build; "EXIT=$LASTEXITCODE"   # EXIT=0 + "✓ built in Xs" 필수
   cd C:\; Remove-Item -Recurse -Force $env:TEMP\genos-build
   ```
@@ -64,6 +65,7 @@
 - [ ] 사용자 포털: 사용자명·부서, 워크스페이스 3종, 문서함 3건, 최근 대화 5건이 팩 콘텐츠
 - [ ] 제안 질의 클릭 → **~2초 후 도메인 답변** 출력 (기본 fallback 응답이면 keywords 불일치)
 - [ ] (mapIntel 보유 팩) 지도 질의 제안 클릭 → 히트맵 타일 전체 + 시계열 차트(선 2개) 렌더, 타일 클릭 시 차트·인사이트 전환, 특정 지역명 질의 시 해당 지역 포커스. **뷰포트 ≥1280에서 검사** (중앙 영역이 좁으면 차트 컬럼이 접힘 — 4단계 반응형 전까지 알려진 한계)
+- [ ] (orchestration 보유 팩) 에이전트 탭 허브 상단에 시나리오 카드 표시 → "시나리오 실행" → "자동화 실행" 클릭 → 4개 스테이지가 순차 진행(로그 줄 등장→산출물→핸드오프) → 최종 보고서 카드(문서번호·요약 3줄·지표 4개) 렌더. 콘텐츠가 해당 도메인 언어인지 확인
 - [ ] LLM 드롭다운: Claude Fable 5 기본 선택 + blocked 모델 차단 표시
 - [ ] 보안 탭 진입 → "로컬 LLM(구축형 모델명)으로 자동 전환" 토스트
 - [ ] 에이전트 탭: 카드 10개가 팩 명칭, 우측 활동 피드가 팩 콘텐츠

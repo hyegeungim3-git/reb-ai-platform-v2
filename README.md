@@ -1,8 +1,10 @@
 # 한국부동산원 AI 플랫폼 (REB AI Platform)
 
-**한국부동산원 생성형 AI 플랫폼 데모 v2.0** — 사용자 포털 + 관리자 시스템 + 10개 AI 에이전트
+**한국부동산원 생성형 AI 플랫폼 데모 v2.0 스냅샷(보존판)** — 사용자 포털 + 관리자 시스템 + 10개 AI 에이전트
 
-> 🌐 **Live demo (v2.0)**: https://hyegeungim3-git.github.io/reb-ai-platform/
+> 📌 이 저장소는 v2.0 시점의 **스냅샷 보존판**입니다. 수정하지 않고 그대로 유지합니다.
+> 🌐 **이 스냅샷 데모**: https://hyegeungim3-git.github.io/reb-ai-platform-v2/
+> 🛠 **개발 계속 진행 중인 원본**: https://hyegeungim3-git.github.io/reb-ai-platform/
 > 🔒 **v1.0 안정 버전**: https://hyegeungim3-git.github.io/genos-app/
 
 ---

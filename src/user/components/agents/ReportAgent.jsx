@@ -201,26 +201,120 @@ const PRESS_RATIO_DATA=[
   {area:'전국',전세가율:85.18,수익률:5.55},
 ];
 
-/* 인쇄용 HTML 빌더 — 도메인 팩이 함수 자체를 통째로 교체하는 계약.
+/* 인쇄용 HTML 빌더 — (args, C, org) 계약.
+   본문 데이터는 C(CONTENT_DEFAULTS+팩 병합)의 press* 키에서 생성하고, 조직명·브랜드색은 org에서 취한다.
+   팩은 press* 데이터만 공급하면 인쇄물이 완성되며, 필요 시 함수 자체를 통째로 교체할 수도 있다.
    buildPressHtml: 보도자료(통계) 레이아웃 / buildReportHtml: 일반 보고서 레이아웃 */
-const buildPressHtml=({title,docNum,dept,period,mainWork,nextPlan,special,apvLine,logo})=>`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+const REB_ORG={name:'한국부동산원',short:'REB',color:'#003087',en:'KOREA REAL ESTATE BOARD'};
+
+/* ── 인쇄용 SVG 생성 헬퍼 — 기존 인쇄 마크업 구조(HTML/CSS·SVG 차트) 유지, 값·라벨·색만 데이터에서 ── */
+const _r=v=>Math.round(v*100)/100;
+const _tick=v=>{const n=+v||0;const a=Math.abs(n);return String(parseFloat(a>=100?n.toFixed(0):a>=10?n.toFixed(1):n.toFixed(2)));};
+const _signTick=v=>(+v>0?'+':'')+_tick(v);
+const _valLabel=v=>{const n=+v||0;return Math.abs(n)>=10?String(parseFloat(n.toFixed(1))):String(n);};
+const _rateColor=v=>{const s=String(v??'').trim();return s.startsWith('-')?'#dc2626':s.startsWith('+')?'#16a34a':'#475569';};
+
+/* 좌측 카드: 지표 월별 추이 꺾은선 (pressTrendData/pressTrendSeries/pressTrendDomain) */
+const _pressTrendSvg=C=>{
+  const data=C.pressTrendData||[],series=C.pressTrendSeries||[];
+  const [mn,mx]=C.pressTrendDomain||[0,100];const rg=(mx-mn)||1;
+  const X0=40,W=250,Y0=10,H=110,PAD=35;
+  const xi=i=>_r(data.length>1?X0+PAD+i*(W-2*PAD)/(data.length-1):X0+W/2);
+  const yi=v=>_r(Y0+(mx-(+v||0))/rg*H);
+  const grid=[1,2,3].map(k=>`<line x1="${X0}" y1="${_r(Y0+k*H/4)}" x2="${X0+W}" y2="${_r(Y0+k*H/4)}" stroke="#e2e8f0" stroke-dasharray="3,3"/>`).join('');
+  const yLbls=[0,1,2,3].map(k=>`<text x="${X0-4}" y="${_r(Y0+k*H/4+4)}" text-anchor="end" font-size="7" fill="#94a3b8">${_tick(mx-k*rg/4)}</text>`).join('');
+  const xLbls=data.map((d,i)=>`<text x="${xi(i)}" y="132" text-anchor="middle" font-size="8" fill="#64748b">${String(d.month??'').replace(/^\d+\./,'')}</text>`).join('');
+  const lines=series.map(s=>{
+    const pts=data.map((d,i)=>`${xi(i)},${yi(d[s.key])}`).join(' ');
+    const dots=data.map((d,i)=>`<circle cx="${xi(i)}" cy="${yi(d[s.key])}" r="3.5" fill="${s.color}"/>`).join('');
+    const f=data[0],l=data[data.length-1];
+    const lbls=f&&l?`<text x="${_r(xi(0)-3)}" y="${_r(yi(f[s.key])-5)}" text-anchor="end" font-size="7" fill="${s.color}" font-weight="700">${f[s.key]}</text><text x="${_r(xi(data.length-1)+4)}" y="${_r(yi(l[s.key])+3)}" font-size="7" fill="${s.color}" font-weight="700">${l[s.key]}</text>`:'';
+    return `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.5" stroke-linejoin="round"/>${dots}${lbls}`;
+  }).join('');
+  const legend=series.map((s,i)=>`<rect x="${60+i*50}" y="140" width="16" height="3" rx="1" fill="${s.color}"/><text x="${80+i*50}" y="143" font-size="7" fill="#64748b">${s.key}</text>`).join('');
+  return `<svg viewBox="0 0 310 155" width="100%" style="display:block;margin-bottom:6px">
+      <defs><linearGradient id="gBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0f9ff"/><stop offset="100%" stop-color="#f8fafc"/></linearGradient></defs>
+      <rect x="${X0}" y="${Y0}" width="${W}" height="${H}" fill="url(#gBg)" rx="3"/>
+      ${grid}${yLbls}${xLbls}${lines}${legend}
+    </svg>`;
+};
+
+/* 우측 카드: 그룹 막대 (pressBarData/pressBarSeries) — 값<0이면 color, 0 이상이면 posColor (화면 미리보기와 동일 규칙) */
+const _pressBarSvg=C=>{
+  const data=C.pressBarData||[],series=C.pressBarSeries||[];
+  const X0=40,W=250,Y0=10,H=110,BW=10,GAP=3;
+  const vals=data.flatMap(d=>series.map(s=>+d[s.key]||0));
+  let P=Math.max(0,...vals)*1.15,N=Math.min(0,...vals)*1.15;
+  if(P-N===0){P=1;N=-1;}
+  const sc=H/(P-N);const zy=_r(Y0+P*sc);
+  const slot=data.length?W/data.length:W;const gw=series.length*BW+(series.length-1)*GAP;
+  const groups=data.map((d,i)=>{
+    const gx=X0+i*slot+(slot-gw)/2;
+    const bars=series.map((s,j)=>{
+      const v=+d[s.key]||0;const h=Math.max(_r(Math.abs(v)*sc),1);
+      return `<rect x="${_r(gx+j*(BW+GAP))}" y="${v>=0?_r(zy-h):zy}" width="${BW}" height="${h}" rx="2" fill="${v<0?s.color:s.posColor}"/>`;
+    }).join('');
+    return `<g>${bars}<text x="${_r(gx+gw/2)}" y="132" text-anchor="middle" font-size="7.5" fill="#334155" font-weight="700">${d.area}</text></g>`;
+  }).join('');
+  const yLbls=[
+    P>0?`<text x="${X0-4}" y="${Y0+4}" text-anchor="end" font-size="7" fill="#94a3b8">${_signTick(P)}</text>`:'',
+    `<text x="${X0-4}" y="${_r(zy+3)}" text-anchor="end" font-size="7" fill="#94a3b8">0</text>`,
+    N<0?`<text x="${X0-4}" y="${Y0+H+4}" text-anchor="end" font-size="7" fill="#94a3b8">${_signTick(N)}</text>`:'',
+  ].join('');
+  const legend=series.map((s,i)=>`<rect x="${60+i*50}" y="140" width="10" height="5" rx="1" fill="${s.color}"/><text x="${74+i*50}" y="145" font-size="7" fill="#64748b">${s.key}</text>`).join('');
+  return `<svg viewBox="0 0 310 155" width="100%" style="display:block;margin-bottom:6px">
+      <rect x="${X0}" y="${Y0}" width="${W}" height="${H}" fill="#fafbfd" rx="3"/>
+      <line x1="${X0}" y1="${_r(Y0+H*0.25)}" x2="${X0+W}" y2="${_r(Y0+H*0.25)}" stroke="#e2e8f0" stroke-dasharray="3,3"/>
+      <line x1="${X0}" y1="${zy}" x2="${X0+W}" y2="${zy}" stroke="#94a3b8" stroke-width="1.2"/>
+      <line x1="${X0}" y1="${_r(Y0+H*0.75)}" x2="${X0+W}" y2="${_r(Y0+H*0.75)}" stroke="#e2e8f0" stroke-dasharray="3,3"/>
+      ${yLbls}${groups}${legend}
+    </svg>`;
+};
+
+/* 이중축 막대 (pressRatioData) — 좌축 leftKey는 threshold 이상이면 경고색, 우축 rightKey (화면 미리보기와 동일 규칙) */
+const _pressRatioSvg=C=>{
+  const data=C.pressRatioData||[];const lk=C.pressRatioLeftKey,rk=C.pressRatioRightKey;
+  const [lmn,lmx]=C.pressRatioLeftDomain||[0,100];const lrg=(lmx-lmn)||1;
+  const [rmn,rmx]=C.pressRatioRightDomain||[0,10];const rrg=(rmx-rmn)||1;
+  const th=C.pressRatioThreshold;
+  const X0=50,W=270,Y0=10,H=105,BOT=Y0+H;
+  const yl=v=>_r(Y0+(lmx-(+v||0))/lrg*H),yr=v=>_r(Y0+(rmx-(+v||0))/rrg*H);
+  const grid=[0,1,2,3,4].map(k=>`<line x1="${X0}" y1="${_r(Y0+k*H/4)}" x2="${X0+W}" y2="${_r(Y0+k*H/4)}" stroke="#e2e8f0" stroke-dasharray="3,3"/><text x="${X0-4}" y="${_r(Y0+k*H/4+4)}" text-anchor="end" font-size="7" fill="#94a3b8">${_tick(lmx-k*lrg/4)}%</text>`).join('');
+  const thLine=th!=null?`<line x1="${X0}" y1="${yl(th)}" x2="${X0+W}" y2="${yl(th)}" stroke="#ef4444" stroke-dasharray="4,3" stroke-width="1"/><text x="${X0+W-2}" y="${_r(yl(th)-3)}" text-anchor="end" font-size="7" fill="#ef4444" font-weight="700">${C.pressRatioRefLabel||''}</text>`:'';
+  const slot=data.length?W/data.length:W;
+  const groups=data.map((d,i)=>{
+    const gx=X0+i*slot+(slot-47)/2;
+    const lv=+d[lk]||0,rv=+d[rk]||0;
+    const ly=Math.min(yl(lv),BOT-1),ry=Math.min(yr(rv),BOT-1);
+    return `<g><rect x="${_r(gx)}" y="${ly}" width="22" height="${_r(BOT-ly)}" rx="3" fill="${th!=null&&lv>=th?'#fca5a5':'#bfdbfe'}"/><rect x="${_r(gx+25)}" y="${ry}" width="22" height="${_r(BOT-ry)}" rx="3" fill="#6ee7b7"/><text x="${_r(gx+11)}" y="${_r(ly-4)}" text-anchor="middle" font-size="7" fill="#3b82f6" font-weight="700">${_valLabel(lv)}%</text><text x="${_r(gx+36)}" y="${_r(ry-4)}" text-anchor="middle" font-size="7" fill="#16a34a" font-weight="700">${_valLabel(rv)}%</text><text x="${_r(gx+23.5)}" y="130" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">${d.area}</text></g>`;
+  }).join('');
+  const legend=th!=null
+    ?`<rect x="65" y="142" width="12" height="5" rx="1" fill="#fca5a5"/><text x="81" y="147" font-size="7" fill="#64748b">${lk}(≥${th}%)</text><rect x="145" y="142" width="12" height="5" rx="1" fill="#bfdbfe"/><text x="161" y="147" font-size="7" fill="#64748b">${lk}(&lt;${th}%)</text><rect x="225" y="142" width="12" height="5" rx="1" fill="#6ee7b7"/><text x="241" y="147" font-size="7" fill="#64748b">${rk}</text>`
+    :`<rect x="65" y="142" width="12" height="5" rx="1" fill="#bfdbfe"/><text x="81" y="147" font-size="7" fill="#64748b">${lk}</text><rect x="145" y="142" width="12" height="5" rx="1" fill="#6ee7b7"/><text x="161" y="147" font-size="7" fill="#64748b">${rk}</text>`;
+  return `<svg viewBox="0 0 340 155" width="100%" style="display:block;margin-bottom:8px">
+    <rect x="${X0}" y="${Y0}" width="${W}" height="${H}" fill="#fafbfd" rx="3"/>
+    ${grid}${thLine}${groups}${legend}
+  </svg>`;
+};
+
+const buildPressHtml=({title,docNum,dept,period,mainWork,nextPlan,special,apvLine,logo},C=CONTENT_DEFAULTS,org=REB_ORG)=>`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <title>${title} — ${docNum}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
   @page{size:A4;margin:12mm 15mm}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}
   body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;margin:0;color:#1a202c;font-size:12px;line-height:1.75;word-break:keep-all;letter-spacing:-0.01em}
-  .hd{border:1px solid #003087;display:grid;grid-template-columns:150px 1fr;grid-template-rows:auto auto;margin-bottom:14px}
-  .hd-logo{grid-column:1;grid-row:1/3;display:flex;align-items:center;justify-content:center;padding:14px 12px;background:#fff;border-right:1px solid #003087}
+  .hd{border:1px solid ${org.color};display:grid;grid-template-columns:150px 1fr;grid-template-rows:auto auto;margin-bottom:14px}
+  .hd-logo{grid-column:1;grid-row:1/3;display:flex;align-items:center;justify-content:center;padding:14px 12px;background:#fff;border-right:1px solid ${org.color}}
   .hd-logo img{width:120px;height:auto}
-  .hd-title{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;padding:14px 12px;background:#e6e6e6;border-bottom:1px solid #003087}
-  .hd-h1{font-size:28px;font-weight:900;letter-spacing:.4em;padding-right:.4em;color:#003087;line-height:1.2}
+  .hd-title{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;padding:14px 12px;background:#e6e6e6;border-bottom:1px solid ${org.color}}
+  .hd-h1{font-size:28px;font-weight:900;letter-spacing:.4em;padding-right:.4em;color:${org.color};line-height:1.2}
   .hd-meta{grid-column:2;grid-row:2;display:grid;grid-template-columns:64px 1fr 64px 1fr}
-  .hd-ml{display:flex;align-items:center;justify-content:center;padding:6px 8px;background:#dbeafe;border-right:1px solid #003087;font-size:10px;font-weight:700;color:#003087}
-  .hd-mv{display:flex;align-items:center;padding:6px 10px;border-right:1px solid #003087;font-size:11px;color:#1a202c;font-weight:600}
+  .hd-ml{display:flex;align-items:center;justify-content:center;padding:6px 8px;background:#dbeafe;border-right:1px solid ${org.color};font-size:10px;font-weight:700;color:${org.color}}
+  .hd-mv{display:flex;align-items:center;padding:6px 10px;border-right:1px solid ${org.color};font-size:11px;color:#1a202c;font-weight:600}
   .hd-mv-last{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:6px 10px;font-size:10px;color:#1a202c}
   .kpi{background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:12px 16px;margin-bottom:12px}
-  .kpi-title{font-size:10px;font-weight:800;color:#003087;margin-bottom:10px}
+  .kpi-title{font-size:10px;font-weight:800;color:${org.color};margin-bottom:10px}
   .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
   .kpi-card{background:#fff;border:1px solid #e0e7ff;border-radius:6px;padding:8px 10px;text-align:center}
   .kpi-lbl{font-size:9px;color:#6b7280;font-weight:700;margin-bottom:3px}
@@ -230,7 +324,7 @@ const buildPressHtml=({title,docNum,dept,period,mainWork,nextPlan,special,apvLin
   .kpi-sl{font-size:9px;color:#6b7280;font-weight:600}
   .kpi-sv{font-size:11px;color:#1e3a8a;font-weight:800}
   .sh{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:900;color:#1a202c;margin:14px 0 7px}
-  .sn{width:20px;height:20px;background:#003087;color:white;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;flex-shrink:0}
+  .sn{width:20px;height:20px;background:${org.color};color:white;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;flex-shrink:0}
   .ml{margin-left:27px}
   .rcard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:8px}
   .rcard{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px}
@@ -238,21 +332,21 @@ const buildPressHtml=({title,docNum,dept,period,mainWork,nextPlan,special,apvLin
   .rcard-rate{font-size:14px;font-weight:900;line-height:1.2}
   .rcard-prev{font-size:9px;color:#cbd5e1;margin-top:2px}
   .drow{display:flex;gap:6px;font-size:11px;line-height:1.6;align-items:flex-start;margin-bottom:5px}
-  .drow-area{font-weight:800;color:#003087;width:36px;flex-shrink:0}
+  .drow-area{font-weight:800;color:${org.color};width:36px;flex-shrink:0}
   .drow-rate{font-weight:700;flex-shrink:0;width:52px}
   .drow-note{color:#475569}
   table.idx{width:100%;border-collapse:collapse;font-size:10px;border:1px solid #e2e8f0}
-  table.idx th{background:#003087;color:#fff;padding:5px 7px;font-weight:700;text-align:left}
+  table.idx th{background:${org.color};color:#fff;padding:5px 7px;font-weight:700;text-align:left}
   table.idx td{padding:4px 7px;border-bottom:1px solid #f1f5f9}
-  table.idx tr.cat td{background:#dbeafe;font-weight:800;color:#003087}
+  table.idx tr.cat td{background:#dbeafe;font-weight:800;color:${org.color}}
   .note{font-size:9px;color:#9ca3af;margin-top:4px}
   table.jw{width:100%;border-collapse:collapse;font-size:10px;border:1px solid #e2e8f0}
-  table.jw th{background:#003087;color:#fff;padding:5px 7px;font-weight:700;text-align:center}
+  table.jw th{background:${org.color};color:#fff;padding:5px 7px;font-weight:700;text-align:center}
   table.jw td{padding:4px 7px;border-bottom:1px solid #f1f5f9;text-align:center}
   .contact{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;font-size:10px;color:#64748b;margin-top:14px}
-  .sig-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px;border-top:2px solid #003087;padding-top:12px}
+  .sig-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px;border-top:2px solid ${org.color};padding-top:12px}
   .sig-box{border:1px solid #cbd5e0;border-radius:5px;overflow:hidden}
-  .sig-lbl{background:#003087;color:white;text-align:center;padding:5px;font-size:10px;font-weight:700}
+  .sig-lbl{background:${org.color};color:white;text-align:center;padding:5px;font-size:10px;font-weight:700}
   .sig-sp{height:48px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:6px;gap:2px}
   .sig-name{font-size:12px;font-weight:700;color:#334155}
   .sig-dept{font-size:10px;color:#94a3b8}
@@ -261,7 +355,7 @@ const buildPressHtml=({title,docNum,dept,period,mainWork,nextPlan,special,apvLin
 </style></head><body>
 <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};</script>
 <div class="hd">
-  <div class="hd-logo"><img src="${logo}" alt="한국부동산원"/></div>
+  <div class="hd-logo"><img src="${logo}" alt="${org.name}"/></div>
   <div class="hd-title"><div class="hd-h1">${title}</div></div>
   <div class="hd-meta">
     <div class="hd-ml">담당부서</div><div class="hd-mv">${dept}</div>
@@ -270,277 +364,114 @@ const buildPressHtml=({title,docNum,dept,period,mainWork,nextPlan,special,apvLin
   </div>
 </div>
 
-<table style="width:100%;border-collapse:collapse;font-size:11px;border-top:2px solid #003087;margin-bottom:12px">
-  <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:5px 8px;font-weight:700;color:#003087;width:80px">담당 부서</td><td style="padding:5px 8px;font-weight:600" colspan="3">${dept}</td></tr>
-  <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:5px 8px;font-weight:700;color:#003087">조사 기간</td><td style="padding:5px 8px">${period}</td><td style="padding:5px 8px;font-weight:700;color:#003087;width:70px">배포 일시</td><td style="padding:5px 8px">2025년 7월 15일 (화)</td></tr>
-  <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:5px 8px;font-weight:700;color:#003087">주요 내용</td><td style="padding:5px 8px;font-size:10px" colspan="3">${mainWork.replace(/\n/g,'<br/>')}</td></tr>
+<table style="width:100%;border-collapse:collapse;font-size:11px;border-top:2px solid ${org.color};margin-bottom:12px">
+  <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:5px 8px;font-weight:700;color:${org.color};width:80px">담당 부서</td><td style="padding:5px 8px;font-weight:600" colspan="3">${dept}</td></tr>
+  <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:5px 8px;font-weight:700;color:${org.color}">조사 기간</td><td style="padding:5px 8px">${period}</td><td style="padding:5px 8px;font-weight:700;color:${org.color};width:70px">배포 일시</td><td style="padding:5px 8px">${C.pressDistDate||''}</td></tr>
+  <tr style="border-bottom:1px solid #e2e8f0"><td style="padding:5px 8px;font-weight:700;color:${org.color}">주요 내용</td><td style="padding:5px 8px;font-size:10px" colspan="3">${mainWork.replace(/\n/g,'<br/>')}</td></tr>
 </table>
 
 <div class="kpi">
-  <div class="kpi-title">▪ 2025년 2분기 주택가격동향 핵심 지표 (전분기 대비)</div>
+  <div class="kpi-title">${C.pressKpiTitle||''}</div>
   <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-lbl">매매가격</div><div class="kpi-val red">▼ 0.39%</div><div class="kpi-sub">전분기 -0.39%</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">전세가격</div><div class="kpi-val red">▼ 0.25%</div><div class="kpi-sub">전분기 -0.22%</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">월세가격</div><div class="kpi-val green">▲ 0.20%</div><div class="kpi-sub">전분기 +0.49%</div></div>
-    <div class="kpi-card"><div class="kpi-lbl">전월세전환율</div><div class="kpi-val blue">6.35%</div><div class="kpi-sub">수익률 5.55%</div></div>
+    ${(C.pressKpiCards||[]).map(c=>`<div class="kpi-card"><div class="kpi-lbl">${c.label}</div><div class="kpi-val" style="color:${c.color}">${c.value}</div><div class="kpi-sub">${c.sub}</div></div>`).join('')}
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
-    <div class="kpi-stat"><span class="kpi-sl">전국 매매 평균가격</span><span class="kpi-sv">221,662천원</span></div>
-    <div class="kpi-stat"><span class="kpi-sl">전국 전세가율</span><span class="kpi-sv">85.18%</span></div>
-    <div class="kpi-stat"><span class="kpi-sl">서울 월세 평균</span><span class="kpi-sv">914천원/월</span></div>
+  <div style="display:grid;grid-template-columns:repeat(${(C.pressKpiStats||[]).length||3},1fr);gap:6px">
+    ${(C.pressKpiStats||[]).map(s=>`<div class="kpi-stat"><span class="kpi-sl">${s.label}</span><span class="kpi-sv">${s.value}</span></div>`).join('')}
   </div>
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
   <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px">
-    <div style="font-size:10px;font-weight:800;color:#003087;margin-bottom:6px;letter-spacing:0.03em">▪ 가격지수 월별 추이 (2023.12=100.0)</div>
-    <svg viewBox="0 0 310 155" width="100%" style="display:block;margin-bottom:6px">
-      <defs><linearGradient id="gBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0f9ff"/><stop offset="100%" stop-color="#f8fafc"/></linearGradient></defs>
-      <rect x="40" y="10" width="250" height="110" fill="url(#gBg)" rx="3"/>
-      <line x1="40" y1="37" x2="290" y2="37" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-      <line x1="40" y1="64" x2="290" y2="64" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-      <line x1="40" y1="91" x2="290" y2="91" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-      <text x="36" y="14" text-anchor="end" font-size="7" fill="#94a3b8">102</text>
-      <text x="36" y="41" text-anchor="end" font-size="7" fill="#94a3b8">100</text>
-      <text x="36" y="68" text-anchor="end" font-size="7" fill="#94a3b8">98</text>
-      <text x="36" y="95" text-anchor="end" font-size="7" fill="#94a3b8">96</text>
-      <text x="75" y="132" text-anchor="middle" font-size="8" fill="#64748b">4월</text>
-      <text x="165" y="132" text-anchor="middle" font-size="8" fill="#64748b">5월</text>
-      <text x="255" y="132" text-anchor="middle" font-size="8" fill="#64748b">6월</text>
-      <polyline points="75,87 165,89 255,92" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round"/>
-      <circle cx="75" cy="87" r="3.5" fill="#dc2626"/><circle cx="165" cy="89" r="3.5" fill="#dc2626"/><circle cx="255" cy="92" r="3.5" fill="#dc2626"/>
-      <text x="72" y="83" text-anchor="end" font-size="7" fill="#dc2626" font-weight="700">97.82</text>
-      <text x="258" y="100" font-size="7" fill="#dc2626" font-weight="700">97.57</text>
-      <polyline points="75,73 165,76 255,78" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round"/>
-      <circle cx="75" cy="73" r="3.5" fill="#2563eb"/><circle cx="165" cy="76" r="3.5" fill="#2563eb"/><circle cx="255" cy="78" r="3.5" fill="#2563eb"/>
-      <text x="72" y="70" text-anchor="end" font-size="7" fill="#2563eb" font-weight="700">98.67</text>
-      <text x="258" y="75" font-size="7" fill="#2563eb" font-weight="700">98.49</text>
-      <polyline points="75,24 165,23 255,22" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linejoin="round"/>
-      <circle cx="75" cy="24" r="3.5" fill="#16a34a"/><circle cx="165" cy="23" r="3.5" fill="#16a34a"/><circle cx="255" cy="22" r="3.5" fill="#16a34a"/>
-      <text x="72" y="20" text-anchor="end" font-size="7" fill="#16a34a" font-weight="700">101.79</text>
-      <text x="258" y="19" font-size="7" fill="#16a34a" font-weight="700">101.92</text>
-      <rect x="60" y="140" width="16" height="3" rx="1" fill="#dc2626"/><text x="80" y="143" font-size="7" fill="#64748b">매매</text>
-      <rect x="110" y="140" width="16" height="3" rx="1" fill="#2563eb"/><text x="130" y="143" font-size="7" fill="#64748b">전세</text>
-      <rect x="160" y="140" width="16" height="3" rx="1" fill="#16a34a"/><text x="180" y="143" font-size="7" fill="#64748b">월세</text>
-    </svg>
-    <div style="font-size:9px;color:#94a3b8">매매·전세 하락 지속, 월세 상승 추세</div>
+    <div style="font-size:10px;font-weight:800;color:${org.color};margin-bottom:6px;letter-spacing:0.03em">${C.pressTrendTitle||''}</div>
+    ${_pressTrendSvg(C)}
   </div>
   <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px">
-    <div style="font-size:10px;font-weight:800;color:#003087;margin-bottom:6px;letter-spacing:0.03em">▪ 지역별 전분기 변동률 (%)</div>
-    <svg viewBox="0 0 310 155" width="100%" style="display:block;margin-bottom:6px">
-      <rect x="40" y="10" width="250" height="110" fill="#fafbfd" rx="3"/>
-      <line x1="40" y1="37" x2="290" y2="37" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-      <line x1="40" y1="64" x2="290" y2="64" stroke="#94a3b8" stroke-width="1.2"/>
-      <line x1="40" y1="91" x2="290" y2="91" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-      <text x="36" y="41" text-anchor="end" font-size="7" fill="#94a3b8">+0.5</text>
-      <text x="36" y="68" text-anchor="end" font-size="7" fill="#94a3b8">0</text>
-      <text x="36" y="95" text-anchor="end" font-size="7" fill="#94a3b8">-0.5</text>
-      <text x="36" y="122" text-anchor="end" font-size="7" fill="#94a3b8">-1.0</text>
-      <g transform="translate(58,0)">
-        <rect x="0" y="64" width="10" height="21" rx="2" fill="#fca5a5"/>
-        <rect x="13" y="64" width="10" height="14" rx="2" fill="#93c5fd"/>
-        <rect x="26" y="53" width="10" height="11" rx="2" fill="#86efac"/>
-        <text x="18" y="132" text-anchor="middle" font-size="7.5" fill="#334155" font-weight="700">전국</text>
-      </g>
-      <g transform="translate(108,0)">
-        <rect x="0" y="64" width="10" height="18" rx="2" fill="#fca5a5"/>
-        <rect x="13" y="64" width="10" height="12" rx="2" fill="#93c5fd"/>
-        <rect x="26" y="50" width="10" height="14" rx="2" fill="#86efac"/>
-        <text x="18" y="132" text-anchor="middle" font-size="7.5" fill="#334155" font-weight="700">수도권</text>
-      </g>
-      <g transform="translate(158,0)">
-        <rect x="0" y="63" width="10" height="1" rx="0.5" fill="#cbd5e1"/>
-        <rect x="13" y="64" width="10" height="1" rx="0.5" fill="#93c5fd"/>
-        <rect x="26" y="49" width="10" height="15" rx="2" fill="#86efac"/>
-        <text x="18" y="132" text-anchor="middle" font-size="7.5" fill="#334155" font-weight="700">서울</text>
-      </g>
-      <g transform="translate(208,0)">
-        <rect x="0" y="64" width="10" height="49" rx="2" fill="#fca5a5"/>
-        <rect x="13" y="64" width="10" height="35" rx="2" fill="#93c5fd"/>
-        <rect x="26" y="59" width="10" height="5" rx="2" fill="#86efac"/>
-        <text x="18" y="132" text-anchor="middle" font-size="7.5" fill="#334155" font-weight="700">인천</text>
-      </g>
-      <g transform="translate(258,0)">
-        <rect x="0" y="64" width="10" height="25" rx="2" fill="#fca5a5"/>
-        <rect x="13" y="64" width="10" height="17" rx="2" fill="#93c5fd"/>
-        <rect x="26" y="49" width="10" height="15" rx="2" fill="#86efac"/>
-        <text x="18" y="132" text-anchor="middle" font-size="7.5" fill="#334155" font-weight="700">경기</text>
-      </g>
-      <rect x="60" y="140" width="10" height="5" rx="1" fill="#fca5a5"/><text x="74" y="145" font-size="7" fill="#64748b">매매</text>
-      <rect x="110" y="140" width="10" height="5" rx="1" fill="#93c5fd"/><text x="124" y="145" font-size="7" fill="#64748b">전세</text>
-      <rect x="160" y="140" width="10" height="5" rx="1" fill="#86efac"/><text x="174" y="145" font-size="7" fill="#64748b">월세</text>
-    </svg>
-    <div style="font-size:9px;color:#94a3b8">인천 매매 -0.91% 최대 하락 | 서울 매매 보합 전환</div>
+    <div style="font-size:10px;font-weight:800;color:${org.color};margin-bottom:6px;letter-spacing:0.03em">${C.pressBarTitle||''}</div>
+    ${_pressBarSvg(C)}
   </div>
 </div>
 
-<div class="sh"><span class="sn">1</span> 매매가격동향</div>
+${(C.pressSections||[]).map(sec=>`<div class="sh"><span class="sn">${sec.num}</span> ${sec.title}</div>
 <div class="ml">
   <div class="rcard-grid">
-    <div class="rcard"><div class="rcard-area">전국</div><div class="rcard-rate red">-0.39%</div><div class="rcard-prev">전분기 -0.39%</div></div>
-    <div class="rcard"><div class="rcard-area">수도권</div><div class="rcard-rate red">-0.34%</div><div class="rcard-prev">전분기 -0.31%</div></div>
-    <div class="rcard"><div class="rcard-area">지방</div><div class="rcard-rate red">-0.56%</div><div class="rcard-prev">전분기 -0.72%</div></div>
+    ${(sec.regions||[]).map(g=>`<div class="rcard"><div class="rcard-area">${g.area}</div><div class="rcard-rate" style="color:${_rateColor(g.rate)}">${g.rate}</div><div class="rcard-prev">전분기 ${g.prev}</div></div>`).join('')}
   </div>
-  <div class="drow"><span class="drow-area">서울</span><span class="drow-rate gray">(0.00%)</span><span class="drow-note">중대형 주택 상승 + 초소형 하락 상쇄 → 보합 전환 (전분기 0.03%→0.00%)</span></div>
-  <div class="drow"><span class="drow-area">인천</span><span class="drow-rate red">(-0.91%)</span><span class="drow-note">입주예정 매물 누적 하락세 지속. 역세권 신축 매수 문의 증가로 하락폭 소폭 축소 (-0.96%→-0.91%)</span></div>
-  <div class="drow"><span class="drow-area">경기</span><span class="drow-rate red">(-0.47%)</span><span class="drow-note">신도시 신축 공급 과잉이 하락 주도. 노후 단지 투자 수요 감소로 하락폭 확대 (-0.40%→-0.47%)</span></div>
-</div>
+  ${(sec.details||[]).map(d=>`<div class="drow"><span class="drow-area">${d.area}</span><span class="drow-rate" style="color:${_rateColor(d.rate)}">(${d.rate})</span><span class="drow-note">${d.note}</span></div>`).join('')}
+</div>`).join('\n')}
 
-<div class="sh"><span class="sn">2</span> 전세가격동향</div>
-<div class="ml">
-  <div class="rcard-grid">
-    <div class="rcard"><div class="rcard-area">전국</div><div class="rcard-rate red">-0.25%</div><div class="rcard-prev">전분기 -0.22%</div></div>
-    <div class="rcard"><div class="rcard-area">수도권</div><div class="rcard-rate red">-0.23%</div><div class="rcard-prev">전분기 -0.16%</div></div>
-    <div class="rcard"><div class="rcard-area">지방</div><div class="rcard-rate red">-0.30%</div><div class="rcard-prev">전분기 -0.44%</div></div>
-  </div>
-  <div class="drow"><span class="drow-area">서울</span><span class="drow-rate red">(-0.02%)</span><span class="drow-note">이사철 마무리로 이주 수요 감소. 전세기피·월세전환 증가로 상승→하락 전환 (0.01%→-0.02%)</span></div>
-  <div class="drow"><span class="drow-area">인천</span><span class="drow-rate red">(-0.64%)</span><span class="drow-note">전세사기·역전세 우려로 전세기피 지속. 노후 주택 중심 하락폭 확대 (-0.47%→-0.64%)</span></div>
-  <div class="drow"><span class="drow-area">경기</span><span class="drow-rate red">(-0.31%)</span><span class="drow-note">매매가 하락에 따른 보증금 미반환 불안 확산. 공급 과잉 지역 중심 하락폭 확대 (-0.22%→-0.31%)</span></div>
-</div>
-
-<div class="sh"><span class="sn">3</span> 월세가격동향</div>
-<div class="ml">
-  <div class="rcard-grid">
-    <div class="rcard"><div class="rcard-area">전국</div><div class="rcard-rate green">+0.20%</div><div class="rcard-prev">전분기 +0.49%</div></div>
-    <div class="rcard"><div class="rcard-area">수도권</div><div class="rcard-rate green">+0.25%</div><div class="rcard-prev">전분기 +0.56%</div></div>
-    <div class="rcard"><div class="rcard-area">지방</div><div class="rcard-rate green">+0.04%</div><div class="rcard-prev">전분기 +0.20%</div></div>
-  </div>
-  <div class="drow"><span class="drow-area">서울</span><span class="drow-rate green">(+0.28%)</span><span class="drow-note">역세권 입주여건 양호 지역 중심 상승. 이사철 마무리로 상승폭 축소 (0.44%→0.28%)</span></div>
-  <div class="drow"><span class="drow-area">인천</span><span class="drow-rate green">(+0.08%)</span><span class="drow-note">공급 과잉·노후 주택 하락으로 상승폭 대폭 축소 (1.30%→0.08%)</span></div>
-  <div class="drow"><span class="drow-area">경기</span><span class="drow-rate green">(+0.28%)</span><span class="drow-note">교통 양호 지역 월세선호 증가로 상승. 신도시 공급 과잉 지역은 하락 (0.43%→0.28%)</span></div>
-</div>
-
-<div class="sh"><span class="sn">4</span> 2025년 4~6월 가격지수 및 변동률 (2023.12=100.0)</div>
+<div class="sh"><span class="sn">${(C.pressSections||[]).length+1}</span> ${C.pressIndexTitle||''}</div>
 <div class="ml">
   <table class="idx">
-    <thead><tr><th>구분</th><th>지역</th><th>2025.4</th><th>2025.5</th><th>2025.6</th><th>전분기 변동률(%)</th></tr></thead>
+    <thead><tr>${(C.pressIndexHead||[]).map(h=>`<th>${h}</th>`).join('')}</tr></thead>
     <tbody>
-      <tr class="cat"><td colspan="6">매매가격</td></tr>
-      <tr><td></td><td>전국</td><td>97.82</td><td>97.71</td><td>97.57</td><td class="red">-0.39</td></tr>
-      <tr><td></td><td>수도권</td><td>98.24</td><td>98.13</td><td>98.02</td><td class="red">-0.34</td></tr>
-      <tr><td></td><td>서울</td><td>99.70</td><td>99.71</td><td>99.70</td><td class="gray">0.00</td></tr>
-      <tr class="cat"><td colspan="6">전세가격</td></tr>
-      <tr><td></td><td>전국</td><td>98.67</td><td>98.58</td><td>98.49</td><td class="red">-0.25</td></tr>
-      <tr><td></td><td>수도권</td><td>99.03</td><td>98.95</td><td>98.87</td><td class="red">-0.23</td></tr>
-      <tr><td></td><td>서울</td><td>99.81</td><td>99.79</td><td>99.80</td><td class="red">-0.02</td></tr>
-      <tr class="cat"><td colspan="6">월세가격</td></tr>
-      <tr><td></td><td>전국</td><td>101.79</td><td>101.85</td><td>101.92</td><td class="green">+0.20</td></tr>
-      <tr><td></td><td>수도권</td><td>102.31</td><td>102.38</td><td>102.47</td><td class="green">+0.25</td></tr>
-      <tr><td></td><td>서울</td><td>102.24</td><td>102.33</td><td>102.42</td><td class="green">+0.28</td></tr>
+      ${(C.pressIndexGroups||[]).map(g=>`<tr class="cat"><td colspan="${(C.pressIndexHead||[]).length||5}">${g.label}</td></tr>`+(g.rows||[]).map(rw=>`<tr><td>${rw.a}</td><td>${rw.v1}</td><td>${rw.v2}</td><td>${rw.v3}</td><td style="color:${_rateColor(rw.c)}">${rw.c}</td></tr>`).join('')).join('\n      ')}
     </tbody>
   </table>
-  <p class="note">* 지수산정: 제본스지수 | 통계청 국가통계 승인번호 408002</p>
+  <p class="note">${C.pressIndexNote||''}</p>
 </div>
 
-<div class="sh"><span class="sn">5</span> 지역별 전세가율 및 수익률</div>
+<div class="sh"><span class="sn">${(C.pressSections||[]).length+2}</span> ${C.pressRatioTitle||''}</div>
 <div class="ml">
-  <svg viewBox="0 0 340 155" width="100%" style="display:block;margin-bottom:8px">
-    <rect x="50" y="10" width="270" height="105" fill="#fafbfd" rx="3"/>
-    <line x1="50" y1="10" x2="320" y2="10" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-    <line x1="50" y1="36" x2="320" y2="36" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-    <line x1="50" y1="62" x2="320" y2="62" stroke="#ef4444" stroke-dasharray="4,3" stroke-width="1"/>
-    <line x1="50" y1="88" x2="320" y2="88" stroke="#e2e8f0" stroke-dasharray="3,3"/>
-    <text x="46" y="14" text-anchor="end" font-size="7" fill="#94a3b8">92%</text>
-    <text x="46" y="40" text-anchor="end" font-size="7" fill="#94a3b8">88%</text>
-    <text x="46" y="66" text-anchor="end" font-size="7" fill="#94a3b8">85%</text>
-    <text x="46" y="92" text-anchor="end" font-size="7" fill="#94a3b8">82%</text>
-    <text x="46" y="118" text-anchor="end" font-size="7" fill="#94a3b8">78%</text>
-    <text x="275" y="59" font-size="7" fill="#ef4444" font-weight="700">위험선 85%</text>
-    <g transform="translate(75,0)">
-      <rect x="0" y="17" width="22" height="98" rx="3" fill="#fca5a5"/>
-      <rect x="25" y="78" width="22" height="37" rx="3" fill="#6ee7b7"/>
-      <text x="11" y="13" text-anchor="middle" font-size="7" fill="#3b82f6" font-weight="700">88.3%</text>
-      <text x="36" y="74" text-anchor="middle" font-size="7" fill="#16a34a" font-weight="700">4.8%</text>
-      <text x="23" y="130" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">서울</text>
-    </g>
-    <g transform="translate(135,0)">
-      <rect x="0" y="25" width="22" height="90" rx="3" fill="#fca5a5"/>
-      <rect x="25" y="68" width="22" height="47" rx="3" fill="#6ee7b7"/>
-      <text x="11" y="21" text-anchor="middle" font-size="7" fill="#3b82f6" font-weight="700">87.2%</text>
-      <text x="36" y="64" text-anchor="middle" font-size="7" fill="#16a34a" font-weight="700">5.4%</text>
-      <text x="23" y="130" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">인천</text>
-    </g>
-    <g transform="translate(195,0)">
-      <rect x="0" y="29" width="22" height="86" rx="3" fill="#fca5a5"/>
-      <rect x="25" y="72" width="22" height="43" rx="3" fill="#6ee7b7"/>
-      <text x="11" y="25" text-anchor="middle" font-size="7" fill="#3b82f6" font-weight="700">86.7%</text>
-      <text x="36" y="68" text-anchor="middle" font-size="7" fill="#16a34a" font-weight="700">5.1%</text>
-      <text x="23" y="130" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">경기</text>
-    </g>
-    <g transform="translate(255,0)">
-      <rect x="0" y="52" width="22" height="63" rx="3" fill="#bfdbfe"/>
-      <rect x="25" y="62" width="22" height="53" rx="3" fill="#6ee7b7"/>
-      <text x="11" y="48" text-anchor="middle" font-size="7" fill="#3b82f6" font-weight="700">83.5%</text>
-      <text x="36" y="58" text-anchor="middle" font-size="7" fill="#16a34a" font-weight="700">5.8%</text>
-      <text x="23" y="130" text-anchor="middle" font-size="8" fill="#334155" font-weight="700">부산</text>
-    </g>
-    <rect x="65" y="142" width="12" height="5" rx="1" fill="#fca5a5"/><text x="81" y="147" font-size="7" fill="#64748b">전세가율(≥85%)</text>
-    <rect x="145" y="142" width="12" height="5" rx="1" fill="#bfdbfe"/><text x="161" y="147" font-size="7" fill="#64748b">전세가율(&lt;85%)</text>
-    <rect x="225" y="142" width="12" height="5" rx="1" fill="#6ee7b7"/><text x="241" y="147" font-size="7" fill="#64748b">수익률</text>
-  </svg>
+  ${_pressRatioSvg(C)}
   <table class="jw">
-    <thead><tr><th>지역</th><th>전세가율(%)</th><th>수익률(%)</th><th>고위험 여부</th></tr></thead>
+    <thead><tr><th>구분</th><th>${C.pressRatioLeftKey||''}(%)</th><th>${C.pressRatioRightKey||''}(%)</th><th>고위험 여부</th></tr></thead>
     <tbody>
-      <tr><td>서울</td><td class="blue">88.34</td><td class="green">4.82</td><td class="red" style="font-weight:700">고위험</td></tr>
-      <tr><td>인천</td><td class="blue">87.20</td><td class="green">5.41</td><td class="red" style="font-weight:700">고위험</td></tr>
-      <tr><td>경기</td><td class="blue">86.72</td><td class="green">5.13</td><td class="red" style="font-weight:700">고위험</td></tr>
-      <tr><td>부산</td><td class="blue">83.45</td><td class="green">5.77</td><td class="gray">정상</td></tr>
-      <tr style="background:#f0f9ff;font-weight:700"><td>전국</td><td class="blue">85.18</td><td class="green">5.55</td><td class="red" style="font-weight:700">고위험 임계</td></tr>
+      ${(C.pressRatioData||[]).map((row,i,arr)=>{const lv=+row[C.pressRatioLeftKey]||0;const hi=C.pressRatioThreshold!=null&&lv>=C.pressRatioThreshold;const last=i===arr.length-1;return `<tr${last?' style="background:#f0f9ff;font-weight:700"':''}><td>${row.area}</td><td class="blue">${row[C.pressRatioLeftKey]}</td><td class="green">${row[C.pressRatioRightKey]}</td><td class="${hi?'red':'gray'}"${hi?' style="font-weight:700"':''}>${hi?'고위험':'정상'}</td></tr>`;}).join('\n      ')}
     </tbody>
   </table>
-  <p class="note">* 전세가율 85% 이상(빨간 막대): 전세사기·깡통전세 고위험 임계치 | 수익률: 월세 연환산 ÷ 전세보증금</p>
+  <p class="note">${C.pressRatioNote||''}</p>
 </div>
 
-<div class="sh"><span class="sn">6</span> 향후 계획</div>
+<div class="sh"><span class="sn">${(C.pressSections||[]).length+3}</span> 향후 계획</div>
 <div class="ml" style="font-size:11px;color:#374151;line-height:1.9">${nextPlan.replace(/\n/g,'<br/>')}</div>
 
-<div class="sh"><span class="sn">7</span> 특이 사항</div>
+<div class="sh"><span class="sn">${(C.pressSections||[]).length+4}</span> 특이 사항</div>
 <div class="ml" style="font-size:11px;color:#374151;line-height:1.9">${(special||'(해당 없음)').replace(/\n/g,'<br/>')}</div>
 
 <div class="contact">
-  <span style="font-weight:700;color:#003087">문의</span>　부동산통계처 상업자산통계부장 최윤주 ☎ (053)663-8531 | 담당 차장 박병희 ☎ (053)663-8532　｜　자료확인: R-ONE 부동산통계정보시스템 www.reb.or.kr/r-one
+  <span style="font-weight:700;color:${org.color}">문의</span>　${C.pressContact||''}
 </div>
 
 <div class="sig-grid">
-  ${apvLine.map(p=>`<div class="sig-box"><div class="sig-lbl">${p.role}</div><div class="sig-sp"><div class="sig-name">${p.name}</div><div class="sig-dept">${p.dept}</div></div></div>`).join('')}
+  ${(apvLine||[]).map(p=>`<div class="sig-box"><div class="sig-lbl">${p.role}</div><div class="sig-sp"><div class="sig-name">${p.name}</div><div class="sig-dept">${p.dept}</div></div></div>`).join('')}
 </div>
 <p class="footer">본 보고서는 GENOS AI 보고서 작성 에이전트에 의해 자동 생성되었으며, 담당자 검토 후 확정됩니다.</p>
 </body></html>`;
 
-const buildReportHtml=({title,docNum,dept,period,mainWork,nextPlan,special,logo})=>`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${title} — ${docNum}</title>
+const buildReportHtml=({title,docNum,dept,period,mainWork,nextPlan,special,logo},C=CONTENT_DEFAULTS,org=REB_ORG)=>`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${title} — ${docNum}</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
       @page{size:A4;margin:15mm 18mm}
       *{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}
       body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;margin:0;color:#1a202c;font-size:14px;line-height:1.9;word-break:keep-all;letter-spacing:-0.01em}
-      .hd{border:1px solid #091D58}
+      .hd{border:1px solid ${org.color}}
       .hd-grid{display:grid;grid-template-columns:170px 1fr;grid-template-rows:auto auto}
-      .hd-logo{grid-column:1;grid-row:1/3;display:flex;align-items:center;justify-content:center;padding:16px 14px;background:#fff;border-right:1px solid #091D58}
+      .hd-logo{grid-column:1;grid-row:1/3;display:flex;align-items:center;justify-content:center;padding:16px 14px;background:#fff;border-right:1px solid ${org.color}}
       .hd-logo img{width:130px;height:auto}
-      .hd-title{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;padding:16px 12px;background:#e6e6e6;border-bottom:1px solid #091D58}
+      .hd-title{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;padding:16px 12px;background:#e6e6e6;border-bottom:1px solid ${org.color}}
       .hd-meta{grid-column:2;grid-row:2;display:grid;grid-template-columns:72px 1fr 72px 1fr}
-      .hd-h1{font-size:34px;font-weight:900;letter-spacing:.4em;padding-right:.4em;white-space:nowrap;font-family:'HY견고딕','돋움','맑은 고딕',sans-serif;color:#041E54;line-height:1.2}
-      .hd-meta-lbl{display:flex;align-items:center;justify-content:center;padding:7px 10px;background:#dfeaf5;border-right:1px solid #091D58;font-size:12px;font-weight:700;color:#091D58}
-      .hd-meta-val{display:flex;align-items:center;padding:7px 12px;border-right:1px solid #091D58;font-size:13.5px;color:#1a202c;font-weight:600}
+      .hd-h1{font-size:34px;font-weight:900;letter-spacing:.4em;padding-right:.4em;white-space:nowrap;font-family:'HY견고딕','돋움','맑은 고딕',sans-serif;color:${org.color};line-height:1.2}
+      .hd-meta-lbl{display:flex;align-items:center;justify-content:center;padding:7px 10px;background:#dfeaf5;border-right:1px solid ${org.color};font-size:12px;font-weight:700;color:${org.color}}
+      .hd-meta-val{display:flex;align-items:center;padding:7px 12px;border-right:1px solid ${org.color};font-size:13.5px;color:#1a202c;font-weight:600}
       .hd-meta-val-last{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:7px 12px;font-size:12px;color:#1a202c}
       .body{background:white;padding:24px 30px}
-      .info-tbl{width:100%;border-collapse:collapse;border-top:2px solid #064e3b;margin-bottom:18px}
+      .info-tbl{width:100%;border-collapse:collapse;border-top:2px solid ${org.color};margin-bottom:18px}
       .info-tbl td{padding:9px 11px;border-bottom:1px solid #e2e8f0;font-size:13.5px;line-height:1.7}
-      .lbl{font-weight:700;color:#064e3b;width:72px;white-space:nowrap}
+      .lbl{font-weight:700;color:${org.color};width:72px;white-space:nowrap}
       .sh{display:flex;align-items:center;gap:8px;font-size:15.5px;font-weight:900;color:#1a202c;margin:20px 0 9px}
-      .sn{width:22px;height:22px;background:#064e3b;color:white;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0}
+      .sn{width:22px;height:22px;background:${org.color};color:white;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0}
       .sc{margin-left:30px;font-size:14px;color:#374151;line-height:2.0;word-break:keep-all}
-      .sig-area{border-top:2px solid #064e3b;padding-top:14px;margin-top:20px}
+      .sig-area{border-top:2px solid ${org.color};padding-top:14px;margin-top:20px}
       .sig-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
       .sig-box{border:1px solid #cbd5e0;border-radius:5px;overflow:hidden}
-      .sig-lbl{background:#064e3b;color:white;text-align:center;padding:6px;font-size:12px;font-weight:700}
+      .sig-lbl{background:${org.color};color:white;text-align:center;padding:6px;font-size:12px;font-weight:700}
       .sig-sp{height:54px}
       .footer{text-align:center;font-size:11px;color:#a0aec0;margin-top:12px}
     </style></head><body>
     <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};</script>
     <div class="hd">
       <div class="hd-grid">
-        <div class="hd-logo"><img src="${logo}" alt="REB 한국부동산원"/></div>
+        <div class="hd-logo"><img src="${logo}" alt="${org.short} ${org.name}"/></div>
         <div class="hd-title"><div class="hd-h1">${title}</div></div>
         <div class="hd-meta">
           <div class="hd-meta-lbl">담당부서</div>
@@ -612,8 +543,8 @@ export const CONTENT_DEFAULTS={
   pressRatioRefLabel:'위험선 85%',           // 기준선 라벨
   pressRatioNote:'* 전세가율 85% 이상(빨간 막대): 전세사기·깡통전세 고위험 임계치 | 수익률: 월세 연환산 ÷ 전세보증금', // 섹션 5 각주
   pressContact:'부동산통계처 상업자산통계부장 최윤주 ☎ (053)663-8531 | 담당 차장 박병희 ☎ (053)663-8532　｜　자료확인: R-ONE 부동산통계정보시스템 www.reb.or.kr/r-one', // 문의처 1줄 ('문의' 라벨은 코어)
-  buildPressHtml,                           // ({title,docNum,dept,period,mainWork,nextPlan,special,apvLine,logo})=>html 문자열 — 보도자료 인쇄본. 팩이 전체 교체
-  buildReportHtml,                          // ({title,docNum,dept,period,mainWork,nextPlan,special,logo})=>html 문자열 — 일반 보고서 인쇄본. 팩이 전체 교체
+  buildPressHtml,                           // ({title,docNum,dept,period,mainWork,nextPlan,special,apvLine,logo}, C, org:{name,short,color,en})=>html — 보도자료 인쇄본. 본문은 C의 press* 키에서 생성되므로 팩은 데이터만 공급하면 됨(함수 통째 교체도 가능)
+  buildReportHtml,                          // ({title,docNum,dept,period,mainWork,nextPlan,special,logo}, C, org)=>html — 일반 보고서 인쇄본. 조직 표기·색만 org 사용(함수 통째 교체도 가능)
 };
 
 const ReportAgent=({onBack,domain})=>{
@@ -676,9 +607,10 @@ ${special||'(해당 없음)'}
 
   const downloadDoc=()=>{
     const docTitle=selectedType?.label||C.reportTypes[0].label;
+    const org={name:domain?.orgName||'한국부동산원',short:domain?.orgShort||'REB',color:domain?.brandColor||'#003087',en:domain?.orgEn||'KOREA REAL ESTATE BOARD'};
     const html=reportType===C.pressTypeId
-      ?C.buildPressHtml({title:docTitle,docNum:DOC_NUM,dept,period,mainWork,nextPlan,special,apvLine:C.apvLine,logo:C.logo})
-      :C.buildReportHtml({title:docTitle,docNum:DOC_NUM,dept,period,mainWork,nextPlan,special,logo:C.logo});
+      ?C.buildPressHtml({title:docTitle,docNum:DOC_NUM,dept,period,mainWork,nextPlan,special,apvLine:C.apvLine,logo:C.logo},C,org)
+      :C.buildReportHtml({title:docTitle,docNum:DOC_NUM,dept,period,mainWork,nextPlan,special,logo:C.logo},C,org);
     const w=window.open('','_blank','width=900,height=1200');
     w.document.write(html);
     w.document.close();

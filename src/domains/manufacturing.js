@@ -1369,9 +1369,8 @@ LIMIT 50;`,
       ],
     },
     /* ── 생산일보 작성 에이전트 ──
-     * ⚠️ buildPressHtml/buildReportHtml 키는 의도적으로 생략(함수 통째 교체 계약이라 유지보수 부담 큼).
-     *    이 때문에 '인쇄 미리보기(다운로드 HTML)'에는 REB 기본 레이아웃(기본 조직 로고·브랜드색·기관명)이 남는다.
-     *    화면(문서 뷰·차트·결재)은 아래 텍스트 키로 전부 교체됨. 추후 필요 시 함수 2종을 팩에서 교체할 것. */
+     * buildPressHtml/buildReportHtml 키 생략 = 정상 (2026-07-06 데이터 구동화 이후).
+     * 기본 빌더가 아래 press·report 접두 키 + 도메인 org(조직명·브랜드색)로 인쇄 HTML을 생성한다. */
     "agent-report": {
       apvLine: [
         { name: '박태윤', dept: '생산기술팀', title: '책임',   role: '작성자' },

@@ -257,8 +257,8 @@ const civic = {
   },
   /* 에이전트 내부 콘텐츠 — 각 키는 CONTENT_DEFAULTS(각 에이전트 파일)와 shape·항목 수 동일 계약.
      logo/logoSrc(data URI)는 생략(REB 로고 노출되나 화면 로고는 코어가 org 색으로 처리).
-     agent-report의 buildPressHtml/buildReportHtml은 생략 — 인쇄 미리보기(브라우저 인쇄 팝업) 본문에는
-     REB 고정 문구·통계가 남는다. 화면 미리보기는 press 접두 키와 report 접두 키로 전부 교체됨. */
+     agent-report의 buildPressHtml/buildReportHtml 생략 = 정상 (2026-07-06 데이터 구동화) —
+     기본 빌더가 press·report 접두 키 + 도메인 org로 인쇄 HTML을 생성한다. */
   agentContent: {
     "agent-chatbot": {
       welcomeText: "안녕하세요! 한성시 스마트행정 AI 어시스턴트입니다.\n\n민원 처리 절차, 자치법규, 행정 지침 등에 관해 자유롭게 질문해 주세요. 민원사무편람과 한성시 자치법규집을 기반으로 근거 있는 답변을 제공합니다.\n\n**자주 묻는 주제:**\n- 긴급 여권 발급 요건 및 구비서류\n- 옥외광고물 표시 허가 절차\n- 민원 처리기한 및 연장 통지\n- 유연근무 신청 기준",
@@ -1395,8 +1395,8 @@ LIMIT 50;`,
         { code: "4513010400", label: "한성시 공단동 (법정)" },
       ],
     },
-    /* buildPressHtml/buildReportHtml 함수 키는 의도적으로 생략 —
-       브라우저 인쇄 미리보기 본문에는 REB 고정 통계·문구가 남는다 (화면 미리보기는 아래 키로 전부 교체됨). */
+    /* buildPressHtml/buildReportHtml 생략 = 정상 (2026-07-06 데이터 구동화) —
+       기본 빌더가 아래 press·report 접두 키 + 도메인 org로 인쇄 HTML을 생성한다. */
     "agent-report": {
       apvLine: [
         { name: "이서연", dept: "민원여권과", title: "주무관",       role: "작성자" },

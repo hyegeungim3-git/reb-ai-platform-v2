@@ -25,28 +25,28 @@ const MOCK_GPU_NODES = [
 ];
 
 const MOCK_EMBEDDING_JOBS = [
-  {id:950,name:'임베딩 학습 테스트',plan:'-',creator:'김세는',dept:'소프트웨어',date:'2025-10-27 14:51:32',gpu:'학습용 임시 1/8',tbStatus:'실행 중',status:'학습 완료'},
-  {id:910,name:'임베딩 학습 12345',plan:'-',creator:'이세는',dept:'개발',date:'2025-08-28 22:35:46',gpu:'학습을 임시 1/8',tbStatus:'실행 중',status:'학습 완료'},
-  {id:895,name:'임베딩 학습 23456',plan:'-',creator:'박세는',dept:'개발',date:'2025-08-19 19:59:20',gpu:'QA training 2 1/2',tbStatus:'중지됨',status:'취소됨'},
-  {id:874,name:'임베딩 학습 34567',plan:'-',creator:'최세는',dept:'개발',date:'2025-08-19 19:40:26',gpu:'QA training 2 1/2',tbStatus:'중지됨',status:'학습 완료'},
-  {id:856,name:'임베딩 학습 45689',plan:'-',creator:'전세는',dept:'개발',date:'2025-08-19 12:00:38',gpu:'QA training 1/1',tbStatus:'중지됨',status:'학습 완료'},
-  {id:853,name:'567890',plan:'-',creator:'주세는',dept:'개발',date:'2025-08-19 11:37:59',gpu:'QA training 1/1',tbStatus:'중지됨',status:'오류 발생'},
-  {id:847,name:'중지 테스트',plan:'-',creator:'고세는',dept:'기획',date:'2025-08-18 21:42:03',gpu:'QA training 2 1/2',tbStatus:'중지됨',status:'대기 중'},
-  {id:844,name:'임베딩 학습 54321',plan:'-',creator:'현세는',dept:'사업개발',date:'2025-08-18 20:58:53',gpu:'QA training 2 1/2',tbStatus:'중지됨',status:'오류 발생'},
-  {id:838,name:'임베딩 학습 98765',plan:'-',creator:'정세는',dept:'연구',date:'2025-08-18 20:46:38',gpu:'QA training 2 1/2',tbStatus:'중지됨',status:'오류 발생'},
+  {id:950,name:'공시지가 조사지침 임베딩 v3',plan:'KoE5-base',creator:'김세은',dept:'AI혁신TF',date:'2026-02-10 14:51:32',gpu:'A100 x1',tbStatus:'실행 중',status:'학습 완료'},
+  {id:910,name:'감정평가 선례 임베딩 v2',plan:'KoE5-base',creator:'이준호',dept:'토지공시부',date:'2026-01-28 22:35:46',gpu:'A100 x1',tbStatus:'실행 중',status:'학습 완료'},
+  {id:895,name:'내규·지침 통합 임베딩 v4',plan:'KoE5-large',creator:'박지현',dept:'경영지원팀',date:'2026-01-19 19:59:20',gpu:'A100 x2',tbStatus:'중지됨',status:'취소됨'},
+  {id:874,name:'실거래 신고서 임베딩 v1',plan:'KoE5-base',creator:'최민수',dept:'법무팀',date:'2026-01-19 19:40:26',gpu:'A100 x1',tbStatus:'중지됨',status:'학습 완료'},
+  {id:856,name:'공동주택 특성자료 임베딩 v2',plan:'BGE-m3-ko',creator:'장영수',dept:'주택공시부',date:'2026-01-12 12:00:38',gpu:'A100 x1',tbStatus:'중지됨',status:'학습 완료'},
+  {id:853,name:'민원 상담 사례 임베딩 v1',plan:'BGE-m3-ko',creator:'주현탁',dept:'민원지원부',date:'2026-01-11 11:37:59',gpu:'A100 x1',tbStatus:'중지됨',status:'오류 발생'},
+  {id:847,name:'법령·판례 임베딩 v2',plan:'KoE5-large',creator:'고성민',dept:'부동산공시처',date:'2025-12-18 21:42:03',gpu:'A100 x2',tbStatus:'중지됨',status:'대기 중'},
+  {id:844,name:'조사·평가 매뉴얼 임베딩 v1',plan:'KoE5-base',creator:'현지우',dept:'부동산통계처',date:'2025-12-18 20:58:53',gpu:'A100 x1',tbStatus:'중지됨',status:'오류 발생'},
+  {id:838,name:'보상평가서 임베딩 v1',plan:'KoE5-base',creator:'정다은',dept:'보상지원부',date:'2025-12-18 20:46:38',gpu:'A100 x1',tbStatus:'중지됨',status:'오류 발생'},
 ];
 
 const MOCK_MCP_TOOLS = [
-  {id:162,name:'Search',desc:'',creator:'김세는',dept:'기획',date:'2025-10-29 22:06:28'},
-  {id:159,name:'Web Search',desc:'검색 분야 설정 + 검색 분량 설정 추가',creator:'이세는',dept:'AI Engineer',date:'2025-10-23 10:59:32'},
-  {id:158,name:'Web Crawler',desc:'웹 크롤링',creator:'최세는',dept:'Test',date:'2025-10-21 18:36:52'},
-  {id:155,name:'Dynamic SearchFilter',desc:'Test',creator:'박세는',dept:'AI Engineer',date:'2025-10-20 15:27:50'},
-  {id:153,name:'Dynamic Filter',desc:'Test',creator:'장세는',dept:'Test',date:'2025-10-17 18:01:51'},
-  {id:151,name:'CodeDev',desc:'상세 설명',creator:'전세는',dept:'사업개발',date:'2025-09-26 14:28:00'},
-  {id:150,name:'Code_tmp',desc:'상세 설명',creator:'최세는',dept:'사업개발',date:'2025-09-24 16:24:45'},
-  {id:148,name:'SearchFilter',desc:'',creator:'이세는',dept:'AI Engineer',date:'2025-09-18 17:56:05'},
-  {id:146,name:'tmp',desc:'',creator:'전세는',dept:'기획',date:'2025-09-12 16:17:30'},
-  {id:145,name:'Normality_Test',desc:'정규성 검정',creator:'이세는',dept:'AI Engineer',date:'2025-09-12 14:46:54'},
+  {id:162,name:'Search',desc:'사내 지식베이스 시맨틱 검색',creator:'김세은',dept:'AI혁신TF',date:'2026-01-29 22:06:28'},
+  {id:159,name:'Web Search',desc:'검색 분야 설정 + 검색 분량 설정 추가',creator:'이준호',dept:'토지공시부',date:'2026-01-23 10:59:32'},
+  {id:158,name:'Web Crawler',desc:'국토교통부·법제처 고시 수집',creator:'최민수',dept:'법무팀',date:'2026-01-21 18:36:52'},
+  {id:155,name:'Dynamic SearchFilter',desc:'보안등급별 검색 결과 필터링',creator:'박지현',dept:'경영지원팀',date:'2026-01-20 15:27:50'},
+  {id:153,name:'Dynamic Filter',desc:'부서 권한 기반 응답 필터링',creator:'장영수',dept:'주택공시부',date:'2026-01-17 18:01:51'},
+  {id:151,name:'CodeDev',desc:'통계 분석 코드 실행 샌드박스',creator:'전하늘',dept:'인재개발부',date:'2025-12-26 14:28:00'},
+  {id:150,name:'DocConverter',desc:'HWP·PDF 문서 변환기',creator:'최민수',dept:'법무팀',date:'2025-12-24 16:24:45'},
+  {id:148,name:'SearchFilter',desc:'공시자료 검색 범위 제한',creator:'이준호',dept:'토지공시부',date:'2025-12-18 17:56:05'},
+  {id:146,name:'AddrGeocoder',desc:'주소 표준화·지오코딩',creator:'전하늘',dept:'부동산통계처',date:'2025-12-12 16:17:30'},
+  {id:145,name:'Normality_Test',desc:'가격 분포 정규성 검정',creator:'이준호',dept:'부동산통계처',date:'2025-12-12 14:46:54'},
 ];
 
 const MOCK_MODELS = [
@@ -58,26 +58,26 @@ const MOCK_MODELS = [
 ];
 
 const MOCK_PROMPTS = [
-  {id:385,name:'[전용] 나만의 RAG',desc:'전용 채팅 기능(나만의 RAG3)',dept:'QA',date:'2025-10-29 10:41:12'},
-  {id:384,name:'RAG 프롬프트 테스트',desc:'',dept:'AI Engineer',date:'2025-10-27 10:54:11'},
-  {id:383,name:'[전용] 나만의 RAG',desc:'전용 채팅 기능(나만의 RAG)',dept:'QA',date:'2025-10-22 14:10:12'},
-  {id:382,name:'[TEST] 테스트',desc:'',dept:'AI Engineer',date:'2025-10-22 04:30:28'},
-  {id:381,name:'IT 프로젝트 교육용 프롬프트',desc:'IT 프로젝트 교육용 자료',dept:'AI Engineer',date:'2025-10-22 04:27:45'},
-  {id:380,name:'[전용] pdf 뷰어 테스트',desc:'전용 채팅 기능(pdf 뷰어 테스트)',dept:'AI Engineer',date:'2025-10-20 18:30:11'},
-  {id:378,name:'[전용] 생성 동작 확인',desc:'전용 채팅 기능 (생성 동작 확인)',dept:'QA',date:'2025-10-13 18:11:50'},
+  {id:385,name:'[전용] 공시지가 상담 RAG',desc:'표준지·개별공시지가 질의 응답용 RAG 프롬프트',dept:'부동산공시처',date:'2026-01-29 10:41:12'},
+  {id:384,name:'이의신청 답변 초안 프롬프트',desc:'이의신청 회신문 표준 서식 초안 생성',dept:'토지공시부',date:'2026-01-27 10:54:11'},
+  {id:383,name:'[전용] 나만의 RAG',desc:'개인 지식영역 기반 전용 채팅',dept:'AI혁신TF',date:'2026-01-22 14:10:12'},
+  {id:382,name:'보도자료 요약 프롬프트',desc:'주간 보도자료 3줄 요약 생성',dept:'홍보실',date:'2026-01-22 04:30:28'},
+  {id:381,name:'신입 교육용 프롬프트',desc:'공시업무 입문 교육 질의응답 자료',dept:'인재개발부',date:'2026-01-22 04:27:45'},
+  {id:380,name:'[전용] 규정 원문 뷰어',desc:'전용 채팅 기능(규정 원문 인용·페이지 이동)',dept:'경영지원팀',date:'2026-01-20 18:30:11'},
+  {id:378,name:'[전용] 보고서 자동 생성',desc:'전용 채팅 기능(주간 실적 보고 서식)',dept:'부동산통계처',date:'2026-01-13 18:11:50'},
 ];
 
 const MOCK_CHAT_APPS = [
-  {id:1663,name:'',type:'',status:'',deploy:'',creator:'',dept:'QA',addr:''},
-  {id:1662,name:'',type:'',status:'',deploy:'',creator:'',dept:'엔지니어',addr:''},
-  {id:1661,name:'',type:'',status:'',deploy:'',creator:'',dept:'AI Engineer',addr:''},
-  {id:1656,name:'',type:'',status:'',deploy:'',creator:'',dept:'AI Engineer',addr:''},
-  {id:1655,name:'',type:'',status:'',deploy:'',creator:'',dept:'AI Engineer',addr:''},
-  {id:1650,name:'',type:'',status:'',deploy:'',creator:'',dept:'AI Engineer',addr:''},
-  {id:1649,name:'',type:'',status:'',deploy:'',creator:'',dept:'QA',addr:''},
-  {id:1645,name:'리모트 RAG 채팅',type:'전용 채팅',status:'Offline',deploy:'배포중지',creator:'장세는',dept:'QA',addr:''},
-  {id:1643,name:'고객언어 전처리기 test',type:'전용 채팅',status:'Online',deploy:'배포',creator:'김세는',dept:'AI Engineer',addr:''},
-  {id:1640,name:'이미지 생성+통사지',type:'전용 채팅',status:'Online',deploy:'배포',creator:'이세는',dept:'AI Engineer',addr:''},
+  {id:1663,name:'공시지가 상담 챗봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'김세은',dept:'부동산공시처',addr:'/apps/notice-chat'},
+  {id:1662,name:'이의신청 안내 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'이준호',dept:'토지공시부',addr:'/apps/appeal-guide'},
+  {id:1661,name:'내규 Q&A 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'박지현',dept:'경영지원팀',addr:'/apps/reg-qa'},
+  {id:1656,name:'실거래 검증 도우미',type:'전용 채팅',status:'Online',deploy:'배포',creator:'장영수',dept:'주택공시부',addr:'/apps/rtms-verify'},
+  {id:1655,name:'청약 상담 봇 (시범)',type:'전용 채팅',status:'Offline',deploy:'배포중지',creator:'주현탁',dept:'청약운영부',addr:'/apps/subscription'},
+  {id:1650,name:'보상평가 문의 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'정다은',dept:'보상지원부',addr:'/apps/compensation'},
+  {id:1649,name:'통계 조회 어시스턴트',type:'전용 채팅',status:'Online',deploy:'배포',creator:'현지우',dept:'부동산통계처',addr:'/apps/stats-query'},
+  {id:1645,name:'리모트 RAG 채팅',type:'전용 채팅',status:'Offline',deploy:'배포중지',creator:'고성민',dept:'AI혁신TF',addr:'/apps/remote-rag'},
+  {id:1643,name:'민원 응대 지원 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'김세은',dept:'민원지원부',addr:'/apps/civil-support'},
+  {id:1640,name:'현장조사 지원 챗봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'이준호',dept:'토지공시부',addr:'/apps/field-survey'},
 ];
 
 const MOCK_NODES = [
@@ -97,32 +97,32 @@ const MOCK_GUARDRAIL_LOGS = [
 // ==================== LLM ADMIN MOCK DATA ====================
 const MOCK_LLM_ADMIN_MODELS = [
   {id:'m-001',name:'GPT-OSS-120B',baseModel:'Meta-Llama-3-405B-Instruct',version:'v2.4.1',
-   desc:'KOGAS 특화 파인튜닝 대용량 LLM — 규정 검색, 문서 요약, 에이전트 업무 자동화 최적화',
+   desc:'한국부동산원 특화 파인튜닝 대용량 LLM — 규정 검색, 문서 요약, 에이전트 업무 자동화 최적화',
    status:'Active',temperature:0.3,maxTokens:4096,topP:0.9,contextWindow:'128K',
-   systemPrompt:'당신은 한국가스기술공사(KOGAS)의 전문 AI 어시스턴트입니다.\n\n규칙:\n1. 반드시 사내 규정·지침을 우선 참조합니다.\n2. 불확실한 내용은 "확인이 필요합니다"로 답변합니다.\n3. 개인정보 및 보안 정보는 절대 제공하지 않습니다.\n4. 모든 답변은 공문서 형식을 따릅니다.',
+   systemPrompt:'당신은 한국부동산원(REB)의 전문 AI 어시스턴트입니다.\n\n규칙:\n1. 반드시 사내 규정·지침을 우선 참조합니다.\n2. 불확실한 내용은 "확인이 필요합니다"로 답변합니다.\n3. 개인정보 및 보안 정보는 절대 제공하지 않습니다.\n4. 모든 답변은 공문서 형식을 따릅니다.',
    promptHistory:[
     {ver:'v2.4.1',date:'2026-02-10 14:30',author:'김영빈',note:'보안 규정 4항 추가',
-     content:'당신은 한국가스기술공사(KOGAS)의 전문 AI 어시스턴트입니다.\n\n규칙:\n1. 반드시 사내 규정·지침을 우선 참조합니다.\n2. 불확실한 내용은 "확인이 필요합니다"로 답변합니다.\n3. 개인정보 및 보안 정보는 절대 제공하지 않습니다.\n4. 모든 답변은 공문서 형식을 따릅니다.'},
+     content:'당신은 한국부동산원(REB)의 전문 AI 어시스턴트입니다.\n\n규칙:\n1. 반드시 사내 규정·지침을 우선 참조합니다.\n2. 불확실한 내용은 "확인이 필요합니다"로 답변합니다.\n3. 개인정보 및 보안 정보는 절대 제공하지 않습니다.\n4. 모든 답변은 공문서 형식을 따릅니다.'},
     {ver:'v2.3.0',date:'2026-01-15 09:00',author:'한서윤',note:'온보딩 처리 규칙 개선',
-     content:'당신은 한국가스기술공사의 AI 어시스턴트입니다.\n\n사내 규정을 참조하여 답변하고, 불확실한 내용은 확인 필요 안내를 제공하세요.'},
+     content:'당신은 한국부동산원의 AI 어시스턴트입니다.\n\n사내 규정을 참조하여 답변하고, 불확실한 내용은 확인 필요 안내를 제공하세요.'},
     {ver:'v2.0.0',date:'2025-12-01 10:00',author:'김영빈',note:'초기 배포 버전',
-     content:'한국가스기술공사 AI 어시스턴트입니다. 전문적이고 정확한 정보를 제공합니다.'},
+     content:'한국부동산원 AI 어시스턴트입니다. 전문적이고 정확한 정보를 제공합니다.'},
   ]},
   {id:'m-002',name:'Llama-3-Kor-Instruct',baseModel:'Meta-Llama-3-70B',version:'v1.8.0',
    desc:'70B 한국어 특화 경량 모델 — HR 질의, 교육 안내 등 빠른 응답 업무에 활용',
    status:'Active',temperature:0.5,maxTokens:2048,topP:0.95,contextWindow:'8K',
-   systemPrompt:'한국가스기술공사 직원 지원 AI입니다. 인사 규정, 복리후생, 교육 안내를 친절하게 제공합니다.',
+   systemPrompt:'한국부동산원 직원 지원 AI입니다. 인사 규정, 복리후생, 교육 안내를 친절하게 제공합니다.',
    promptHistory:[
     {ver:'v1.8.0',date:'2026-02-01 11:00',author:'박지현',note:'인사 규정 2026 개정 반영',
-     content:'한국가스기술공사 직원 지원 AI입니다. 인사 규정, 복리후생, 교육 안내를 친절하게 제공합니다.'},
-    {ver:'v1.5.0',date:'2025-11-10 09:00',author:'전하늘',note:'교육 안내 기능 추가',content:'한국가스기술공사 HR 어시스턴트입니다.'},
+     content:'한국부동산원 직원 지원 AI입니다. 인사 규정, 복리후생, 교육 안내를 친절하게 제공합니다.'},
+    {ver:'v1.5.0',date:'2025-11-10 09:00',author:'전하늘',note:'교육 안내 기능 추가',content:'한국부동산원 HR 어시스턴트입니다.'},
   ]},
   {id:'m-003',name:'EXAONE-3.0-7.8B',baseModel:'LG-EXAONE-3.0-7.8B',version:'v1.3.2',
    desc:'LG AI Research 7.8B 경량 모델 — 저지연 실시간 응답, 단순 질의 최적',
    status:'Active',temperature:0.6,maxTokens:1024,topP:0.9,contextWindow:'32K',
-   systemPrompt:'KOGAS 정보 안내 AI입니다. 간결하고 정확하게 답변합니다.',
+   systemPrompt:'한국부동산원 정보 안내 AI입니다. 간결하고 정확하게 답변합니다.',
    promptHistory:[
-    {ver:'v1.3.2',date:'2026-01-20 14:00',author:'김영빈',note:'응답 간결화 지시어 추가',content:'KOGAS 정보 안내 AI입니다. 간결하고 정확하게 답변합니다.'},
+    {ver:'v1.3.2',date:'2026-01-20 14:00',author:'김영빈',note:'응답 간결화 지시어 추가',content:'한국부동산원 정보 안내 AI입니다. 간결하고 정확하게 답변합니다.'},
   ]},
   {id:'m-004',name:'Solar-10.7B-v1.0',baseModel:'Upstage-Solar-Pro-10.7B',version:'v1.0.0',
    desc:'Upstage Solar 10.7B — 비활성화 (성능 평가 후 재도입 예정)',
@@ -142,12 +142,12 @@ const MOCK_FILTER_RULES = [
 
 // ==================== 신뢰성 관리 MOCK DATA ====================
 const MOCK_RERANK_PIPELINES = [
-  {id:'rp-001',agent:'안전규정 검색 에이전트',model:'BGE-Reranker-v2',topK:5,threshold:0.70,enabled:true,improvement:18.4},
-  {id:'rp-002',agent:'설비 진단 어시스턴트',model:'Cross-Encoder-KoE5',topK:3,threshold:0.75,enabled:true,improvement:12.1},
+  {id:'rp-001',agent:'공시업무규정 검색 에이전트',model:'BGE-Reranker-v2',topK:5,threshold:0.70,enabled:true,improvement:18.4},
+  {id:'rp-002',agent:'가격 검증 어시스턴트',model:'Cross-Encoder-KoE5',topK:3,threshold:0.75,enabled:true,improvement:12.1},
   {id:'rp-003',agent:'HR 질의응답 봇',model:'BGE-Reranker-v2',topK:5,threshold:0.65,enabled:true,improvement:9.8},
   {id:'rp-004',agent:'계약서 검토 에이전트',model:'ColBERT-v2-Kor',topK:8,threshold:0.80,enabled:false,improvement:0},
-  {id:'rp-005',agent:'비상 대응 가이드',model:'BGE-Reranker-v2',topK:5,threshold:0.85,enabled:true,improvement:22.3},
-  {id:'rp-006',agent:'기술 교육 튜터',model:'Cross-Encoder-KoE5',topK:4,threshold:0.68,enabled:true,improvement:7.5},
+  {id:'rp-005',agent:'민원 대응 가이드',model:'BGE-Reranker-v2',topK:5,threshold:0.85,enabled:true,improvement:22.3},
+  {id:'rp-006',agent:'직무 교육 튜터',model:'Cross-Encoder-KoE5',topK:4,threshold:0.68,enabled:true,improvement:7.5},
 ];
 
 const MOCK_RAG_GLOBAL = {
@@ -158,12 +158,12 @@ const MOCK_RAG_GLOBAL = {
 };
 
 const MOCK_RAG_AREAS = [
-  {id:'KA-001',area:'안전규정',topK:8,threshold:0.70,chunkSize:256,override:true,updated:'2026-02-12'},
-  {id:'KA-002',area:'설비 유지보수',topK:10,threshold:0.65,chunkSize:512,override:true,updated:'2026-02-10'},
+  {id:'KA-001',area:'공시업무규정',topK:8,threshold:0.70,chunkSize:256,override:true,updated:'2026-02-12'},
+  {id:'KA-002',area:'조사·평가 매뉴얼',topK:10,threshold:0.65,chunkSize:512,override:true,updated:'2026-02-10'},
   {id:'KA-003',area:'인사규정',topK:5,threshold:0.60,chunkSize:512,override:false,updated:'2026-02-08'},
   {id:'KA-004',area:'법률/계약',topK:6,threshold:0.75,chunkSize:256,override:true,updated:'2026-02-05'},
   {id:'KA-005',area:'교육자료',topK:7,threshold:0.62,chunkSize:512,override:false,updated:'2026-02-11'},
-  {id:'KA-006',area:'비상대응',topK:5,threshold:0.80,chunkSize:256,override:true,updated:'2026-01-28'},
+  {id:'KA-006',area:'민원대응',topK:5,threshold:0.80,chunkSize:256,override:true,updated:'2026-01-28'},
 ];
 
 const MOCK_OUTPUT_GUARDRAILS = [
@@ -211,50 +211,50 @@ const MOCK_VOLUMES = [
 
 // ==================== ADMIN MOCK DATA ====================
 const MOCK_USERS = [
-  {id:'USR-001',name:'김영빈',dept:'AI활용 초혁신 추진반',role:'시스템관리자',email:'kim@kogas.or.kr',status:'Running',lastLogin:'2026-02-14 09:10',loginCount:342,apiCalls:1580},
-  {id:'USR-002',name:'이준호',dept:'기술안전팀',role:'부서관리자',email:'lee@kogas.or.kr',status:'Running',lastLogin:'2026-02-14 08:45',loginCount:280,apiCalls:920},
-  {id:'USR-003',name:'박지현',dept:'경영지원팀',role:'일반사용자',email:'park@kogas.or.kr',status:'Running',lastLogin:'2026-02-13 17:30',loginCount:156,apiCalls:430},
-  {id:'USR-004',name:'최민수',dept:'법무팀',role:'일반사용자',email:'choi@kogas.or.kr',status:'Running',lastLogin:'2026-02-14 07:20',loginCount:98,apiCalls:210},
-  {id:'USR-005',name:'장영수',dept:'시설관리팀',role:'부서관리자',email:'jang@kogas.or.kr',status:'Stopped',lastLogin:'2026-02-10 14:00',loginCount:45,apiCalls:80},
-  {id:'USR-006',name:'전하늘',dept:'교육훈련팀',role:'일반사용자',email:'jeon@kogas.or.kr',status:'Running',lastLogin:'2026-02-13 16:55',loginCount:201,apiCalls:560},
-  {id:'USR-007',name:'고성민',dept:'안전관리처',role:'부서관리자',email:'ko@kogas.or.kr',status:'Running',lastLogin:'2026-02-14 08:00',loginCount:310,apiCalls:1200},
-  {id:'USR-008',name:'한서윤',dept:'정보기술팀',role:'시스템관리자',email:'han@kogas.or.kr',status:'Running',lastLogin:'2026-02-14 09:05',loginCount:450,apiCalls:2100},
+  {id:'USR-001',name:'김영빈',dept:'AI활용 업무혁신 TF',role:'시스템관리자',email:'kim@reb.or.kr',status:'Running',lastLogin:'2026-02-14 09:10',loginCount:342,apiCalls:1580},
+  {id:'USR-002',name:'이준호',dept:'토지공시부',role:'부서관리자',email:'lee@reb.or.kr',status:'Running',lastLogin:'2026-02-14 08:45',loginCount:280,apiCalls:920},
+  {id:'USR-003',name:'박지현',dept:'경영지원팀',role:'일반사용자',email:'park@reb.or.kr',status:'Running',lastLogin:'2026-02-13 17:30',loginCount:156,apiCalls:430},
+  {id:'USR-004',name:'최민수',dept:'법무팀',role:'일반사용자',email:'choi@reb.or.kr',status:'Running',lastLogin:'2026-02-14 07:20',loginCount:98,apiCalls:210},
+  {id:'USR-005',name:'장영수',dept:'주택공시부',role:'부서관리자',email:'jang@reb.or.kr',status:'Stopped',lastLogin:'2026-02-10 14:00',loginCount:45,apiCalls:80},
+  {id:'USR-006',name:'전하늘',dept:'인재개발부',role:'일반사용자',email:'jeon@reb.or.kr',status:'Running',lastLogin:'2026-02-13 16:55',loginCount:201,apiCalls:560},
+  {id:'USR-007',name:'고성민',dept:'부동산공시처',role:'부서관리자',email:'ko@reb.or.kr',status:'Running',lastLogin:'2026-02-14 08:00',loginCount:310,apiCalls:1200},
+  {id:'USR-008',name:'한서윤',dept:'정보기술팀',role:'시스템관리자',email:'han@reb.or.kr',status:'Running',lastLogin:'2026-02-14 09:05',loginCount:450,apiCalls:2100},
 ];
 
 const MOCK_PERMISSION_REQUESTS = [
-  {id:'PRM-001',user:'박지현',dept:'경영지원팀',type:'지식영역 접근',target:'안전규정 DB',status:'대기 중',date:'2026-02-13'},
+  {id:'PRM-001',user:'박지현',dept:'경영지원팀',type:'지식영역 접근',target:'공시업무규정 DB',status:'대기 중',date:'2026-02-13'},
   {id:'PRM-002',user:'최민수',dept:'법무팀',type:'API 키 발급',target:'GPT-OSS-120B',status:'대기 중',date:'2026-02-12'},
-  {id:'PRM-003',user:'장영수',dept:'시설관리팀',type:'에이전트 배포',target:'시설물 점검 보고서 생성기',status:'완료',date:'2026-02-11'},
-  {id:'PRM-004',user:'전하늘',dept:'교육훈련팀',type:'데이터셋 접근',target:'Safety_Regulations_QA_v1',status:'완료',date:'2026-02-10'},
+  {id:'PRM-003',user:'장영수',dept:'주택공시부',type:'에이전트 배포',target:'현장조사 보고서 생성기',status:'완료',date:'2026-02-11'},
+  {id:'PRM-004',user:'전하늘',dept:'인재개발부',type:'데이터셋 접근',target:'Notice_Guidelines_QA_v1',status:'완료',date:'2026-02-10'},
 ];
 
 const MOCK_KNOWLEDGE_AREAS = [
-  {id:'KA-001',name:'안전규정',desc:'사내 안전규정 및 매뉴얼',docs:245,chunks:12400,size:'1.2 GB',owner:'안전관리처',access:['AI연구소','기술안전팀','안전관리처'],updated:'2026-02-12',status:'Running'},
-  {id:'KA-002',name:'설비 유지보수',desc:'가스 설비 점검 및 유지보수 문서',docs:180,chunks:9200,size:'850 MB',owner:'시설관리팀',access:['기술안전팀','시설관리팀'],updated:'2026-02-10',status:'Running'},
+  {id:'KA-001',name:'공시업무규정',desc:'사내 공시업무규정 및 매뉴얼',docs:245,chunks:12400,size:'1.2 GB',owner:'부동산공시처',access:['AI연구소','토지공시부','부동산공시처'],updated:'2026-02-12',status:'Running'},
+  {id:'KA-002',name:'조사·평가 매뉴얼',desc:'현장조사 및 평가 실무 문서',docs:180,chunks:9200,size:'850 MB',owner:'주택공시부',access:['토지공시부','주택공시부'],updated:'2026-02-10',status:'Running'},
   {id:'KA-003',name:'인사규정',desc:'복리후생, 급여, 인사 관련 규정',docs:120,chunks:6100,size:'320 MB',owner:'경영지원팀',access:['전체'],updated:'2026-02-08',status:'Running'},
   {id:'KA-004',name:'법률/계약',desc:'계약서 템플릿 및 법률 자문 문서',docs:95,chunks:4800,size:'450 MB',owner:'법무팀',access:['법무팀','경영지원팀'],updated:'2026-02-05',status:'Running'},
-  {id:'KA-005',name:'교육자료',desc:'신입사원 교육 및 기술 교육 자료',docs:310,chunks:15600,size:'2.1 GB',owner:'교육훈련팀',access:['전체'],updated:'2026-02-11',status:'Running'},
-  {id:'KA-006',name:'비상대응',desc:'비상 매뉴얼 및 대응 절차',docs:65,chunks:3200,size:'180 MB',owner:'안전관리처',access:['전체'],updated:'2026-01-28',status:'Warning'},
+  {id:'KA-005',name:'교육자료',desc:'신입사원 교육 및 기술 교육 자료',docs:310,chunks:15600,size:'2.1 GB',owner:'인재개발부',access:['전체'],updated:'2026-02-11',status:'Running'},
+  {id:'KA-006',name:'민원대응',desc:'비상 매뉴얼 및 대응 절차',docs:65,chunks:3200,size:'180 MB',owner:'부동산공시처',access:['전체'],updated:'2026-01-28',status:'Warning'},
 ];
 
 const MOCK_KB_FOLDERS = [
-  {id:'f-001',name:'안전규정',parent:null,docs:245,perm:'all',owner:'안전관리처'},
-  {id:'f-011',name:'가스안전',parent:'f-001',docs:120,perm:'dept',owner:'안전관리처'},
-  {id:'f-012',name:'시설안전',parent:'f-001',docs:125,perm:'dept',owner:'기술안전팀'},
-  {id:'f-002',name:'설비 유지보수',parent:null,docs:180,perm:'dept',owner:'시설관리팀'},
-  {id:'f-021',name:'점검 이력',parent:'f-002',docs:80,perm:'dept',owner:'시설관리팀'},
+  {id:'f-001',name:'공시업무규정',parent:null,docs:245,perm:'all',owner:'부동산공시처'},
+  {id:'f-011',name:'실거래 검증',parent:'f-001',docs:120,perm:'dept',owner:'부동산공시처'},
+  {id:'f-012',name:'시설안전',parent:'f-001',docs:125,perm:'dept',owner:'토지공시부'},
+  {id:'f-002',name:'조사·평가 매뉴얼',parent:null,docs:180,perm:'dept',owner:'주택공시부'},
+  {id:'f-021',name:'점검 이력',parent:'f-002',docs:80,perm:'dept',owner:'주택공시부'},
   {id:'f-003',name:'인사규정',parent:null,docs:120,perm:'all',owner:'경영지원팀'},
   {id:'f-004',name:'법률/계약',parent:null,docs:95,perm:'specific',owner:'법무팀'},
-  {id:'f-005',name:'교육자료',parent:null,docs:310,perm:'all',owner:'교육훈련팀'},
+  {id:'f-005',name:'교육자료',parent:null,docs:310,perm:'all',owner:'인재개발부'},
 ];
 const MOCK_KB_DOCS = {
   'f-001':[
-    {id:'d-001',name:'안전관리규정_2026.pdf',size:'4.2MB',pii:false,status:'완료',chunks:312,uploaded:'2026-02-12',uploader:'고성민'},
-    {id:'d-002',name:'가스시설안전기준.pdf',size:'8.1MB',pii:false,status:'완료',chunks:580,uploaded:'2026-02-10',uploader:'고성민'},
+    {id:'d-001',name:'공시업무규정_2026.pdf',size:'4.2MB',pii:false,status:'완료',chunks:312,uploaded:'2026-02-12',uploader:'고성민'},
+    {id:'d-002',name:'표준지공시지가_조사기준.pdf',size:'8.1MB',pii:false,status:'완료',chunks:580,uploaded:'2026-02-10',uploader:'고성민'},
     {id:'d-003',name:'안전점검체크리스트.xlsx',size:'1.2MB',pii:true,status:'완료',chunks:85,uploaded:'2026-02-08',uploader:'이준호'},
   ],
   'f-002':[
-    {id:'d-011',name:'가스설비점검매뉴얼.pdf',size:'12.3MB',pii:false,status:'완료',chunks:820,uploaded:'2026-02-10',uploader:'장영수'},
+    {id:'d-011',name:'현장조사_실무매뉴얼.pdf',size:'12.3MB',pii:false,status:'완료',chunks:820,uploaded:'2026-02-10',uploader:'장영수'},
     {id:'d-012',name:'2025_유지보수이력.xlsx',size:'2.8MB',pii:true,status:'처리중',chunks:190,uploaded:'2026-02-11',uploader:'장영수'},
   ],
   'f-003':[
@@ -268,15 +268,15 @@ const MOCK_KB_DOCS = {
   ],
 };
 const MOCK_BATCH_JOBS = [
-  {id:'bj-001',src:'그룹웨어',target:'안전규정',schedule:'매일 02:00',lastRun:'2026-02-25 02:00',lastResult:'성공',addedDocs:3,updatedDocs:1,deletedDocs:0,enabled:true},
+  {id:'bj-001',src:'그룹웨어',target:'공시업무규정',schedule:'매일 02:00',lastRun:'2026-02-25 02:00',lastResult:'성공',addedDocs:3,updatedDocs:1,deletedDocs:0,enabled:true},
   {id:'bj-002',src:'ERP',target:'인사규정',schedule:'매주 월 03:00',lastRun:'2026-02-24 03:00',lastResult:'성공',addedDocs:0,updatedDocs:2,deletedDocs:0,enabled:true},
   {id:'bj-003',src:'DMS',target:'법률/계약',schedule:'실시간 동기화',lastRun:'2026-02-25 09:15',lastResult:'성공',addedDocs:1,updatedDocs:0,deletedDocs:0,enabled:true},
   {id:'bj-004',src:'그룹웨어',target:'교육자료',schedule:'매일 04:00',lastRun:'2026-02-24 04:00',lastResult:'실패',addedDocs:0,updatedDocs:0,deletedDocs:0,enabled:false},
 ];
 const MOCK_SYNC_LOGS = [
   {id:1,time:'2026-02-25 09:15:22',src:'DMS',folder:'법률/계약',file:'임시계약서_수정본.docx',action:'추가',pii:false,status:'완료'},
-  {id:2,time:'2026-02-25 02:00:45',src:'그룹웨어',folder:'안전규정',file:'안전교육자료_2월.pdf',action:'추가',pii:false,status:'완료'},
-  {id:3,time:'2026-02-25 02:00:43',src:'그룹웨어',folder:'안전규정',file:'안전점검일지_2월.xlsx',action:'업데이트',pii:true,status:'완료(마스킹)'},
+  {id:2,time:'2026-02-25 02:00:45',src:'그룹웨어',folder:'공시업무규정',file:'안전교육자료_2월.pdf',action:'추가',pii:false,status:'완료'},
+  {id:3,time:'2026-02-25 02:00:43',src:'그룹웨어',folder:'공시업무규정',file:'안전점검일지_2월.xlsx',action:'업데이트',pii:true,status:'완료(마스킹)'},
   {id:4,time:'2026-02-24 03:01:12',src:'ERP',folder:'인사규정',file:'급여기준표_개정.xlsx',action:'업데이트',pii:true,status:'완료(마스킹)'},
   {id:5,time:'2026-02-23 04:00:33',src:'그룹웨어',folder:'교육자료',file:'신입교육자료_2월.pptx',action:'추가',pii:false,status:'실패'},
 ];
@@ -286,65 +286,65 @@ const MOCK_USAGE_STATS = {
     {date:'02-08',queries:1240,users:85},{date:'02-09',queries:980,users:72},{date:'02-10',queries:1560,users:102},
     {date:'02-11',queries:1890,users:115},{date:'02-12',queries:2100,users:128},{date:'02-13',queries:1780,users:110},{date:'02-14',queries:920,users:68}
   ],
-  byDept:[{dept:'AI연구소',queries:3200,pct:28},{dept:'기술안전팀',queries:2400,pct:21},{dept:'경영지원팀',queries:1800,pct:16},{dept:'안전관리처',queries:1500,pct:13},{dept:'교육훈련팀',queries:1200,pct:10},{dept:'기타',queries:1370,pct:12}],
+  byDept:[{dept:'AI연구소',queries:3200,pct:28},{dept:'토지공시부',queries:2400,pct:21},{dept:'경영지원팀',queries:1800,pct:16},{dept:'부동산공시처',queries:1500,pct:13},{dept:'인재개발부',queries:1200,pct:10},{dept:'기타',queries:1370,pct:12}],
   byModel:[{model:'GPT-OSS-120B',queries:5200,pct:45},{model:'Llama-3-Kor',queries:3100,pct:27},{model:'EXAONE-3.0',queries:2800,pct:24},{model:'기타',queries:370,pct:4}],
-  topKeywords:['안전규정','설비점검','가스누출','인사규정','계약검토','교육자료','비상대응','유지보수','복리후생','출장규정'],
+  topKeywords:['공시업무규정','현장조사','실거래 검증','인사규정','계약검토','교육자료','민원대응','표준지 선정','복리후생','출장규정'],
 };
 
 const MOCK_USAGE_HISTORY = [
-  {id:'uh-001',user:'김영빈',dept:'AI활용 초혁신 추진반',mode:'GENERAL',query:'평택기지 초저온 안전밸브(PSV) 정기 점검 주기가 어떻게 되나요?',answer:'평택기지 유지보수 지침서(제2장)에 따르면, 초저온 안전밸브(PSV)는 1년 주기로 분해 점검(Overhaul) 및 작동 시험(POP Test) 실시...',time:'2026-02-25 14:30',tokens:284,rating:5,errReport:false},
-  {id:'uh-002',user:'이준호',dept:'기술안전팀',mode:'REVIEW',query:'업로드한 출장 신청 기안문을 취업규칙과 대조해서 위반 소지 검토해줘',answer:'취업규칙 대조 결과: 5박 초과 시 임원 별도 승인 필요(제42조②), 출장비 신청서 누락...',time:'2026-02-25 13:20',tokens:412,rating:4,errReport:false},
-  {id:'uh-003',user:'박지현',dept:'경영지원팀',mode:'TRANSLATE',query:'업로드한 영문 기술 지침서를 한국어로 번역해줘',answer:'안전 유의사항 (LNG 저장탱크) — LNG 저장탱크 상부에는 영하 162°C의 초저온...',time:'2026-02-25 11:05',tokens:556,rating:5,errReport:false},
-  {id:'uh-004',user:'고성민',dept:'안전관리처',mode:'GENERAL',query:'비상시 대피 경로',answer:'본사 건물의 비상 대피 경로는...',time:'2026-02-24 16:42',tokens:185,rating:2,errReport:true,errDetail:'층별 대피도 누락, 환각 의심'},
+  {id:'uh-001',user:'김영빈',dept:'AI활용 업무혁신 TF',mode:'GENERAL',query:'표준지공시지가 정기 현장조사 시기가 어떻게 되나요?',answer:'표준지공시지가 조사지침(제2장)에 따르면, 표준지는 매년 1월 1일을 기준으로 현장조사를 실시하며, 가격변동이 큰 지역은 수시조사를 병행...',time:'2026-02-25 14:30',tokens:284,rating:5,errReport:false},
+  {id:'uh-002',user:'이준호',dept:'토지공시부',mode:'REVIEW',query:'업로드한 출장 신청 기안문을 취업규칙과 대조해서 위반 소지 검토해줘',answer:'취업규칙 대조 결과: 5박 초과 시 임원 별도 승인 필요(제42조②), 출장비 신청서 누락...',time:'2026-02-25 13:20',tokens:412,rating:4,errReport:false},
+  {id:'uh-003',user:'박지현',dept:'경영지원팀',mode:'TRANSLATE',query:'업로드한 영문 평가 기준서를 한국어로 번역해줘',answer:'시장가치의 정의 (IVS 국제평가기준) — 시장가치란 자발적인 매도인과 매수인 사이의 정상적인 거래에서 성립될 가능성이 가장 높은 가액...',time:'2026-02-25 11:05',tokens:556,rating:5,errReport:false},
+  {id:'uh-004',user:'고성민',dept:'부동산공시처',mode:'GENERAL',query:'비상시 대피 경로',answer:'본사 건물의 비상 대피 경로는...',time:'2026-02-24 16:42',tokens:185,rating:2,errReport:true,errDetail:'층별 대피도 누락, 환각 의심'},
   {id:'uh-005',user:'최민수',dept:'법무팀',mode:'REVIEW',query:'수의계약 한도액 기준 확인',answer:'수의계약은 추정가격이 2천만원 이하인 경우...',time:'2026-02-24 15:30',tokens:320,rating:3,errReport:false},
-  {id:'uh-006',user:'전하늘',dept:'교육훈련팀',mode:'REPORT',query:'이번 주 PSV 점검 5건 완료, 배관 누설 탐지 2건 처리 완료를 주간 실적 보고서로 작성해줘',answer:'정비기술처 주간 업무 실적 보고 | 보고 기간: 2026.02.17~02.21...',time:'2026-02-24 14:15',tokens:680,rating:5,errReport:false},
+  {id:'uh-006',user:'전하늘',dept:'인재개발부',mode:'REPORT',query:'이번 주 표준지 현장조사 12건 완료, 이의신청 검토 2건 처리 완료를 주간 실적 보고서로 작성해줘',answer:'부동산공시처 주간 업무 실적 보고 | 보고 기간: 2026.02.17~02.21...',time:'2026-02-24 14:15',tokens:680,rating:5,errReport:false},
 ];
 const MOCK_SATISFACTION_DATA = {
   avg:4.2, total:342,
   dist:[{stars:5,count:178,pct:52},{stars:4,count:95,pct:28},{stars:3,count:41,pct:12},{stars:2,count:18,pct:5},{stars:1,count:10,pct:3}],
   recent:[
-    {id:1,user:'이준호',dept:'기술안전팀',stars:4,comment:'문서 검토 결과가 매우 정확했습니다. 더 빠른 응답 속도가 필요합니다.',date:'2026-02-25'},
+    {id:1,user:'이준호',dept:'토지공시부',stars:4,comment:'문서 검토 결과가 매우 정확했습니다. 더 빠른 응답 속도가 필요합니다.',date:'2026-02-25'},
     {id:2,user:'박지현',dept:'경영지원팀',stars:5,comment:'번역 품질이 훌륭합니다. 공기업 문체도 잘 반영됩니다.',date:'2026-02-25'},
-    {id:3,user:'고성민',dept:'안전관리처',stars:2,comment:'비상 대피 경로 답변이 부정확했습니다. 개선 필요.',date:'2026-02-24'},
-    {id:4,user:'전하늘',dept:'교육훈련팀',stars:5,comment:'보고서 자동 작성 기능이 업무 효율을 크게 높여주었습니다.',date:'2026-02-24'},
+    {id:3,user:'고성민',dept:'부동산공시처',stars:2,comment:'비상 대피 경로 답변이 부정확했습니다. 개선 필요.',date:'2026-02-24'},
+    {id:4,user:'전하늘',dept:'인재개발부',stars:5,comment:'보고서 자동 작성 기능이 업무 효율을 크게 높여주었습니다.',date:'2026-02-24'},
     {id:5,user:'최민수',dept:'법무팀',stars:3,comment:'계약 관련 법령 DB가 더 최신화되면 좋겠습니다.',date:'2026-02-23'},
   ]
 };
 
 // ==================== RAG PIPELINE MOCK DATA ====================
 const MOCK_DATA_SOURCES_INT = [
-  {id:'ds-i01',name:'그룹웨어 (WorksOn)',protocol:'REST API',target:'안전규정/교육자료',schedule:'매일 02:00',lastSync:'2026-02-25 02:01',status:'정상',docCount:555,newToday:5},
+  {id:'ds-i01',name:'그룹웨어 (WorksOn)',protocol:'REST API',target:'공시업무규정/교육자료',schedule:'매일 02:00',lastSync:'2026-02-25 02:01',status:'정상',docCount:555,newToday:5},
   {id:'ds-i02',name:'ERP (SAP S/4HANA)',protocol:'DB Direct',target:'인사규정',schedule:'매주 월 03:00',lastSync:'2026-02-24 03:02',status:'정상',docCount:120,newToday:0},
   {id:'ds-i03',name:'DMS (문서관리시스템)',protocol:'WebDAV',target:'법률/계약',schedule:'실시간 동기화',lastSync:'2026-02-25 09:15',status:'정상',docCount:95,newToday:1},
-  {id:'ds-i04',name:'EDMS (전자결재시스템)',protocol:'REST API',target:'안전규정',schedule:'매일 01:00',lastSync:'2026-02-25 01:03',status:'경고',docCount:280,newToday:0},
+  {id:'ds-i04',name:'EDMS (전자결재시스템)',protocol:'REST API',target:'공시업무규정',schedule:'매일 01:00',lastSync:'2026-02-25 01:03',status:'경고',docCount:280,newToday:0},
 ];
 const MOCK_DATA_SOURCES_EXT = [
   {id:'ds-e01',name:'법령정보센터 (법제처)',method:'Open API',url:'https://www.law.go.kr/DRF/lawService',target:'법률/계약',schedule:'매주 화 05:00',lastSync:'2026-02-25 05:00',status:'정상',docCount:1240,newToday:3},
   {id:'ds-e02',name:'나라장터 (조달청)',method:'Open API',url:'https://openapi.g2b.go.kr/',target:'법률/계약',schedule:'매일 06:00',lastSync:'2026-02-25 06:01',status:'정상',docCount:320,newToday:12},
-  {id:'ds-e03',name:'국가법령 (산업안전)',method:'크롤링',url:'https://www.law.go.kr/',target:'안전규정',schedule:'매주 수 04:00',lastSync:'2026-02-19 04:00',status:'정상',docCount:88,newToday:0},
-  {id:'ds-e04',name:'가스안전공사 기술기준',method:'크롤링',url:'https://www.kgs.or.kr/',target:'안전규정',schedule:'매주 목 04:00',lastSync:'2026-02-20 04:00',status:'오류',docCount:42,newToday:0},
+  {id:'ds-e03',name:'국가법령 (산업안전)',method:'크롤링',url:'https://www.law.go.kr/',target:'공시업무규정',schedule:'매주 수 04:00',lastSync:'2026-02-19 04:00',status:'정상',docCount:88,newToday:0},
+  {id:'ds-e04',name:'국토교통부 공시업무 규정',method:'크롤링',url:'https://www.molit.go.kr/',target:'공시업무규정',schedule:'매주 목 04:00',lastSync:'2026-02-20 04:00',status:'오류',docCount:42,newToday:0},
 ];
 const MOCK_DOC_PIPELINE = [
-  {id:'dp-001',name:'안전관리규정_2026.pdf',folder:'안전규정',src:'그룹웨어',type:'PDF',size:'4.2MB',ingest:'2026-02-25 02:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:312,tokens:48200,pii:false,version:3,changeType:'업데이트'},
-  {id:'dp-002',name:'안전교육자료_2월.pdf',folder:'안전규정',src:'그룹웨어',type:'PDF',size:'8.1MB',ingest:'2026-02-25 02:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:580,tokens:91000,pii:false,version:1,changeType:'신규'},
+  {id:'dp-001',name:'공시업무규정_2026.pdf',folder:'공시업무규정',src:'그룹웨어',type:'PDF',size:'4.2MB',ingest:'2026-02-25 02:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:312,tokens:48200,pii:false,version:3,changeType:'업데이트'},
+  {id:'dp-002',name:'안전교육자료_2월.pdf',folder:'공시업무규정',src:'그룹웨어',type:'PDF',size:'8.1MB',ingest:'2026-02-25 02:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:580,tokens:91000,pii:false,version:1,changeType:'신규'},
   {id:'dp-003',name:'급여기준표_개정.xlsx',folder:'인사규정',src:'ERP',type:'XLSX',size:'1.8MB',ingest:'2026-02-24 03:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:145,tokens:18500,pii:true,version:5,changeType:'업데이트'},
   {id:'dp-004',name:'임시계약서_수정본.docx',folder:'법률/계약',src:'DMS',type:'DOCX',size:'580KB',ingest:'2026-02-25 09:15',parseStatus:'완료',chunkStatus:'완료',embedStatus:'처리중',chunks:62,tokens:9800,pii:false,version:2,changeType:'업데이트'},
   {id:'dp-005',name:'신입교육자료_2월.pptx',folder:'교육자료',src:'그룹웨어',type:'PPTX',size:'22.5MB',ingest:'2026-02-23 04:00',parseStatus:'완료',chunkStatus:'실패',embedStatus:'대기',chunks:0,tokens:0,pii:false,version:1,changeType:'신규'},
-  {id:'dp-006',name:'산업안전보건법_개정.pdf',folder:'안전규정',src:'법령정보센터',type:'PDF',size:'3.2MB',ingest:'2026-02-25 05:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:210,tokens:33500,pii:false,version:1,changeType:'신규'},
+  {id:'dp-006',name:'산업안전보건법_개정.pdf',folder:'공시업무규정',src:'법령정보센터',type:'PDF',size:'3.2MB',ingest:'2026-02-25 05:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:210,tokens:33500,pii:false,version:1,changeType:'신규'},
   {id:'dp-007',name:'나라장터_입찰공고_0225.json',folder:'법률/계약',src:'조달청',type:'JSON',size:'1.1MB',ingest:'2026-02-25 06:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:28,tokens:4200,pii:false,version:1,changeType:'신규'},
 ];
 const MOCK_CHUNK_QUALITY = [
-  {docId:'d-001',name:'안전관리규정_2026.pdf',folder:'안전규정',avgLen:154,specialCharPct:1.2,dupPct:0.8,semanticScore:94,status:'양호'},
-  {docId:'d-002',name:'가스시설안전기준.pdf',folder:'안전규정',avgLen:168,specialCharPct:2.1,dupPct:1.5,semanticScore:91,status:'양호'},
-  {docId:'d-011',name:'가스설비점검매뉴얼.pdf',folder:'설비 유지보수',avgLen:142,specialCharPct:4.5,dupPct:3.2,semanticScore:78,status:'주의'},
+  {docId:'d-001',name:'공시업무규정_2026.pdf',folder:'공시업무규정',avgLen:154,specialCharPct:1.2,dupPct:0.8,semanticScore:94,status:'양호'},
+  {docId:'d-002',name:'표준지공시지가_조사기준.pdf',folder:'공시업무규정',avgLen:168,specialCharPct:2.1,dupPct:1.5,semanticScore:91,status:'양호'},
+  {docId:'d-011',name:'현장조사_실무매뉴얼.pdf',folder:'조사·평가 매뉴얼',avgLen:142,specialCharPct:4.5,dupPct:3.2,semanticScore:78,status:'주의'},
   {docId:'d-021',name:'인사규정_2026_개정안.pdf',folder:'인사규정',avgLen:201,specialCharPct:0.8,dupPct:0.4,semanticScore:96,status:'양호'},
   {docId:'d-041',name:'신입교육과정.pptx',folder:'교육자료',avgLen:88,specialCharPct:8.2,dupPct:6.5,semanticScore:58,status:'경고'},
-  {docId:'e-006',name:'산업안전보건법_개정.pdf',folder:'안전규정',avgLen:178,specialCharPct:1.9,dupPct:0.9,semanticScore:92,status:'양호'},
+  {docId:'e-006',name:'산업안전보건법_개정.pdf',folder:'공시업무규정',avgLen:178,specialCharPct:1.9,dupPct:0.9,semanticScore:92,status:'양호'},
 ];
 const MOCK_CHUNK_PREVIEW = [
-  {idx:1,text:'제1장 총칙 제1조(목적) 본 안전관리규정은 한국가스기술공사 임직원 및 협력업체 종사자가 가스 설비 작업 수행 시 발생할 수 있는 위험 요소를 사전에 제거하고 안전한 작업 환경을 조성함을 목적으로 한다.',len:142,score:96},
-  {idx:2,text:'제2조(적용범위) 이 규정은 평택·통영·삼척·하동 인수기지 및 각 지역 관리소 소속 임직원과 현장 상주 협력업체 종사자에게 적용한다.',len:88,score:93},
-  {idx:3,text:'제3조(정의) ① "안전관리자"란 산업안전보건법에 따라 선임된 자를 말한다. ② "위험작업"이란 가스 설비 내부 진입, 고압 배관 용접, 초저온 설비 점검 등 부상·사망 위험이 수반되는 작업을 말한다.',len:165,score:97},
+  {idx:1,text:'제1장 총칙 제1조(목적) 본 조사지침은 표준지공시지가의 조사·평가에 관한 세부 기준과 절차를 정하여 공시지가의 적정성과 균형성을 확보함을 목적으로 한다.',len:142,score:96},
+  {idx:2,text:'제2조(적용범위) 이 지침은 전국 표준지 및 시·군·구 조사 담당자와 조사·평가를 위탁받은 감정평가법인등에 적용한다.',len:88,score:93},
+  {idx:3,text:'제3조(정의) ① "표준지"란 토지의 가격공시를 위하여 선정한 대표성 있는 필지를 말한다. ② "현장조사"란 조사자가 대상 토지를 직접 방문하여 이용상황·주위환경 등을 확인하는 절차를 말한다.',len:165,score:97},
 ];
 const MOCK_EMBED_STATUS = {
   today:{total:1420,success:1398,fail:8,pending:14,successRate:98.4},
@@ -364,9 +364,9 @@ const MOCK_EMBED_STATUS = {
 };
 const MOCK_REPROCESS_QUEUE = [
   {id:'rq-001',doc:'신입교육자료_2월.pptx',folder:'교육자료',src:'그룹웨어',stage:'청킹',error:'PPTX 이미지 슬라이드 파싱 오류 (PIL 디코딩 실패)',failedAt:'2026-02-23 04:00',retryCount:2,status:'대기중',priority:'높음'},
-  {id:'rq-002',doc:'가스안전공사_기술기준.pdf',folder:'안전규정',src:'크롤링',stage:'임베딩',error:'임베딩 서버 응답 타임아웃 (>30s)',failedAt:'2026-02-20 04:15',retryCount:1,status:'대기중',priority:'보통'},
-  {id:'rq-003',doc:'설비점검일지_1월.xlsx',folder:'설비 유지보수',src:'그룹웨어',stage:'파싱',error:'암호화된 XLSX 파일 — 비밀번호 해제 필요',failedAt:'2026-02-18 02:05',retryCount:3,status:'수동처리필요',priority:'높음'},
-  {id:'rq-004',doc:'비상대응매뉴얼_v3.pdf',folder:'비상대응',src:'DMS',stage:'임베딩',error:'토큰 수 초과 (한도 32,768 — 실제 41,200토큰)',failedAt:'2026-02-22 09:30',retryCount:0,status:'대기중',priority:'보통'},
+  {id:'rq-002',doc:'국토교통부_공시업무규정.pdf',folder:'공시업무규정',src:'크롤링',stage:'임베딩',error:'임베딩 서버 응답 타임아웃 (>30s)',failedAt:'2026-02-20 04:15',retryCount:1,status:'대기중',priority:'보통'},
+  {id:'rq-003',doc:'현장조사일지_1월.xlsx',folder:'조사·평가 매뉴얼',src:'그룹웨어',stage:'파싱',error:'암호화된 XLSX 파일 — 비밀번호 해제 필요',failedAt:'2026-02-18 02:05',retryCount:3,status:'수동처리필요',priority:'높음'},
+  {id:'rq-004',doc:'민원대응매뉴얼_v3.pdf',folder:'민원대응',src:'DMS',stage:'임베딩',error:'토큰 수 초과 (한도 32,768 — 실제 41,200토큰)',failedAt:'2026-02-22 09:30',retryCount:0,status:'대기중',priority:'보통'},
 ];
 
 // ==================== 정보서비스·모니터링·HR MOCK DATA ====================
@@ -378,12 +378,12 @@ const MOCK_SERVICE_STATS = {
     {date:'02-23',users:32,conv:620,api:1980},{date:'02-24',users:128,conv:2380,api:7100},{date:'02-25',users:134,conv:2460,api:7280},
   ],
   keywords:[
-    {word:'안전규정',cnt:1240},{word:'설비점검',cnt:980},{word:'가스누출',cnt:820},{word:'인사규정',cnt:750},
-    {word:'계약검토',cnt:680},{word:'교육자료',cnt:540},{word:'비상대응',cnt:490},{word:'유지보수',cnt:420},
-    {word:'PSV 점검',cnt:380},{word:'복리후생',cnt:320},{word:'출장규정',cnt:280},{word:'보고서 작성',cnt:240},
+    {word:'공시업무규정',cnt:1240},{word:'현장조사',cnt:980},{word:'실거래 검증',cnt:820},{word:'인사규정',cnt:750},
+    {word:'계약검토',cnt:680},{word:'교육자료',cnt:540},{word:'민원대응',cnt:490},{word:'표준지 선정',cnt:420},
+    {word:'이의신청 처리',cnt:380},{word:'복리후생',cnt:320},{word:'출장규정',cnt:280},{word:'보고서 작성',cnt:240},
   ],
   topics:[
-    {topic:'안전·보건',pct:38,c:'bg-red-400'},{topic:'설비·기술',pct:25,c:'bg-blue-400'},
+    {topic:'공시·조사',pct:38,c:'bg-red-400'},{topic:'통계·시장',pct:25,c:'bg-blue-400'},
     {topic:'인사·노무',pct:16,c:'bg-green-400'},{topic:'법무·계약',pct:11,c:'bg-purple-400'},{topic:'교육·훈련',pct:10,c:'bg-yellow-400'},
   ],
   apiByEndpoint:[
@@ -400,9 +400,9 @@ const MOCK_NOTICES_MGMT = [
 ];
 const MOCK_QNA_MGMT = [
   {id:'Q-001',title:'번역 기능에서 한→중 번역이 안됩니다',user:'박지현',dept:'경영지원팀',date:'2026-02-25',status:'답변완료',answer:'현재 한→중 번역은 베타 기능으로 일부 문장 유형에서 오류가 발생할 수 있습니다. v2.1 패치에서 개선될 예정입니다.'},
-  {id:'Q-002',title:'에이전트가 설비 데이터에 접근하지 못하는 경우',user:'이준호',dept:'기술안전팀',date:'2026-02-24',status:'처리중',answer:''},
-  {id:'Q-003',title:'RAG 검색 시 유사도 점수 기준이 어떻게 되나요?',user:'고성민',dept:'안전관리처',date:'2026-02-23',status:'답변완료',answer:'현재 코사인 유사도 0.75 이상인 문서가 검색 결과에 포함됩니다. 관리자 설정에서 임계값 조정이 가능합니다.'},
-  {id:'Q-004',title:'보고서 자동 생성 길이 제한 변경 가능한가요?',user:'전하늘',dept:'교육훈련팀',date:'2026-02-21',status:'대기',answer:''},
+  {id:'Q-002',title:'에이전트가 공시 데이터에 접근하지 못하는 경우',user:'이준호',dept:'토지공시부',date:'2026-02-24',status:'처리중',answer:''},
+  {id:'Q-003',title:'RAG 검색 시 유사도 점수 기준이 어떻게 되나요?',user:'고성민',dept:'부동산공시처',date:'2026-02-23',status:'답변완료',answer:'현재 코사인 유사도 0.75 이상인 문서가 검색 결과에 포함됩니다. 관리자 설정에서 임계값 조정이 가능합니다.'},
+  {id:'Q-004',title:'보고서 자동 생성 길이 제한 변경 가능한가요?',user:'전하늘',dept:'인재개발부',date:'2026-02-21',status:'대기',answer:''},
 ];
 const MOCK_SURVEYS_MGMT = [
   {id:'SV-001',title:'2026년 1분기 AI 플랫폼 만족도 조사',start:'2026-02-01',end:'2026-02-28',responses:248,target:450,status:'진행중'},
@@ -416,25 +416,25 @@ const MOCK_IP_BLOCKS = [
   {id:'ib-004',target:'192.168.200.0/24',type:'대역',reason:'협력업체 외부망 허용 대역',action:'허용',appliedBy:'한서윤',date:'2026-02-10',status:'활성'},
 ];
 const MOCK_WORK_LOG = [
-  {id:1,time:'2026-02-25 14:35',user:'김영빈',dept:'AI추진반',ip:'10.20.30.41',action:'문서 업로드',target:'안전관리규정_2026.pdf',detail:'안전규정 폴더 업로드 (4.2MB)'},
+  {id:1,time:'2026-02-25 14:35',user:'김영빈',dept:'AI혁신TF',ip:'10.20.30.41',action:'문서 업로드',target:'공시업무규정_2026.pdf',detail:'공시업무규정 폴더 업로드 (4.2MB)'},
   {id:2,time:'2026-02-25 14:20',user:'한서윤',dept:'정보기술팀',ip:'10.20.30.10',action:'설정 변경',target:'GPT-OSS-120B',detail:'Temperature 0.3→0.2 변경'},
-  {id:3,time:'2026-02-25 13:55',user:'이준호',dept:'기술안전팀',ip:'10.20.30.55',action:'에이전트 호출',target:'설비진단봇',detail:'가스설비 진단 질의 (응답 2.1s)'},
+  {id:3,time:'2026-02-25 13:55',user:'이준호',dept:'토지공시부',ip:'10.20.30.55',action:'에이전트 호출',target:'가격검증봇',detail:'공시가격 검증 질의 (응답 2.1s)'},
   {id:4,time:'2026-02-25 11:30',user:'박지현',dept:'경영지원팀',ip:'10.20.30.78',action:'데이터 추출',target:'이용통계_0225.xlsx',detail:'통계 엑셀 다운로드 (48KB)'},
-  {id:5,time:'2026-02-25 10:12',user:'고성민',dept:'안전관리처',ip:'10.20.30.62',action:'지식영역 접근',target:'안전규정 DB',detail:'비상대응 관련 5건 검색'},
+  {id:5,time:'2026-02-25 10:12',user:'고성민',dept:'부동산공시처',ip:'10.20.30.62',action:'지식영역 접근',target:'공시업무규정 DB',detail:'민원대응 관련 5건 검색'},
 ];
 const MOCK_EXTRACT_LOG = [
   {id:1,time:'2026-02-25 11:30',user:'박지현',dept:'경영지원팀',type:'통계 엑셀',file:'이용통계_0225.xlsx',size:'48KB',rows:340},
-  {id:2,time:'2026-02-24 16:45',user:'김영빈',dept:'AI추진반',type:'로그 CSV',file:'접속로그_0224.csv',size:'1.2MB',rows:5820},
+  {id:2,time:'2026-02-24 16:45',user:'김영빈',dept:'AI혁신TF',type:'로그 CSV',file:'접속로그_0224.csv',size:'1.2MB',rows:5820},
   {id:3,time:'2026-02-23 14:20',user:'한서윤',dept:'정보기술팀',type:'보고서 PDF',file:'월간리포트_202601.pdf',size:'3.4MB',rows:null},
-  {id:4,time:'2026-02-22 10:05',user:'이준호',dept:'기술안전팀',type:'질의이력 CSV',file:'질의이력_이준호_0222.csv',size:'89KB',rows:248},
+  {id:4,time:'2026-02-22 10:05',user:'이준호',dept:'토지공시부',type:'질의이력 CSV',file:'질의이력_이준호_0222.csv',size:'89KB',rows:248},
 ];
 const MOCK_USAGE_BY_DEPT = [
   {dept:'AI활용 추진반',users:8,queries:3240,avgLen:245,tokens:812000,peakHour:'14:00',abuseSuspect:false},
-  {dept:'기술안전팀',users:15,queries:2880,avgLen:198,tokens:621000,peakHour:'10:00',abuseSuspect:false},
-  {dept:'안전관리처',users:12,queries:2240,avgLen:185,tokens:452000,peakHour:'09:00',abuseSuspect:false},
+  {dept:'토지공시부',users:15,queries:2880,avgLen:198,tokens:621000,peakHour:'10:00',abuseSuspect:false},
+  {dept:'부동산공시처',users:12,queries:2240,avgLen:185,tokens:452000,peakHour:'09:00',abuseSuspect:false},
   {dept:'경영지원팀',users:10,queries:1820,avgLen:142,tokens:284000,peakHour:'14:00',abuseSuspect:false},
   {dept:'법무팀',users:6,queries:1480,avgLen:312,tokens:502000,peakHour:'11:00',abuseSuspect:false},
-  {dept:'교육훈련팀',users:11,queries:1240,avgLen:168,tokens:228000,peakHour:'15:00',abuseSuspect:false},
+  {dept:'인재개발부',users:11,queries:1240,avgLen:168,tokens:228000,peakHour:'15:00',abuseSuspect:false},
 ];
 const MOCK_ABUSE_ALERTS = [
   {id:'ab-001',user:'미확인',ip:'192.168.100.45',type:'반복 접속',detail:'10분간 500회 API 호출 (정상범위 100회/10분)',detected:'2026-02-25 11:18',status:'차단됨',severity:'위험'},
@@ -449,12 +449,12 @@ const MOCK_APIS = [
   {id:'api-005',name:'통계 조회 API',endpoint:'/api/v1/stats',version:'v1.0',auth:'API Key',status:'활성',callsToday:320,approvedDate:'2026-01-20'},
 ];
 const MOCK_API_APPROVALS = [
-  {id:'apr-001',requester:'이준호',dept:'기술안전팀',api:'에이전트 실행 API',purpose:'설비 진단 자동화 파이프라인 연동',requestDate:'2026-02-24',status:'대기'},
+  {id:'apr-001',requester:'이준호',dept:'토지공시부',api:'에이전트 실행 API',purpose:'가격 검증 자동화 파이프라인 연동',requestDate:'2026-02-24',status:'대기'},
   {id:'apr-002',requester:'최민수',dept:'법무팀',api:'RAG 검색 API',purpose:'계약서 검토 자동화 연동',requestDate:'2026-02-22',status:'대기'},
-  {id:'apr-003',requester:'전하늘',dept:'교육훈련팀',api:'임베딩 API',purpose:'교육자료 유사도 검색 시스템',requestDate:'2026-02-20',status:'승인'},
+  {id:'apr-003',requester:'전하늘',dept:'인재개발부',api:'임베딩 API',purpose:'교육자료 유사도 검색 시스템',requestDate:'2026-02-20',status:'승인'},
 ];
 const MOCK_PROMPTS_MGMT = [
-  {id:'pt-001',name:'안전규정 Q&A 시스템 프롬프트',mode:'GENERAL',version:'v2.1',tokens:342,lastUpdated:'2026-02-20',active:true,desc:'가스 설비 안전규정 전문 답변 프롬프트. 출처 인용 필수, 환각 방지 지시 포함.'},
+  {id:'pt-001',name:'공시업무규정 Q&A 시스템 프롬프트',mode:'GENERAL',version:'v2.1',tokens:342,lastUpdated:'2026-02-20',active:true,desc:'부동산 공시업무규정 전문 답변 프롬프트. 출처 인용 필수, 환각 방지 지시 포함.'},
   {id:'pt-002',name:'문서 검토 평가 프롬프트',mode:'REVIEW',version:'v1.4',tokens:518,lastUpdated:'2026-02-18',active:true,desc:'사내 규정 대조 문서 검토용. 위반 소지 항목을 조항 단위로 발췌하도록 지시.'},
   {id:'pt-003',name:'번역·요약 지시 프롬프트',mode:'TRANSLATE',version:'v1.0',tokens:285,lastUpdated:'2026-02-10',active:true,desc:'한/영/중/일 다국어 번역 및 요약 길이 제어 지시.'},
   {id:'pt-004',name:'보고서 생성 프롬프트',mode:'REPORT',version:'v2.0',tokens:624,lastUpdated:'2026-02-15',active:true,desc:'공문서 형식 기반 주간/월간/특수 보고서 자동 생성.'},
@@ -464,11 +464,11 @@ const MOCK_HR_SYNC = {
   summary:{total:842,new:3,retired:1,moved:5,concurrent:2,leave:4},
   recent:[
     {id:'hr-001',name:'신민철',type:'신규입사',dept:'AI활용 추진반',syncDate:'2026-02-25',action:'계정 생성'},
-    {id:'hr-002',name:'유정민',type:'신규입사',dept:'기술안전팀',syncDate:'2026-02-25',action:'계정 생성'},
+    {id:'hr-002',name:'유정민',type:'신규입사',dept:'토지공시부',syncDate:'2026-02-25',action:'계정 생성'},
     {id:'hr-003',name:'장태훈',type:'퇴직',dept:'정보기술팀',syncDate:'2026-02-25',action:'계정 비활성화'},
-    {id:'hr-004',name:'이민준',type:'부서이동',dept:'안전관리처 → 기술안전팀',syncDate:'2026-02-24',action:'부서 정보 업데이트'},
+    {id:'hr-004',name:'이민준',type:'부서이동',dept:'부동산공시처 → 토지공시부',syncDate:'2026-02-24',action:'부서 정보 업데이트'},
     {id:'hr-005',name:'박서연',type:'겸직',dept:'법무팀 + 경영지원팀',syncDate:'2026-02-24',action:'그룹 추가'},
-    {id:'hr-006',name:'최재혁',type:'부재설정',dept:'기술안전팀',syncDate:'2026-02-23',action:'임시 계정 잠금 (육아휴직)'},
+    {id:'hr-006',name:'최재혁',type:'부재설정',dept:'토지공시부',syncDate:'2026-02-23',action:'임시 계정 잠금 (육아휴직)'},
   ],
 };
 const MOCK_CONNECTED_SW = {
@@ -487,21 +487,21 @@ const MOCK_CONNECTED_SW = {
 };
 
 const MOCK_ACCESS_LOGS = [
-  {id:1,time:'2026-02-14 09:10:23',user:'김영빈',dept:'AI활용 초혁신 추진반',action:'로그인',ip:'10.20.30.41',detail:'SSO 인증 성공'},
-  {id:2,time:'2026-02-14 09:08:15',user:'이준호',dept:'기술안전팀',action:'에이전트 호출',ip:'10.20.30.55',detail:'설비 진단 어시스턴트 질의'},
+  {id:1,time:'2026-02-14 09:10:23',user:'김영빈',dept:'AI활용 업무혁신 TF',action:'로그인',ip:'10.20.30.41',detail:'SSO 인증 성공'},
+  {id:2,time:'2026-02-14 09:08:15',user:'이준호',dept:'토지공시부',action:'에이전트 호출',ip:'10.20.30.55',detail:'가격 검증 어시스턴트 질의'},
   {id:3,time:'2026-02-14 08:55:02',user:'한서윤',dept:'정보기술팀',action:'모델 설정 변경',ip:'10.20.30.10',detail:'GPT-OSS-120B Temperature 0.3→0.2'},
   {id:4,time:'2026-02-14 08:45:33',user:'박지현',dept:'경영지원팀',action:'문서 업로드',ip:'10.20.30.78',detail:'인사규정_2026_개정안.pdf (2.4MB)'},
-  {id:5,time:'2026-02-14 08:30:11',user:'고성민',dept:'안전관리처',action:'에이전트 호출',ip:'10.20.30.62',detail:'비상 대응 가이드 질의'},
+  {id:5,time:'2026-02-14 08:30:11',user:'고성민',dept:'부동산공시처',action:'에이전트 호출',ip:'10.20.30.62',detail:'민원 대응 가이드 질의'},
   {id:6,time:'2026-02-14 08:20:45',user:'최민수',dept:'법무팀',action:'에이전트 호출',ip:'10.20.30.90',detail:'계약서 검토 에이전트 질의'},
-  {id:7,time:'2026-02-13 17:55:10',user:'전하늘',dept:'교육훈련팀',action:'보고서 생성',ip:'10.20.30.44',detail:'기술교육 이수현황 리포트'},
-  {id:8,time:'2026-02-13 17:30:22',user:'장영수',dept:'시설관리팀',action:'로그아웃',ip:'10.20.30.33',detail:'세션 종료'},
+  {id:7,time:'2026-02-13 17:55:10',user:'전하늘',dept:'인재개발부',action:'보고서 생성',ip:'10.20.30.44',detail:'기술교육 이수현황 리포트'},
+  {id:8,time:'2026-02-13 17:30:22',user:'장영수',dept:'주택공시부',action:'로그아웃',ip:'10.20.30.33',detail:'세션 종료'},
 ];
 
 const MOCK_QUALITY_REVIEWS = [
-  {id:'QR-001',query:'가스 배관 점검 주기는?',answer:'가스 배관은 매월 1회 정기 점검을 실시하며...',agent:'안전규정 검색 에이전트',reviewer:'고성민',rating:'good',confidence:0.92,date:'2026-02-13',feedback:'정확한 규정 인용'},
+  {id:'QR-001',query:'표준지 현장조사 주기는?',answer:'표준지는 연 1회 정기 현장조사를 실시하며...',agent:'공시업무규정 검색 에이전트',reviewer:'고성민',rating:'good',confidence:0.92,date:'2026-02-13',feedback:'정확한 규정 인용'},
   {id:'QR-002',query:'연차 계산 방법 알려줘',answer:'근로기준법에 따라 1년 미만 근로자는...',agent:'HR 질의응답 봇',reviewer:'박지현',rating:'edit',confidence:0.78,date:'2026-02-12',feedback:'공사 내규 추가 필요'},
-  {id:'QR-003',query:'LNG 저장탱크 안전밸브 설정압력',answer:'LNG 저장탱크의 안전밸브는...',agent:'설비 진단 어시스턴트',reviewer:'이준호',rating:'good',confidence:0.95,date:'2026-02-11',feedback:''},
-  {id:'QR-004',query:'비상시 대피 경로',answer:'본사 건물의 비상 대피 경로는...',agent:'비상 대응 가이드',reviewer:'고성민',rating:'bad',confidence:0.55,date:'2026-02-10',feedback:'층별 대피도 누락, 할루시네이션 의심'},
+  {id:'QR-003',query:'공동주택 공시가격 산정 기준',answer:'공동주택 공시가격은 실거래가와 시세 수준을 반영하여...',agent:'가격 검증 어시스턴트',reviewer:'이준호',rating:'good',confidence:0.95,date:'2026-02-11',feedback:''},
+  {id:'QR-004',query:'비상시 대피 경로',answer:'본사 건물의 비상 대피 경로는...',agent:'민원 대응 가이드',reviewer:'고성민',rating:'bad',confidence:0.55,date:'2026-02-10',feedback:'층별 대피도 누락, 할루시네이션 의심'},
   {id:'QR-005',query:'수의계약 한도액 기준',answer:'수의계약은 추정가격이 2천만원 이하인 경우...',agent:'계약서 검토 에이전트',reviewer:'최민수',rating:'edit',confidence:0.82,date:'2026-02-09',feedback:'공사 내규 한도액 기준 상이'},
 ];
 
@@ -513,42 +513,42 @@ const MOCK_ANNOUNCEMENTS = [
 ];
 
 const MOCK_LINKED_SW = [
-  {name:'Milvus Vector DB',version:'2.4.1',status:'Running',endpoint:'milvus.kogas.internal:19530',cpu:12.5,memory:28.4,uptime:'30d 4h'},
-  {name:'OCR Engine (Tesseract)',version:'5.3.3',status:'Running',endpoint:'ocr.kogas.internal:8090',cpu:5.2,memory:8.1,uptime:'30d 4h'},
-  {name:'vLLM Serving',version:'0.4.2',status:'Running',endpoint:'vllm.kogas.internal:8000',cpu:45.0,memory:62.3,uptime:'14d 2h'},
-  {name:'Redis Cache',version:'7.2.4',status:'Running',endpoint:'redis.kogas.internal:6379',cpu:2.1,memory:15.6,uptime:'30d 4h'},
-  {name:'MinIO Object Storage',version:'2024.02',status:'Warning',endpoint:'minio.kogas.internal:9000',cpu:8.3,memory:12.0,uptime:'30d 4h'},
-  {name:'Agent Runtime',version:'1.2.0',status:'Running',endpoint:'agent.kogas.internal:5000',cpu:18.7,memory:24.5,uptime:'7d 11h'},
+  {name:'Milvus Vector DB',version:'2.4.1',status:'Running',endpoint:'milvus.reb.internal:19530',cpu:12.5,memory:28.4,uptime:'30d 4h'},
+  {name:'OCR Engine (Tesseract)',version:'5.3.3',status:'Running',endpoint:'ocr.reb.internal:8090',cpu:5.2,memory:8.1,uptime:'30d 4h'},
+  {name:'vLLM Serving',version:'0.4.2',status:'Running',endpoint:'vllm.reb.internal:8000',cpu:45.0,memory:62.3,uptime:'14d 2h'},
+  {name:'Redis Cache',version:'7.2.4',status:'Running',endpoint:'redis.reb.internal:6379',cpu:2.1,memory:15.6,uptime:'30d 4h'},
+  {name:'MinIO Object Storage',version:'2024.02',status:'Warning',endpoint:'minio.reb.internal:9000',cpu:8.3,memory:12.0,uptime:'30d 4h'},
+  {name:'Agent Runtime',version:'1.2.0',status:'Running',endpoint:'agent.reb.internal:5000',cpu:18.7,memory:24.5,uptime:'7d 11h'},
 ];
 
 // ==================== AGENT MOCK DATA ====================
 const MOCK_AGENTS = [
-  {id:'AGT-001',name:'안전규정 검색 에이전트',desc:'사내 안전규정 및 매뉴얼을 기반으로 질의응답을 수행합니다.',model:'GPT-OSS-120B',tools:['사내 규정 벡터 DB','웹 검색'],mcpTools:['MCP-Search','MCP-WebCrawler'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v2.1',creator:'김세은',dept:'AI연구소',created:'2026-01-15',updated:'2026-02-08',requests24h:342,avgLatency:'1.2s',successRate:98.5,confidence:0.92,systemPrompt:'당신은 한국가스기술공사의 안전 규정 전문가입니다. 사내 규정을 정확히 참조하여 답변하세요.',temperature:0.3,maxTokens:2048},
-  {id:'AGT-002',name:'설비 진단 어시스턴트',desc:'가스 설비 이상 징후를 분석하고 점검 절차를 안내합니다. IoT 센서 연동으로 실시간 데이터 분석.',model:'Llama-3-Kor-Instruct',tools:['설비 이력 DB','IoT 센서 API'],mcpTools:['MCP-IoTSensor','MCP-SearchFilter'],ragEnabled:true,hitl:true,a2a:true,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.8',creator:'이준호',dept:'기술안전팀',created:'2026-01-20',updated:'2026-02-10',requests24h:189,avgLatency:'0.8s',successRate:97.2,confidence:0.88,systemPrompt:'가스 설비 전문 진단 도우미입니다. 설비 이력과 센서 데이터를 참조하여 점검 절차를 안내하세요.',temperature:0.2,maxTokens:4096},
-  {id:'AGT-003',name:'HR 질의응답 봇',desc:'인사/복리후생/규정 관련 직원 문의에 자동 응답합니다.',model:'EXAONE-3.0-7.8B',tools:['HR 규정 벡터 DB'],mcpTools:['MCP-Search'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.3',creator:'박지현',dept:'경영지원팀',created:'2025-12-05',updated:'2026-02-03',requests24h:567,avgLatency:'0.5s',successRate:95.8,confidence:0.85,systemPrompt:'한국가스기술공사 인사 규정 전문 도우미입니다. 정확한 조항을 인용하여 답변하세요.',temperature:0.4,maxTokens:1024},
+  {id:'AGT-001',name:'공시업무규정 검색 에이전트',desc:'사내 공시업무규정 및 매뉴얼을 기반으로 질의응답을 수행합니다.',model:'GPT-OSS-120B',tools:['사내 규정 벡터 DB','웹 검색'],mcpTools:['MCP-Search','MCP-WebCrawler'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v2.1',creator:'김세은',dept:'AI연구소',created:'2026-01-15',updated:'2026-02-08',requests24h:342,avgLatency:'1.2s',successRate:98.5,confidence:0.92,systemPrompt:'당신은 한국부동산원의 공시 규정 전문가입니다. 사내 규정을 정확히 참조하여 답변하세요.',temperature:0.3,maxTokens:2048},
+  {id:'AGT-002',name:'가격 검증 어시스턴트',desc:'공시가격 이상 징후를 분석하고 검증 절차를 안내합니다. 실거래가 데이터 연동으로 실시간 분석.',model:'Llama-3-Kor-Instruct',tools:['공시가격 이력 DB','실거래가 조회 API'],mcpTools:['MCP-RTMS','MCP-SearchFilter'],ragEnabled:true,hitl:true,a2a:true,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.8',creator:'이준호',dept:'토지공시부',created:'2026-01-20',updated:'2026-02-10',requests24h:189,avgLatency:'0.8s',successRate:97.2,confidence:0.88,systemPrompt:'공시가격 전문 검증 도우미입니다. 가격 이력과 실거래 데이터를 참조하여 검증 절차를 안내하세요.',temperature:0.2,maxTokens:4096},
+  {id:'AGT-003',name:'HR 질의응답 봇',desc:'인사/복리후생/규정 관련 직원 문의에 자동 응답합니다.',model:'EXAONE-3.0-7.8B',tools:['HR 규정 벡터 DB'],mcpTools:['MCP-Search'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.3',creator:'박지현',dept:'경영지원팀',created:'2025-12-05',updated:'2026-02-03',requests24h:567,avgLatency:'0.5s',successRate:95.8,confidence:0.85,systemPrompt:'한국부동산원 인사 규정 전문 도우미입니다. 정확한 조항을 인용하여 답변하세요.',temperature:0.4,maxTokens:1024},
   {id:'AGT-004',name:'계약서 검토 에이전트',desc:'계약서 초안을 검토하고 리스크 조항을 식별합니다.',model:'GPT-OSS-120B',tools:['법률 규정 DB','계약 템플릿 DB'],mcpTools:['MCP-Search','MCP-DynamicFilter'],ragEnabled:true,hitl:true,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.0',creator:'최민수',dept:'법무팀',created:'2026-02-01',updated:'2026-02-09',requests24h:45,avgLatency:'2.1s',successRate:99.1,confidence:0.94,systemPrompt:'계약서 전문 검토 에이전트입니다. 불리한 조항이나 누락된 사항을 식별하세요.',temperature:0.1,maxTokens:4096},
-  {id:'AGT-005',name:'시설물 점검 보고서 생성기',desc:'현장 점검 데이터를 기반으로 정형화된 보고서를 자동 생성합니다.',model:'Llama-3-Kor-Instruct',tools:['보고서 템플릿 DB','시설물 이력 DB'],mcpTools:['MCP-CodeDev'],ragEnabled:false,hitl:false,a2a:true,responseMode:'direct',actionable:true,status:'Stopped',version:'v0.9',creator:'장영수',dept:'시설관리팀',created:'2026-01-25',updated:'2026-02-05',requests24h:0,avgLatency:'-',successRate:92.0,confidence:0.76,systemPrompt:'시설물 점검 보고서를 작성하는 전문 에이전트입니다.',temperature:0.5,maxTokens:8192},
-  {id:'AGT-006',name:'기술 교육 튜터',desc:'신입사원 및 기술직 대상 가스 기술 교육 질의응답을 제공합니다.',model:'EXAONE-3.0-7.8B',tools:['교육 자료 벡터 DB','웹 검색'],mcpTools:['MCP-Search','MCP-WebSearch'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.5',creator:'전하늘',dept:'교육훈련팀',created:'2025-11-10',updated:'2026-01-28',requests24h:231,avgLatency:'0.6s',successRate:96.4,confidence:0.87,systemPrompt:'한국가스기술공사 기술 교육 튜터입니다. 쉽고 정확하게 설명하세요.',temperature:0.6,maxTokens:2048},
-  {id:'AGT-007',name:'비상 대응 가이드',desc:'가스 누출 등 비상 상황 시 대응 절차를 실시간으로 안내합니다.',model:'GPT-OSS-120B',tools:['비상 매뉴얼 DB','알림 서비스 API'],mcpTools:['MCP-Search','MCP-IoTSensor'],ragEnabled:true,hitl:true,a2a:true,responseMode:'knowledge',actionable:true,status:'Running',version:'v3.0',creator:'고성민',dept:'안전관리처',created:'2025-10-01',updated:'2026-02-11',requests24h:12,avgLatency:'0.9s',successRate:99.8,confidence:0.96,systemPrompt:'비상 대응 전문 에이전트입니다. 신속하고 정확한 대응 절차를 안내하세요.',temperature:0.1,maxTokens:2048},
+  {id:'AGT-005',name:'현장조사 보고서 생성기',desc:'현장 조사 데이터를 기반으로 정형화된 보고서를 자동 생성합니다.',model:'Llama-3-Kor-Instruct',tools:['보고서 템플릿 DB','현장조사 이력 DB'],mcpTools:['MCP-CodeDev'],ragEnabled:false,hitl:false,a2a:true,responseMode:'direct',actionable:true,status:'Stopped',version:'v0.9',creator:'장영수',dept:'주택공시부',created:'2026-01-25',updated:'2026-02-05',requests24h:0,avgLatency:'-',successRate:92.0,confidence:0.76,systemPrompt:'현장조사 보고서를 작성하는 전문 에이전트입니다.',temperature:0.5,maxTokens:8192},
+  {id:'AGT-006',name:'직무 교육 튜터',desc:'신입사원 및 조사직 대상 직무 교육 질의응답을 제공합니다.',model:'EXAONE-3.0-7.8B',tools:['교육 자료 벡터 DB','웹 검색'],mcpTools:['MCP-Search','MCP-WebSearch'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.5',creator:'전하늘',dept:'인재개발부',created:'2025-11-10',updated:'2026-01-28',requests24h:231,avgLatency:'0.6s',successRate:96.4,confidence:0.87,systemPrompt:'한국부동산원 직무 교육 튜터입니다. 쉽고 정확하게 설명하세요.',temperature:0.6,maxTokens:2048},
+  {id:'AGT-007',name:'민원 대응 가이드',desc:'집단 민원 등 긴급 상황 시 대응 절차를 실시간으로 안내합니다.',model:'GPT-OSS-120B',tools:['민원 매뉴얼 DB','알림 서비스 API'],mcpTools:['MCP-Search','MCP-RTMS'],ragEnabled:true,hitl:true,a2a:true,responseMode:'knowledge',actionable:true,status:'Running',version:'v3.0',creator:'고성민',dept:'부동산공시처',created:'2025-10-01',updated:'2026-02-11',requests24h:12,avgLatency:'0.9s',successRate:99.8,confidence:0.96,systemPrompt:'민원 대응 전문 에이전트입니다. 신속하고 정확한 대응 절차를 안내하세요.',temperature:0.1,maxTokens:2048},
   {id:'AGT-008',name:'회계전표 자동 작성',desc:'업무 지시를 받아 ERP 시스템에서 회계전표를 자동으로 작성합니다.',model:'GPT-OSS-120B',tools:['ERP 연동 API','회계 규정 DB'],mcpTools:['MCP-ERPConnector','MCP-GWSync'],ragEnabled:false,hitl:true,a2a:true,responseMode:'direct',actionable:true,status:'Running',version:'v1.0',creator:'한서윤',dept:'정보기술팀',created:'2026-02-05',updated:'2026-02-13',requests24h:78,avgLatency:'3.2s',successRate:96.0,confidence:0.90,systemPrompt:'회계전표 작성 전문 에이전트입니다. ERP 시스템과 연동하여 전표를 자동 생성합니다.',temperature:0.1,maxTokens:2048},
 ];
 
 const MOCK_AGENT_DEPLOYS = [
-  {id:'DEP-001',agentId:'AGT-001',agentName:'안전규정 검색 에이전트',model:'GPT-OSS-120B',version:'v2.1',env:'Production',endpoint:'/api/agent/safety-reg',deployDate:'2026-02-08 14:30',deployer:'김세은',status:'Running',replicas:3,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'5d 12h',requests24h:342,errorRate:1.5},
-  {id:'DEP-002',agentId:'AGT-002',agentName:'설비 진단 어시스턴트',model:'Llama-3-Kor-Instruct',version:'v1.8',env:'Production',endpoint:'/api/agent/equip-diag',deployDate:'2026-02-10 09:15',deployer:'이준호',status:'Running',replicas:2,cpu:'4 Core',memory:'16 GB',gpu:'H200 x1',uptime:'3d 2h',requests24h:189,errorRate:2.8},
+  {id:'DEP-001',agentId:'AGT-001',agentName:'공시업무규정 검색 에이전트',model:'GPT-OSS-120B',version:'v2.1',env:'Production',endpoint:'/api/agent/notice-reg',deployDate:'2026-02-08 14:30',deployer:'김세은',status:'Running',replicas:3,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'5d 12h',requests24h:342,errorRate:1.5},
+  {id:'DEP-002',agentId:'AGT-002',agentName:'가격 검증 어시스턴트',model:'Llama-3-Kor-Instruct',version:'v1.8',env:'Production',endpoint:'/api/agent/price-verify',deployDate:'2026-02-10 09:15',deployer:'이준호',status:'Running',replicas:2,cpu:'4 Core',memory:'16 GB',gpu:'H200 x1',uptime:'3d 2h',requests24h:189,errorRate:2.8},
   {id:'DEP-003',agentId:'AGT-003',agentName:'HR 질의응답 봇',model:'EXAONE-3.0-7.8B',version:'v1.3',env:'Production',endpoint:'/api/agent/hr-qa',deployDate:'2026-02-03 11:00',deployer:'박지현',status:'Running',replicas:2,cpu:'1 Core',memory:'4 GB',gpu:'-',uptime:'10d 1h',requests24h:567,errorRate:4.2},
   {id:'DEP-004',agentId:'AGT-004',agentName:'계약서 검토 에이전트',model:'GPT-OSS-120B',version:'v1.0',env:'Staging',endpoint:'/api/agent/contract-review',deployDate:'2026-02-09 16:45',deployer:'최민수',status:'Running',replicas:1,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'4d 5h',requests24h:45,errorRate:0.9},
-  {id:'DEP-005',agentId:'AGT-005',agentName:'시설물 점검 보고서 생성기',model:'Llama-3-Kor-Instruct',version:'v0.9',env:'Staging',endpoint:'/api/agent/inspect-report',deployDate:'2026-02-05 10:00',deployer:'장영수',status:'Stopped',replicas:0,cpu:'-',memory:'-',gpu:'-',uptime:'-',requests24h:0,errorRate:0},
-  {id:'DEP-006',agentId:'AGT-006',agentName:'기술 교육 튜터',model:'EXAONE-3.0-7.8B',version:'v1.5',env:'Production',endpoint:'/api/agent/edu-tutor',deployDate:'2026-01-28 08:30',deployer:'전하늘',status:'Running',replicas:2,cpu:'1 Core',memory:'4 GB',gpu:'-',uptime:'16d 3h',requests24h:231,errorRate:3.6},
-  {id:'DEP-007',agentId:'AGT-007',agentName:'비상 대응 가이드',model:'GPT-OSS-120B',version:'v3.0',env:'Production',endpoint:'/api/agent/emergency',deployDate:'2026-02-11 00:00',deployer:'고성민',status:'Running',replicas:4,cpu:'4 Core',memory:'16 GB',gpu:'H200 x2',uptime:'2d 11h',requests24h:12,errorRate:0.2},
+  {id:'DEP-005',agentId:'AGT-005',agentName:'현장조사 보고서 생성기',model:'Llama-3-Kor-Instruct',version:'v0.9',env:'Staging',endpoint:'/api/agent/survey-report',deployDate:'2026-02-05 10:00',deployer:'장영수',status:'Stopped',replicas:0,cpu:'-',memory:'-',gpu:'-',uptime:'-',requests24h:0,errorRate:0},
+  {id:'DEP-006',agentId:'AGT-006',agentName:'직무 교육 튜터',model:'EXAONE-3.0-7.8B',version:'v1.5',env:'Production',endpoint:'/api/agent/edu-tutor',deployDate:'2026-01-28 08:30',deployer:'전하늘',status:'Running',replicas:2,cpu:'1 Core',memory:'4 GB',gpu:'-',uptime:'16d 3h',requests24h:231,errorRate:3.6},
+  {id:'DEP-007',agentId:'AGT-007',agentName:'민원 대응 가이드',model:'GPT-OSS-120B',version:'v3.0',env:'Production',endpoint:'/api/agent/civil-response',deployDate:'2026-02-11 00:00',deployer:'고성민',status:'Running',replicas:4,cpu:'4 Core',memory:'16 GB',gpu:'H200 x2',uptime:'2d 11h',requests24h:12,errorRate:0.2},
   {id:'DEP-008',agentId:'AGT-008',agentName:'회계전표 자동 작성',model:'GPT-OSS-120B',version:'v1.0',env:'Staging',endpoint:'/api/agent/accounting',deployDate:'2026-02-13 10:30',deployer:'한서윤',status:'Running',replicas:2,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'1d 0h',requests24h:78,errorRate:4.0},
 ];
 
 const MOCK_WORKFLOWS = [
-  {id:'WF-001',name:'설비 이상 종합 대응',desc:'설비 이상 감지 → 진단 → 보고서 생성 → 알림 발송 (A2A 멀티에이전트)',status:'Running',creator:'김세은',created:'2026-02-01',lastRun:'2026-02-13 09:30',runs24h:8,successRate:95.0,protocol:'A2A',hitl:true,
-    steps:[{id:'s1',name:'IoT 이상 감지',type:'trigger',agentId:null},{id:'s2',name:'설비 진단 어시스턴트',type:'agent',agentId:'AGT-002'},{id:'s3',name:'HITL 전문가 검토',type:'hitl',agentId:null},{id:'s4',name:'심각도 ≥ 높음',type:'condition',agentId:null},{id:'s5',name:'점검 보고서 생성',type:'agent',agentId:'AGT-005'},{id:'s6',name:'비상 대응 가이드',type:'agent',agentId:'AGT-007'},{id:'s7',name:'MCP 알림 발송',type:'mcp',agentId:null}]},
+  {id:'WF-001',name:'공시가격 이상 종합 대응',desc:'가격 이상 감지 → 검증 → 보고서 생성 → 알림 발송 (A2A 멀티에이전트)',status:'Running',creator:'김세은',created:'2026-02-01',lastRun:'2026-02-13 09:30',runs24h:8,successRate:95.0,protocol:'A2A',hitl:true,
+    steps:[{id:'s1',name:'가격 변동 이상 감지',type:'trigger',agentId:null},{id:'s2',name:'가격 검증 어시스턴트',type:'agent',agentId:'AGT-002'},{id:'s3',name:'HITL 전문가 검토',type:'hitl',agentId:null},{id:'s4',name:'심각도 ≥ 높음',type:'condition',agentId:null},{id:'s5',name:'조사 보고서 생성',type:'agent',agentId:'AGT-005'},{id:'s6',name:'민원 대응 가이드',type:'agent',agentId:'AGT-007'},{id:'s7',name:'MCP 알림 발송',type:'mcp',agentId:null}]},
   {id:'WF-002',name:'신입사원 온보딩 자동화',desc:'HR 질의 → 교육 콘텐츠 추천 → 규정 안내 (MCP 그룹웨어 연동)',status:'Running',creator:'박지현',created:'2026-01-20',lastRun:'2026-02-12 15:00',runs24h:15,successRate:98.0,protocol:'MCP',hitl:false,
-    steps:[{id:'s1',name:'신규 입사자 트리거',type:'trigger',agentId:null},{id:'s2',name:'MCP-GWSync',type:'mcp',agentId:null},{id:'s3',name:'HR 질의응답 봇',type:'agent',agentId:'AGT-003'},{id:'s4',name:'기술 교육 튜터',type:'agent',agentId:'AGT-006'},{id:'s5',name:'안전규정 검색 에이전트',type:'agent',agentId:'AGT-001'}]},
+    steps:[{id:'s1',name:'신규 입사자 트리거',type:'trigger',agentId:null},{id:'s2',name:'MCP-GWSync',type:'mcp',agentId:null},{id:'s3',name:'HR 질의응답 봇',type:'agent',agentId:'AGT-003'},{id:'s4',name:'직무 교육 튜터',type:'agent',agentId:'AGT-006'},{id:'s5',name:'공시업무규정 검색 에이전트',type:'agent',agentId:'AGT-001'}]},
   {id:'WF-003',name:'계약 검토 승인 프로세스',desc:'계약서 업로드 → AI 검토 → 리스크 분류 → HITL 승인',status:'Stopped',creator:'최민수',created:'2026-02-05',lastRun:'2026-02-10 11:20',runs24h:0,successRate:100.0,protocol:'A2A',hitl:true,
     steps:[{id:'s1',name:'계약서 업로드',type:'trigger',agentId:null},{id:'s2',name:'계약서 검토 에이전트',type:'agent',agentId:'AGT-004'},{id:'s3',name:'리스크 레벨 분기',type:'condition',agentId:null},{id:'s4',name:'HITL 법무팀 검토',type:'hitl',agentId:null},{id:'s5',name:'승인 요청 발송',type:'action',agentId:null}]},
   {id:'WF-004',name:'회계전표 자동화 파이프라인',desc:'업무 지시 → ERP 데이터 조회 → 전표 작성 → 승인 (Actionable AI)',status:'Running',creator:'한서윤',created:'2026-02-10',lastRun:'2026-02-14 08:30',runs24h:23,successRate:96.5,protocol:'MCP+A2A',hitl:true,
@@ -859,7 +859,7 @@ const DashboardTrainer = () => {
 const DatasetPage = () => {
   const toast=useToast();
   const [datasets,setDatasets]=useState([
-    {id:1,n:'Safety_Regulations_QA_v1',d:'안전 규정 QA 데이터셋',t:'JSONL',s:'124MB',c:'15,000',date:'2026-02-10'},
+    {id:1,n:'Notice_Guidelines_QA_v1',d:'공시 규정 QA 데이터셋',t:'JSONL',s:'124MB',c:'15,000',date:'2026-02-10'},
     {id:2,n:'Maintenance_Manual_Corpus',d:'장비 유지보수 매뉴얼',t:'TXT',s:'512MB',c:'N/A',date:'2026-02-09'},
     {id:3,n:'Employee_Inquiry_Logs',d:'임직원 질의 로그',t:'CSV',s:'45MB',c:'8,200',date:'2026-02-08'},
     {id:4,n:'Gemma_Instruction_Tuning',d:'Gemma 한국어 인스트럭션',t:'JSONL',s:'230MB',c:'25,000',date:'2026-02-07'},
@@ -911,9 +911,9 @@ const VectorDbPage = () => {
     {name:'training_materials',vectors:'240K',dim:768,status:'Building',updated:'2026-02-11'},
   ]);
   const doSearch=()=>{if(!query.trim())return;setSearching(true);setTimeout(()=>{setResults([
-    {id:'vec_8a1',score:0.92,content:'...본 규정은 한국가스기술공사의 안전관리 업무 수행에 필요한 사항을 규정함을 목적으로 한다...'},
+    {id:'vec_8a1',score:0.92,content:'...본 규정은 한국부동산원의 부동산 가격공시 업무 수행에 필요한 사항을 규정함을 목적으로 한다...'},
     {id:'vec_3b2',score:0.88,content:'...제 2 조 (적용범위) 이 규정은 공사의 전 임직원 및 사업장 내 협력업체에 적용하며...'},
-    {id:'vec_9c3',score:0.75,content:'...가스 설비의 유지보수는 매월 1회 정기 점검을 원칙으로 하며...'},
+    {id:'vec_9c3',score:0.75,content:'...표준지 현장조사는 연 1회 정기 실시를 원칙으로 하며...'},
   ]);setSearching(false);},800);};
   return (
     <PageShell breadcrumb={['데이터','벡터 DB']}>
@@ -1167,7 +1167,7 @@ const LlmTraining = () => {
 const VlmTraining = () => {
   const toast=useToast();
   const [jobs,setJobs]=useState([
-    {id:'VLM-101',model:'LLaVA-1.6-13B',resolution:'336x336',epochs:'10/10',progress:100,status:'학습 완료',dataset:'KOGAS_Image_QA',gpu:'A100 x2',created:'2026-02-08'},
+    {id:'VLM-101',model:'LLaVA-1.6-13B',resolution:'336x336',epochs:'10/10',progress:100,status:'학습 완료',dataset:'REB_Image_QA',gpu:'A100 x2',created:'2026-02-08'},
     {id:'VLM-102',model:'InternVL-2-8B',resolution:'448x448',epochs:'4/20',progress:20,status:'학습 중',dataset:'Safety_Image_v2',gpu:'A100 x4',created:'2026-02-10'},
     {id:'VLM-103',model:'Qwen-VL-Chat',resolution:'224x224',epochs:'0/15',progress:0,status:'대기 중',dataset:'Equipment_Manual_Img',gpu:'A100 x2',created:'2026-02-11'},
   ]);
@@ -1261,7 +1261,7 @@ const EmbeddingPage = () => {
             <div><label className="block text-sm font-medium mb-1">유형</label><select value={form.plan} onChange={e=>setForm({...form,plan:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option>Fine-Tune</option><option>Pre-Train</option><option>Distillation</option></select></div>
             <div><label className="block text-sm font-medium mb-1">GPU</label><select value={form.gpu} onChange={e=>setForm({...form,gpu:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option>A100 x1</option><option>A100 x2</option><option>A100 x4</option></select></div>
           </div>
-          <button onClick={()=>{if(!form.name)return;setJobs(p=>[{id:p.length+1,name:form.name,plan:form.plan,creator:'김영빈',dept:'AI활용추진반',date:'2026-02-11',gpu:form.gpu,tbStatus:'정지',status:'대기 중'},...p]);setShowCreate(false);setForm({name:'',plan:'Fine-Tune',gpu:'A100 x1'});toast('임베딩 학습이 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
+          <button onClick={()=>{if(!form.name)return;setJobs(p=>[{id:p.length+1,name:form.name,plan:form.plan,creator:'김영빈',dept:'AI혁신TF',date:'2026-02-11',gpu:form.gpu,tbStatus:'정지',status:'대기 중'},...p]);setShowCreate(false);setForm({name:'',plan:'Fine-Tune',gpu:'A100 x1'});toast('임베딩 학습이 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
         </div>
       </Modal>
       <Modal isOpen={!!detail} onClose={()=>setDetail(null)} title={detail?.name} size="lg">
@@ -1866,7 +1866,7 @@ const MCPToolsPage = () => {
   const toast=useToast();
   const [tools,setTools]=useState(MOCK_MCP_TOOLS.map(t=>({...t})));
   const [search,setSearch]=useState('');const [showCreate,setShowCreate]=useState(false);const [detail,setDetail]=useState(null);const [confirmDel,setConfirmDel]=useState(null);
-  const [form,setForm]=useState({name:'',desc:'',dept:'AI활용추진반'});
+  const [form,setForm]=useState({name:'',desc:'',dept:'AI혁신TF'});
   const filtered=tools.filter(t=>t.name.toLowerCase().includes(search.toLowerCase())||t.desc.includes(search));
   return (
     <PageShell breadcrumb={['도구','MCP 도구']}>
@@ -1895,7 +1895,7 @@ const MCPToolsPage = () => {
           <div><label className="block text-sm font-medium mb-1">제목</label><input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
           <div><label className="block text-sm font-medium mb-1">상세 설명</label><textarea value={form.desc} onChange={e=>setForm({...form,desc:e.target.value})} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
           <div><label className="block text-sm font-medium mb-1">관리 그룹</label><input value={form.dept} onChange={e=>setForm({...form,dept:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
-          <button onClick={()=>{if(!form.name)return;setTools(p=>[{id:p.length+1,name:form.name,desc:form.desc,creator:'김영빈',dept:form.dept,date:'2026-02-11'},...p]);setShowCreate(false);setForm({name:'',desc:'',dept:'AI활용추진반'});toast('MCP 도구가 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
+          <button onClick={()=>{if(!form.name)return;setTools(p=>[{id:p.length+1,name:form.name,desc:form.desc,creator:'김영빈',dept:form.dept,date:'2026-02-11'},...p]);setShowCreate(false);setForm({name:'',desc:'',dept:'AI혁신TF'});toast('MCP 도구가 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
         </div>
       </Modal>
       <Modal isOpen={!!detail} onClose={()=>setDetail(null)} title={detail?.name} size="lg">
@@ -1915,7 +1915,7 @@ const MCPServerPage = () => {
   const toast=useToast();
   const [servers,setServers]=useState([
     {id:1,n:'Local MCP Server',u:'http://localhost:8080',t:'Search, Web Crawler',s:'Running'},
-    {id:2,n:'External API Gateway',u:'https://api.kogas.or.kr/mcp',t:'ERP Connector, GW Sync',s:'Running'},
+    {id:2,n:'External API Gateway',u:'https://api.reb.or.kr/mcp',t:'ERP Connector, GW Sync',s:'Running'},
     {id:3,n:'Test Server',u:'http://192.168.10.50:3000',t:'CodeDev',s:'Stopped'},
   ]);
   const [showAdd,setShowAdd]=useState(false);const [confirmAction,setConfirmAction]=useState(null);
@@ -1952,7 +1952,7 @@ const PromptLibraryPage = () => {
   const toast=useToast();
   const [prompts,setPrompts]=useState(MOCK_PROMPTS.map(p=>({...p})));
   const [search,setSearch]=useState('');const [showCreate,setShowCreate]=useState(false);const [detail,setDetail]=useState(null);const [confirmDel,setConfirmDel]=useState(null);
-  const [form,setForm]=useState({name:'',desc:'',content:'',dept:'AI활용추진반'});
+  const [form,setForm]=useState({name:'',desc:'',content:'',dept:'AI혁신TF'});
   const filtered=prompts.filter(p=>p.name.toLowerCase().includes(search.toLowerCase())||p.desc.includes(search));
   return (
     <PageShell breadcrumb={['도구','프롬프트 라이브러리']}>
@@ -1979,7 +1979,7 @@ const PromptLibraryPage = () => {
           <div><label className="block text-sm font-medium mb-1">설명</label><input value={form.desc} onChange={e=>setForm({...form,desc:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
           <div><label className="block text-sm font-medium mb-1">프롬프트 내용</label><textarea value={form.content} onChange={e=>setForm({...form,content:e.target.value})} rows={5} placeholder="프롬프트 템플릿을 입력하세요..." className="w-full border rounded-lg px-3 py-2 text-sm font-mono"/></div>
           <div><label className="block text-sm font-medium mb-1">관리 그룹</label><input value={form.dept} onChange={e=>setForm({...form,dept:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
-          <button onClick={()=>{if(!form.name)return;setPrompts(p=>[{id:p.length+1,name:form.name,desc:form.desc,dept:form.dept,date:'2026-02-11',content:form.content},...p]);setShowCreate(false);setForm({name:'',desc:'',content:'',dept:'AI활용추진반'});toast('프롬프트가 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
+          <button onClick={()=>{if(!form.name)return;setPrompts(p=>[{id:p.length+1,name:form.name,desc:form.desc,dept:form.dept,date:'2026-02-11',content:form.content},...p]);setShowCreate(false);setForm({name:'',desc:'',content:'',dept:'AI혁신TF'});toast('프롬프트가 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
         </div>
       </Modal>
       <Modal isOpen={!!detail} onClose={()=>setDetail(null)} title={detail?.name} size="lg">
@@ -2111,7 +2111,7 @@ const TaskflowBuilderPage = () => {
   const handleDelete=()=>{setAgents(p=>p.filter(a=>a.id!==selected.id));setSelected(null);setTab('config');toast('에이전트가 삭제되었습니다.','warning');};
   const toggleMcp=(name)=>{setEditForm(p=>{const has=p.mcpTools.includes(name);return{...p,mcpTools:has?p.mcpTools.filter(t=>t!==name):[...p.mcpTools,name]};});};
   const toggleField=(field)=>{setEditForm(p=>({...p,[field]:!p[field]}));};
-  const handleCreate=()=>{if(!newAgent.name.trim()){toast('에이전트 이름을 입력하세요.','error');return;}const id='AGT-'+(agents.length+1).toString().padStart(3,'0');const now=new Date().toISOString().slice(0,10);const a={id,name:newAgent.name,desc:newAgent.desc,model:newAgent.model,tools:[],mcpTools:[],ragEnabled:false,hitl:false,a2a:false,responseMode:newAgent.responseMode,actionable:false,status:'Stopped',version:'v1.0',creator:'김영빈',dept:'AI활용 초혁신 추진반',created:now,updated:now,requests24h:0,avgLatency:'-',successRate:0,confidence:0,systemPrompt:newAgent.systemPrompt,temperature:newAgent.temperature,maxTokens:newAgent.maxTokens};setAgents(p=>[...p,a]);setShowCreateModal(false);setNewAgent({name:'',desc:'',model:'GPT-OSS-120B',responseMode:'knowledge',systemPrompt:'',temperature:0.3,maxTokens:2048});toast(`'${a.name}' 에이전트가 생성되었습니다.`);};
+  const handleCreate=()=>{if(!newAgent.name.trim()){toast('에이전트 이름을 입력하세요.','error');return;}const id='AGT-'+(agents.length+1).toString().padStart(3,'0');const now=new Date().toISOString().slice(0,10);const a={id,name:newAgent.name,desc:newAgent.desc,model:newAgent.model,tools:[],mcpTools:[],ragEnabled:false,hitl:false,a2a:false,responseMode:newAgent.responseMode,actionable:false,status:'Stopped',version:'v1.0',creator:'김영빈',dept:'AI활용 업무혁신 TF',created:now,updated:now,requests24h:0,avgLatency:'-',successRate:0,confidence:0,systemPrompt:newAgent.systemPrompt,temperature:newAgent.temperature,maxTokens:newAgent.maxTokens};setAgents(p=>[...p,a]);setShowCreateModal(false);setNewAgent({name:'',desc:'',model:'GPT-OSS-120B',responseMode:'knowledge',systemPrompt:'',temperature:0.3,maxTokens:2048});toast(`'${a.name}' 에이전트가 생성되었습니다.`);};
   const toggleAgentStatus=(id)=>{setAgents(p=>p.map(a=>a.id===id?{...a,status:a.status==='Running'?'Stopped':'Running'}:a));toast('에이전트 상태가 변경되었습니다.','info');};
   const sendChat=()=>{if(!chatInput.trim())return;const msg=chatInput;setChatMsgs(p=>[...p,{role:'user',text:msg}]);setChatInput('');setTimeout(()=>{const ef=editForm;setChatMsgs(p=>[...p,{role:'assistant',text:`[${ef.name||selected.name}] "${msg}"에 대해 ${ef.responseMode==='knowledge'?'사내 지식 DB를 참조하여':'LLM 직접 응답으로'} 답변드리겠습니다.\n\n${ef.mcpTools?.length>0?`MCP 도구 (${ef.mcpTools.join(', ')})를 활용하여 `:''}처리되었습니다.${ef.hitl?'\n\n⚠️ HITL 모드: 전문가 검토 후 최종 응답이 제공됩니다.':''}\n\n신뢰도: ${(selected.confidence*100).toFixed(0)}% | 응답 모드: ${ef.responseMode==='knowledge'?'지식 참조':'직접 응답'}`}]);setTimeout(()=>chatEndRef.current?.scrollIntoView({behavior:'smooth'}),50);},800);};
   const models=[...new Set(agents.map(a=>a.model))];
@@ -2203,7 +2203,7 @@ const TaskflowBuilderPage = () => {
             <h3 className="font-bold text-sm mb-4 flex items-center"><Unplug size={16} className="mr-1.5 text-purple-600"/>MCP 도구 연결</h3>
             <p className="text-xs text-gray-500 mb-4">Model Context Protocol을 통해 외부 시스템 및 도구를 표준화된 방식으로 연동합니다.</p>
             <div className="space-y-2.5">
-              {[{name:'MCP-Search',desc:'벡터 DB 시맨틱 검색'},{name:'MCP-WebSearch',desc:'외부 웹 검색 엔진'},{name:'MCP-WebCrawler',desc:'웹 페이지 크롤링'},{name:'MCP-IoTSensor',desc:'IoT 센서 실시간 데이터'},{name:'MCP-ERPConnector',desc:'ERP 시스템 연동 (SAP/Oracle)'},{name:'MCP-GWSync',desc:'그룹웨어 일정/문서 동기화'},{name:'MCP-CodeDev',desc:'코드 생성 및 실행'},{name:'MCP-DynamicFilter',desc:'동적 데이터 필터링'}].map((t,i)=>{const active=editForm.mcpTools?.includes(t.name);return(
+              {[{name:'MCP-Search',desc:'벡터 DB 시맨틱 검색'},{name:'MCP-WebSearch',desc:'외부 웹 검색 엔진'},{name:'MCP-WebCrawler',desc:'웹 페이지 크롤링'},{name:'MCP-RTMS',desc:'IoT 센서 실시간 데이터'},{name:'MCP-ERPConnector',desc:'ERP 시스템 연동 (SAP/Oracle)'},{name:'MCP-GWSync',desc:'그룹웨어 일정/문서 동기화'},{name:'MCP-CodeDev',desc:'코드 생성 및 실행'},{name:'MCP-DynamicFilter',desc:'동적 데이터 필터링'}].map((t,i)=>{const active=editForm.mcpTools?.includes(t.name);return(
                 <div key={i} className={`flex items-center justify-between px-3.5 py-3 rounded-lg border transition-all ${active?'border-purple-200 bg-purple-50/50':'border-gray-200'}`}>
                   <div className="flex items-center space-x-2"><Unplug size={14} className={active?'text-purple-600':'text-gray-400'}/><div><div className="text-sm font-medium">{t.name}</div><div className="text-xs text-gray-400">{t.desc}</div></div></div>
                   <ToggleSwitch on={active} onClick={()=>toggleMcp(t.name)}/>
@@ -2217,7 +2217,7 @@ const TaskflowBuilderPage = () => {
           <div className="bg-white rounded-xl border p-6 shadow-sm">
             <h3 className="font-bold text-sm mb-4 flex items-center"><Database size={16} className="mr-1.5 text-blue-600"/>내부 도구 연결</h3>
             <div className="space-y-2.5">
-              {[{name:'사내 규정 벡터 DB',icon:Database,desc:'안전 규정 및 매뉴얼 검색',active:true},{name:'설비 이력 DB',icon:HardDrive,desc:'설비 점검 이력 조회',active:selected.tools.includes('설비 이력 DB')},{name:'알림 서비스 API',icon:Bell,desc:'Slack/Email 알림 발송',active:selected.tools.includes('알림 서비스 API')}].map((t,i)=>(
+              {[{name:'사내 규정 벡터 DB',icon:Database,desc:'공시 규정 및 매뉴얼 검색',active:true},{name:'공시가격 이력 DB',icon:HardDrive,desc:'공시가격 산정 이력 조회',active:selected.tools.includes('공시가격 이력 DB')},{name:'알림 서비스 API',icon:Bell,desc:'Slack/Email 알림 발송',active:selected.tools.includes('알림 서비스 API')}].map((t,i)=>(
                 <div key={i} className={`flex items-center justify-between px-3.5 py-3 rounded-lg border ${t.active?'border-blue-200 bg-blue-50/50':'border-gray-200'}`}>
                   <div className="flex items-center space-x-2"><t.icon size={14} className={t.active?'text-blue-600':'text-gray-400'}/><div><div className="text-sm font-medium">{t.name}</div><div className="text-xs text-gray-400">{t.desc}</div></div></div>
                   <ToggleSwitch on={t.active} onClick={()=>toast(`${t.name} 도구 ${t.active?'비활성화':'활성화'}됨`,'info')}/>
@@ -2357,7 +2357,7 @@ const TaskflowBuilderPage = () => {
       {filtered.length===0&&<div className="text-center py-16 text-gray-400"><Bot size={40} className="mx-auto mb-3 text-gray-300"/><p className="text-sm">검색 조건에 맞는 에이전트가 없습니다.</p></div>}
       <Modal isOpen={showCreateModal} onClose={()=>setShowCreateModal(false)} title="새 에이전트 생성" size="md">
         <div className="space-y-4">
-          <div><label className="text-sm font-bold">에이전트 이름 *</label><input value={newAgent.name} onChange={e=>setNewAgent(p=>({...p,name:e.target.value}))} placeholder="예: 안전규정 검색 에이전트" className="w-full mt-1 px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
+          <div><label className="text-sm font-bold">에이전트 이름 *</label><input value={newAgent.name} onChange={e=>setNewAgent(p=>({...p,name:e.target.value}))} placeholder="예: 공시업무규정 검색 에이전트" className="w-full mt-1 px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
           <div><label className="text-sm font-bold">설명</label><input value={newAgent.desc} onChange={e=>setNewAgent(p=>({...p,desc:e.target.value}))} placeholder="에이전트 역할을 간략히 설명하세요" className="w-full mt-1 px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="text-sm font-bold">모델</label><select value={newAgent.model} onChange={e=>setNewAgent(p=>({...p,model:e.target.value}))} className="w-full mt-1 px-3.5 py-2.5 border rounded-lg text-sm bg-white">{MOCK_MODELS.map(m=><option key={m.id} value={m.name}>{m.name}</option>)}</select></div>
@@ -2387,7 +2387,7 @@ const TaskflowDeployPage = () => {
   const [scaleReplicas,setScaleReplicas]=useState(1);
   const [showStopConfirm,setShowStopConfirm]=useState(false);
   const [showRedeployConfirm,setShowRedeployConfirm]=useState(false);
-  const [newDeploy,setNewDeploy]=useState({agentName:'안전규정 검색 에이전트',env:'Production',replicas:2,cpu:'2 Core',memory:'8 GB',gpu:'-'});
+  const [newDeploy,setNewDeploy]=useState({agentName:'공시업무규정 검색 에이전트',env:'Production',replicas:2,cpu:'2 Core',memory:'8 GB',gpu:'-'});
   const running=deploys.filter(d=>d.status==='Running').length;
   const totalReq=deploys.reduce((s,d)=>s+d.requests24h,0);
   const avgErr=running?(deploys.filter(d=>d.status==='Running').reduce((s,d)=>s+d.errorRate,0)/running).toFixed(1):'0';
@@ -2595,7 +2595,7 @@ const WorkflowPage = () => {
       <ConfirmDialog isOpen={showStopConfirm!==null} onClose={()=>setShowStopConfirm(null)} onConfirm={()=>{handleStop(showStopConfirm);}} title={`워크플로우 ${workflows.find(w=>w.id===showStopConfirm)?.status==='Running'?'중지':'시작'}`} message={`'${workflows.find(w=>w.id===showStopConfirm)?.name}' 워크플로우를 ${workflows.find(w=>w.id===showStopConfirm)?.status==='Running'?'중지':'시작'}하시겠습니까?`} confirmText={workflows.find(w=>w.id===showStopConfirm)?.status==='Running'?'중지':'시작'} danger={workflows.find(w=>w.id===showStopConfirm)?.status==='Running'}/>
       <Modal isOpen={showCreateModal} onClose={()=>setShowCreateModal(false)} title="새 워크플로우 생성" size="md">
         <div className="space-y-4">
-          <div><label className="text-sm font-bold">워크플로우 이름 *</label><input value={newWf.name} onChange={e=>setNewWf(p=>({...p,name:e.target.value}))} placeholder="예: 설비 이상 자동 대응" className="w-full mt-1 px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
+          <div><label className="text-sm font-bold">워크플로우 이름 *</label><input value={newWf.name} onChange={e=>setNewWf(p=>({...p,name:e.target.value}))} placeholder="예: 이의신청 자동 분류" className="w-full mt-1 px-3.5 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
           <div><label className="text-sm font-bold">설명</label><textarea value={newWf.desc} onChange={e=>setNewWf(p=>({...p,desc:e.target.value}))} placeholder="워크플로우의 목적과 처리 흐름을 설명하세요" className="w-full mt-1 h-20 px-3.5 py-2.5 border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="text-sm font-bold">프로토콜</label><select value={newWf.protocol} onChange={e=>setNewWf(p=>({...p,protocol:e.target.value}))} className="w-full mt-1 px-3.5 py-2.5 border rounded-lg text-sm bg-white"><option>MCP</option><option>A2A</option><option>MCP+A2A</option></select></div>
@@ -2652,7 +2652,7 @@ const ChatAppPage = () => {
         {step===1&&<div className="space-y-4">
           <div><label className="text-sm font-bold">제목 *</label><input value={chatForm.title} onChange={e=>setChatForm(p=>({...p,title:e.target.value}))} placeholder="제목을 입력하세요" className="w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
           <div><label className="text-sm font-bold">상세 설명</label><input value={chatForm.desc} onChange={e=>setChatForm(p=>({...p,desc:e.target.value}))} placeholder="상세 설명을 입력하세요" className="w-full mt-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"/></div>
-          <div><label className="text-sm font-bold">관리 그룹 *</label><select value={chatForm.group} onChange={e=>setChatForm(p=>({...p,group:e.target.value}))} className="w-full mt-1 px-3 py-2 border rounded-lg text-sm bg-white"><option>AI Engineer</option><option>QA</option><option>기술안전팀</option><option>경영지원팀</option></select></div>
+          <div><label className="text-sm font-bold">관리 그룹 *</label><select value={chatForm.group} onChange={e=>setChatForm(p=>({...p,group:e.target.value}))} className="w-full mt-1 px-3 py-2 border rounded-lg text-sm bg-white"><option>AI Engineer</option><option>QA</option><option>토지공시부</option><option>경영지원팀</option></select></div>
         </div>}
         {step===2&&<div className="space-y-4">
           <div><label className="text-sm font-bold">LLM 모델 선택 *</label><select value={chatForm.model} onChange={e=>setChatForm(p=>({...p,model:e.target.value}))} className="w-full mt-1 px-3 py-2 border rounded-lg text-sm bg-white">{MOCK_MODELS.map(m=><option key={m.id} value={m.name}>{m.name}</option>)}</select></div>
@@ -2684,14 +2684,14 @@ const ChatAppPage = () => {
 const ReportGenPage = () => {
   const toast=useToast();
   const [reports,setReports]=useState([
-    {id:'RPT-001',title:'2월 안전관리 현황 보고서',type:'요약',template:'안전관리',status:'완료',date:'2026-02-10',pages:12},
-    {id:'RPT-002',title:'가스설비 점검 분석 리포트',type:'분석',template:'설비점검',status:'완료',date:'2026-02-09',pages:24},
+    {id:'RPT-001',title:'2월 공시업무 현황 보고서',type:'요약',template:'공시업무',status:'완료',date:'2026-02-10',pages:12},
+    {id:'RPT-002',title:'공동주택 가격변동 분석 리포트',type:'분석',template:'현장조사',status:'완료',date:'2026-02-09',pages:24},
     {id:'RPT-003',title:'1분기 AI 활용 성과보고',type:'보고서',template:'성과분석',status:'생성 중',date:'2026-02-11',pages:0},
     {id:'RPT-004',title:'장비 유지보수 매뉴얼 번역',type:'번역',template:'기술문서',status:'완료',date:'2026-02-08',pages:45},
     {id:'RPT-005',title:'신입사원 교육자료 요약',type:'요약',template:'교육',status:'대기 중',date:'2026-02-11',pages:0},
   ]);
   const [showCreate,setShowCreate]=useState(false);const [detail,setDetail]=useState(null);
-  const [form,setForm]=useState({title:'',type:'요약',template:'안전관리',source:''});
+  const [form,setForm]=useState({title:'',type:'요약',template:'공시업무',source:''});
   return (
     <PageShell breadcrumb={['애플리케이션','보고서 생성']} title="보고서 생성" action={<button onClick={()=>setShowCreate(true)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center"><Plus size={16} className="mr-1"/>새 보고서</button>}>
       <div className="grid grid-cols-3 gap-4 mb-6">
@@ -2715,10 +2715,10 @@ const ReportGenPage = () => {
           <div><label className="block text-sm font-medium mb-1">제목</label><input value={form.title} onChange={e=>setForm({...form,title:e.target.value})} placeholder="보고서 제목" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-sm font-medium mb-1">유형</label><select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option>요약</option><option>분석</option><option>보고서</option><option>번역</option></select></div>
-            <div><label className="block text-sm font-medium mb-1">템플릿</label><select value={form.template} onChange={e=>setForm({...form,template:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option>안전관리</option><option>설비점검</option><option>성과분석</option><option>기술문서</option><option>교육</option></select></div>
+            <div><label className="block text-sm font-medium mb-1">템플릿</label><select value={form.template} onChange={e=>setForm({...form,template:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option>공시업무</option><option>현장조사</option><option>성과분석</option><option>기술문서</option><option>교육</option></select></div>
           </div>
           <div><label className="block text-sm font-medium mb-1">데이터 소스</label><input value={form.source} onChange={e=>setForm({...form,source:e.target.value})} placeholder="데이터셋 또는 문서명" className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
-          <button onClick={()=>{if(!form.title)return;setReports(p=>[{id:`RPT-${String(p.length+1).padStart(3,'0')}`,title:form.title,type:form.type,template:form.template,status:'생성 중',date:'2026-02-11',pages:0},...p]);setShowCreate(false);setForm({title:'',type:'요약',template:'안전관리',source:''});toast('보고서 생성이 시작되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성 시작</button>
+          <button onClick={()=>{if(!form.title)return;setReports(p=>[{id:`RPT-${String(p.length+1).padStart(3,'0')}`,title:form.title,type:form.type,template:form.template,status:'생성 중',date:'2026-02-11',pages:0},...p]);setShowCreate(false);setForm({title:'',type:'요약',template:'공시업무',source:''});toast('보고서 생성이 시작되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성 시작</button>
         </div>
       </Modal>
       <Modal isOpen={!!detail} onClose={()=>setDetail(null)} title={detail?.title} size="lg">
@@ -2779,7 +2779,7 @@ const ApprovalPage = () => {
     {id:'APR-101',type:'모델 배포',user:'김철수',dept:'AI연구소',date:'2026-02-09',status:'대기 중',desc:'GPT-OSS-120B 모델 운영 환경 배포 요청'},
     {id:'APR-102',type:'GPU 할당',user:'이영희',dept:'개발팀',date:'2026-02-10',status:'대기 중',desc:'VLM 학습을 위한 A100 x4 GPU 할당 요청'},
     {id:'APR-100',type:'GPU 할당',user:'이영희',dept:'개발팀',date:'2026-02-08',status:'승인',desc:'임베딩 학습용 GPU 할당'},
-    {id:'APR-099',type:'데이터 접근',user:'박지민',dept:'안전관리',date:'2026-02-07',status:'승인',desc:'안전 규정 데이터셋 접근 권한 요청'},
+    {id:'APR-099',type:'데이터 접근',user:'박지민',dept:'부동산공시처',date:'2026-02-07',status:'승인',desc:'공시 규정 데이터셋 접근 권한 요청'},
     {id:'APR-098',type:'API 키 발급',user:'최준호',dept:'경영기획',date:'2026-02-06',status:'거부',desc:'외부 API 키 발급 요청'},
   ]);
   const [tab,setTab]=useState('전체');const [confirmAction,setConfirmAction]=useState(null);const [rejectReason,setRejectReason]=useState('');
@@ -2830,7 +2830,7 @@ const QuotaPage = () => {
     {id:3,name:'데이터분석팀',gpu:{used:2,total:4},mem:{used:180,total:256},storage:{used:4.5,total:5}},
     {id:4,name:'서비스운영팀',gpu:{used:0,total:1},mem:{used:32,total:128},storage:{used:1,total:5}},
     {id:5,name:'경영기획팀',gpu:{used:0,total:1},mem:{used:16,total:64},storage:{used:0.5,total:2}},
-    {id:6,name:'안전관리처',gpu:{used:1,total:2},mem:{used:96,total:128},storage:{used:2,total:3}},
+    {id:6,name:'부동산공시처',gpu:{used:1,total:2},mem:{used:96,total:128},storage:{used:2,total:3}},
   ]);
   const [editDept,setEditDept]=useState(null);
   const pct=(u,t)=>Math.round(u/t*100);
@@ -2980,32 +2980,32 @@ const UPSTAGE_OCR_MOCK = {
   totalPages:3, totalBlocks:16, elapsed:2.4,
   pages:[
     {page:1,
-     text:"제1조 (목적)\n이 규정은 한국가스기술공사의 가스 설비 안전 점검에 관한 사항을 규정함을 목적으로 한다.\n\n제2조 (적용 범위)\n이 규정은 공사가 관리하는 모든 가스 설비에 적용한다.\n\n제3조 (정의)\n이 규정에서 사용하는 용어의 정의는 다음과 같다.",
+     text:"제1조 (목적)\n이 규정은 한국부동산원의 표준지공시지가 조사·평가에 관한 사항을 규정함을 목적으로 한다.\n\n제2조 (적용 범위)\n이 규정은 원이 조사하는 모든 표준지에 적용한다.\n\n제3조 (정의)\n이 규정에서 사용하는 용어의 정의는 다음과 같다.",
      blocks:[
        {text:"제1조 (목적)",bbox:{x:14,y:14,w:35,h:6}},
-       {text:"이 규정은 한국가스기술공사의 가스 설비 안전 점검에 관한 사항을 규정함을 목적으로 한다.",bbox:{x:14,y:22,w:70,h:8}},
+       {text:"이 규정은 한국부동산원의 표준지공시지가 조사·평가에 관한 사항을 규정함을 목적으로 한다.",bbox:{x:14,y:22,w:70,h:8}},
        {text:"제2조 (적용 범위)",bbox:{x:14,y:36,w:38,h:6}},
-       {text:"이 규정은 공사가 관리하는 모든 가스 설비에 적용한다.",bbox:{x:14,y:44,w:65,h:6}},
+       {text:"이 규정은 원이 조사하는 모든 표준지에 적용한다.",bbox:{x:14,y:44,w:65,h:6}},
        {text:"제3조 (정의)",bbox:{x:14,y:56,w:28,h:6}},
        {text:"이 규정에서 사용하는 용어의 정의는 다음과 같다.",bbox:{x:14,y:64,w:60,h:6}},
      ]},
     {page:2,
-     text:"제4조 (점검 주기)\n① PSV(압력안전밸브): 정기 점검 1년, 분해 점검 3년\n② 가스 배관: 정기 점검 6개월, 정밀 점검 2년\n③ 압력조정기: 정기 점검 1년, 교체 주기 5년",
+     text:"제4조 (조사 주기)\n① 표준지: 정기 조사 연 1회, 수시 조사 가격변동 시\n② 공동주택: 정기 조사 연 1회, 표본 검증 반기 1회\n③ 비주거용 부동산: 정기 조사 연 1회, 정밀 검증 2년",
      blocks:[
-       {text:"제4조 (점검 주기)",bbox:{x:14,y:10,w:36,h:6}},
-       {text:"① PSV(압력안전밸브): 정기 점검 1년, 분해 점검 3년",bbox:{x:18,y:20,w:66,h:6}},
-       {text:"② 가스 배관: 정기 점검 6개월, 정밀 점검 2년",bbox:{x:18,y:29,w:62,h:6}},
-       {text:"③ 압력조정기: 정기 점검 1년, 교체 주기 5년",bbox:{x:18,y:38,w:60,h:6}},
+       {text:"제4조 (조사 주기)",bbox:{x:14,y:10,w:36,h:6}},
+       {text:"① 표준지: 정기 조사 연 1회, 수시 조사 가격변동 시",bbox:{x:18,y:20,w:66,h:6}},
+       {text:"② 공동주택: 정기 조사 연 1회, 표본 검증 반기 1회",bbox:{x:18,y:29,w:62,h:6}},
+       {text:"③ 비주거용 부동산: 정기 조사 연 1회, 정밀 검증 2년",bbox:{x:18,y:38,w:60,h:6}},
      ]},
     {page:3,
-     text:"제5조 (점검 결과 보고)\n점검 완료 후 14일 이내에 점검 결과 보고서를 작성하여 안전관리처장에게 제출하여야 한다.\n\n[별표 1] 설비별 점검 체크리스트",
+     text:"제5조 (조사 결과 보고)\n조사 완료 후 14일 이내에 조사 결과 보고서를 작성하여 부동산공시처장에게 제출하여야 한다.\n\n[별표 1] 토지특성 조사 체크리스트",
      blocks:[
-       {text:"제5조 (점검 결과 보고)",bbox:{x:14,y:10,w:44,h:6}},
-       {text:"점검 완료 후 14일 이내에 결과보고서를 제출하여야 한다.",bbox:{x:14,y:20,w:70,h:8}},
-       {text:"[별표 1] 설비별 점검 체크리스트",bbox:{x:14,y:36,w:52,h:6}},
-       {text:"(KOGAS 관련 정보 처리됨 — PII 마스킹 적용)",bbox:{x:14,y:46,w:65,h:6}},
+       {text:"제5조 (조사 결과 보고)",bbox:{x:14,y:10,w:44,h:6}},
+       {text:"조사 완료 후 14일 이내에 결과보고서를 제출하여야 한다.",bbox:{x:14,y:20,w:70,h:8}},
+       {text:"[별표 1] 토지특성 조사 체크리스트",bbox:{x:14,y:36,w:52,h:6}},
+       {text:"(개인 식별 정보 처리됨 — PII 마스킹 적용)",bbox:{x:14,y:46,w:65,h:6}},
        {text:"담당자 서명란",bbox:{x:14,y:58,w:28,h:6}},
-       {text:"안전관리처장 확인",bbox:{x:14,y:66,w:34,h:6}},
+       {text:"부동산공시처장 확인",bbox:{x:14,y:66,w:34,h:6}},
      ]},
   ]
 };
@@ -3014,23 +3014,23 @@ const UPSTAGE_OCR_MOCK = {
 const UPSTAGE_PARSE_MOCK = {
   statistics:{paragraphs:24,headings:8,tables:3,figures:2,total:37},
   elements:[
-    {category:'heading1',content:'안전관리규정',page:1},
+    {category:'heading1',content:'공시업무규정',page:1},
     {category:'heading2',content:'제1장 총칙',page:1},
-    {category:'paragraph',content:'제1조 (목적) 이 규정은 한국가스기술공사의 가스 설비 안전 점검에 관한 사항을 규정함을 목적으로 한다.',page:1},
-    {category:'paragraph',content:'제2조 (적용 범위) 이 규정은 공사가 관리하는 모든 가스 설비에 적용한다.',page:1},
-    {category:'heading2',content:'제2장 점검 기준',page:2},
-    {category:'table',content:'| 설비 종류 | 점검 주기 | 담당부서 |\n|---------|---------|--------|\n| PSV | 1년 | 안전관리처 |\n| 가스 배관 | 6개월 | 시설관리팀 |',page:2},
+    {category:'paragraph',content:'제1조 (목적) 이 규정은 한국부동산원의 표준지공시지가 조사·평가에 관한 사항을 규정함을 목적으로 한다.',page:1},
+    {category:'paragraph',content:'제2조 (적용 범위) 이 규정은 원이 조사하는 모든 표준지에 적용한다.',page:1},
+    {category:'heading2',content:'제2장 조사 기준',page:2},
+    {category:'table',content:'| 조사 대상 | 조사 주기 | 담당부서 |\n|---------|---------|--------|\n| 표준지 | 연 1회 | 부동산공시처 |\n| 공동주택 | 연 1회 | 주택공시부 |',page:2},
     {category:'paragraph',content:'제4조 (점검 방법) 점검은 관련 법령 및 내부 기준에 따라 실시한다.',page:2},
-    {category:'figure',content:'[그림 1] 가스 설비 점검 흐름도',page:2},
+    {category:'figure',content:'[그림 1] 표준지 조사 업무 흐름도',page:2},
     {category:'heading2',content:'제3장 보고 의무',page:3},
-    {category:'paragraph',content:'제5조 (보고 의무) 점검 완료 후 14일 이내에 결과보고서를 제출하여야 한다.',page:3},
-    {category:'list',content:'• 정기점검 결과 보고서\n• PSV 교체 기록부\n• 이상 발견 시 즉시 보고',page:3},
+    {category:'paragraph',content:'제5조 (보고 의무) 조사 완료 후 14일 이내에 결과보고서를 제출하여야 한다.',page:3},
+    {category:'list',content:'• 정기조사 결과 보고서\n• 표준지 선정 조서\n• 이상 발견 시 즉시 보고',page:3},
     {category:'figure',content:'[그림 2] 보고 체계도',page:3},
   ],
   outputs:{
-    markdown:`# 안전관리규정\n\n## 제1장 총칙\n\n**제1조 (목적)** 이 규정은 한국가스기술공사의 가스 설비 안전 점검에 관한 사항을 규정함을 목적으로 한다.\n\n**제2조 (적용 범위)** 이 규정은 공사가 관리하는 모든 가스 설비에 적용한다.\n\n## 제2장 점검 기준\n\n| 설비 종류 | 점검 주기 | 담당부서 |\n|---------|---------|--------|\n| PSV | 1년 | 안전관리처 |\n| 가스 배관 | 6개월 | 시설관리팀 |\n\n> [그림 1] 가스 설비 점검 흐름도\n\n## 제3장 보고 의무\n\n**제5조 (보고 의무)** 점검 완료 후 14일 이내에 결과보고서를 제출하여야 한다.\n\n- 정기점검 결과 보고서\n- PSV 교체 기록부\n- 이상 발견 시 즉시 보고`,
-    html:`<h1>안전관리규정</h1>\n<h2>제1장 총칙</h2>\n<p><strong>제1조 (목적)</strong> 이 규정은 한국가스기술공사의 가스 설비 안전 점검에 관한 사항을 규정함을 목적으로 한다.</p>\n<p><strong>제2조 (적용 범위)</strong> 이 규정은 공사가 관리하는 모든 가스 설비에 적용한다.</p>\n<h2>제2장 점검 기준</h2>\n<table><tr><th>설비 종류</th><th>점검 주기</th><th>담당부서</th></tr><tr><td>PSV</td><td>1년</td><td>안전관리처</td></tr></table>`,
-    text:`안전관리규정\n\n제1장 총칙\n\n제1조 (목적) 이 규정은 한국가스기술공사의 가스 설비 안전 점검에 관한 사항을 규정함을 목적으로 한다.\n\n제2조 (적용 범위) 이 규정은 공사가 관리하는 모든 가스 설비에 적용한다.\n\n제2장 점검 기준\nPSV | 1년 | 안전관리처\n가스 배관 | 6개월 | 시설관리팀`,
+    markdown:`# 공시업무규정\n\n## 제1장 총칙\n\n**제1조 (목적)** 이 규정은 한국부동산원의 표준지공시지가 조사·평가에 관한 사항을 규정함을 목적으로 한다.\n\n**제2조 (적용 범위)** 이 규정은 원이 조사하는 모든 표준지에 적용한다.\n\n## 제2장 조사 기준\n\n| 조사 대상 | 조사 주기 | 담당부서 |\n|---------|---------|--------|\n| 표준지 | 연 1회 | 부동산공시처 |\n| 공동주택 | 연 1회 | 주택공시부 |\n\n> [그림 1] 표준지 조사 업무 흐름도\n\n## 제3장 보고 의무\n\n**제5조 (보고 의무)** 조사 완료 후 14일 이내에 결과보고서를 제출하여야 한다.\n\n- 정기조사 결과 보고서\n- 표준지 선정 조서\n- 이상 발견 시 즉시 보고`,
+    html:`<h1>공시업무규정</h1>\n<h2>제1장 총칙</h2>\n<p><strong>제1조 (목적)</strong> 이 규정은 한국부동산원의 표준지공시지가 조사·평가에 관한 사항을 규정함을 목적으로 한다.</p>\n<p><strong>제2조 (적용 범위)</strong> 이 규정은 원이 조사하는 모든 표준지에 적용한다.</p>\n<h2>제2장 조사 기준</h2>\n<table><tr><th>조사 대상</th><th>조사 주기</th><th>담당부서</th></tr><tr><td>표준지</td><td>연 1회</td><td>부동산공시처</td></tr></table>`,
+    text:`공시업무규정\n\n제1장 총칙\n\n제1조 (목적) 이 규정은 한국부동산원의 표준지공시지가 조사·평가에 관한 사항을 규정함을 목적으로 한다.\n\n제2조 (적용 범위) 이 규정은 원이 조사하는 모든 표준지에 적용한다.\n\n제2장 조사 기준\n표준지 | 연 1회 | 부동산공시처\n공동주택 | 연 1회 | 주택공시부`,
   }
 };
 
@@ -3200,8 +3200,8 @@ const KnowledgeManagementPage = () => {
     </div>}
     {/* Tab 3: 에이전트 연동 */}
     {kbTab==='agent'&&<div className="grid grid-cols-3 gap-4">
-      {[{agent:'사규 기반 문서 사전 검토',folders:['안전규정','법률/계약'],icon:CheckSquare,color:'bg-indigo-50 text-indigo-700'},
-        {agent:'설비 진단 어시스턴트',folders:['설비 유지보수','안전규정'],icon:Wrench,color:'bg-blue-50 text-blue-700'},
+      {[{agent:'사규 기반 문서 사전 검토',folders:['공시업무규정','법률/계약'],icon:CheckSquare,color:'bg-indigo-50 text-indigo-700'},
+        {agent:'가격 검증 어시스턴트',folders:['조사·평가 매뉴얼','공시업무규정'],icon:Wrench,color:'bg-blue-50 text-blue-700'},
         {agent:'HR 질의응답 봇',folders:['인사규정','교육자료'],icon:Users,color:'bg-green-50 text-green-700'},
       ].map((ag,i)=><div key={i} className="bg-white rounded-xl border shadow-sm p-5">
         <div className={`w-10 h-10 rounded-xl ${ag.color.split(' ')[0]} flex items-center justify-center mb-3`}><ag.icon size={20} className={ag.color.split(' ')[1]}/></div>
@@ -3978,9 +3978,9 @@ const AdminPage = () => (
 
 const UserPage = () => {
   const toast=useToast();
-  const [profile,setProfile]=useState({name:'김영빈',dept:'AI활용 초혁신 추진반',role:'관리자',email:'kim@kogas.or.kr',phone:'02-2100-0000'});
+  const [profile,setProfile]=useState({name:'김영빈',dept:'AI활용 업무혁신 TF',role:'관리자',email:'kim@reb.or.kr',phone:'02-2100-0000'});
   const [showEdit,setShowEdit]=useState(false);const [editForm,setEditForm]=useState({...profile});
-  const [docs]=useState([{name:'안전관리_규정_요약.pdf',size:'2.4MB',date:'2026-02-08'},{name:'장비점검_매뉴얼.docx',size:'5.1MB',date:'2026-02-05'},{name:'AI_활용_사례집.pptx',size:'12MB',date:'2026-01-28'}]);
+  const [docs]=useState([{name:'공시업무_규정_요약.pdf',size:'2.4MB',date:'2026-02-08'},{name:'현장조사_매뉴얼.docx',size:'5.1MB',date:'2026-02-05'},{name:'AI_활용_사례집.pptx',size:'12MB',date:'2026-01-28'}]);
   const [apiKey]=useState('genos-api-xxxx-xxxx-1a2b');const [showKey,setShowKey]=useState(false);
   return (
     <PageShell breadcrumb={['사용자 페이지']} title="내 정보 및 개인 지식영역">
@@ -4845,15 +4845,15 @@ const AccessSecurityPage = () => {
             <table className="w-full text-[12px]">
               <thead><tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left font-bold text-gray-500 py-2 px-3 text-[11px]">부서/그룹</th>
-                {['안전규정','설비 유지보수','인사규정','법률/계약','교육자료','비상대응'].map(ka=><th key={ka} className="text-center font-bold text-gray-500 py-2 px-2 text-[11px] whitespace-nowrap">{ka}</th>)}
+                {['공시업무규정','조사·평가 매뉴얼','인사규정','법률/계약','교육자료','민원대응'].map(ka=><th key={ka} className="text-center font-bold text-gray-500 py-2 px-2 text-[11px] whitespace-nowrap">{ka}</th>)}
               </tr></thead>
               <tbody>{[
-                {dept:'안전관리처',perm:[true,true,false,false,true,true]},
-                {dept:'기술안전팀',perm:[true,true,false,false,true,true]},
+                {dept:'부동산공시처',perm:[true,true,false,false,true,true]},
+                {dept:'토지공시부',perm:[true,true,false,false,true,true]},
                 {dept:'경영지원팀',perm:[false,false,true,false,true,false]},
                 {dept:'법무팀',perm:[false,false,false,true,false,false]},
-                {dept:'교육훈련팀',perm:[false,false,false,false,true,false]},
-                {dept:'시설관리팀',perm:[false,true,false,false,false,true]},
+                {dept:'인재개발부',perm:[false,false,false,false,true,false]},
+                {dept:'주택공시부',perm:[false,true,false,false,false,true]},
               ].map(r=>(
                 <tr key={r.dept} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="py-2.5 px-3 font-bold text-gray-800">{r.dept}</td>
@@ -5047,7 +5047,7 @@ const UsageMonitorPage = () => {
           </div>
           <div className="bg-blue-50 border-2 border-blue-100 rounded-2xl p-4 flex items-start gap-3">
             <Activity className="w-5 h-5 text-blue-500 shrink-0 mt-0.5"/>
-            <div className="text-[13px] text-blue-800 font-medium"><strong>할당량 관리 권장:</strong> AI활용 추진반(3,240건/월)과 기술안전팀(2,880건/월)이 전체 사용량의 45%를 차지합니다. 부서별 할당량 설정을 통해 리소스를 균형 있게 배분하세요.</div>
+            <div className="text-[13px] text-blue-800 font-medium"><strong>할당량 관리 권장:</strong> AI활용 추진반(3,240건/월)과 토지공시부(2,880건/월)이 전체 사용량의 45%를 차지합니다. 부서별 할당량 설정을 통해 리소스를 균형 있게 배분하세요.</div>
           </div>
         </div>
       )}
@@ -5161,7 +5161,7 @@ const ApiPromptPage = () => {
         <div className="flex gap-5">
           <div className="flex-1 space-y-4">
             {prompts.map(p=>(
-              <div key={p.id} onClick={()=>{setSelPrompt(p);setEditContent(`[${p.mode} 시스템 프롬프트 v${p.version}]\n\n당신은 한국가스기술공사의 AI 어시스턴트입니다.\n${p.desc}\n\n답변 시 반드시 출처 문서를 인용하고, 모르는 내용은 "관련 정보가 없습니다"라고 명확히 밝히세요.`);}} className={`bg-white rounded-2xl border-2 p-5 shadow-sm cursor-pointer transition-colors ${selPrompt?.id===p.id?'border-blue-500':'border-gray-100 hover:border-blue-200'}`}>
+              <div key={p.id} onClick={()=>{setSelPrompt(p);setEditContent(`[${p.mode} 시스템 프롬프트 v${p.version}]\n\n당신은 한국부동산원의 AI 어시스턴트입니다.\n${p.desc}\n\n답변 시 반드시 출처 문서를 인용하고, 모르는 내용은 "관련 정보가 없습니다"라고 명확히 밝히세요.`);}} className={`bg-white rounded-2xl border-2 p-5 shadow-sm cursor-pointer transition-colors ${selPrompt?.id===p.id?'border-blue-500':'border-gray-100 hover:border-blue-200'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2"><span className="font-black text-[14px] text-gray-800">{p.name}</span><span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[11px] font-bold">{p.mode}</span><span className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 text-[11px] font-bold">{p.version}</span></div>
                   <div className="flex items-center gap-2"><span className="text-[11px] text-gray-400">{p.tokens} tokens</span><ToggleSwitch on={p.active} onChange={v=>setPrompts(ps=>ps.map(x=>x.id===p.id?{...x,active:v}:x))} size="sm"/></div>
@@ -5241,7 +5241,7 @@ const HrSyncPage = () => {
         <div className="space-y-4">
           <div className="flex justify-end"><button onClick={()=>setToast({message:'그룹 생성 다이얼로그가 열립니다.'})} className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[13px] font-bold hover:bg-indigo-700 shadow-sm"><Plus className="w-4 h-4"/> 그룹 생성</button></div>
           <div className="grid grid-cols-2 gap-4">
-            {[{name:'안전기술본부',type:'부서 그룹',members:27,areas:['안전규정','비상대응','설비 유지보수'],perms:'읽기+쓰기'},{name:'법무지원그룹',type:'기능 그룹',members:6,areas:['법률/계약'],perms:'읽기 전용'},{name:'관리자 그룹',type:'시스템 그룹',members:3,areas:['전체 영역'],perms:'전체 권한'},{name:'외부 협력업체',type:'외부 그룹',members:12,areas:['교육자료 (일부)'],perms:'제한적 읽기'}].map(g=>(
+            {[{name:'공시가격본부',type:'부서 그룹',members:27,areas:['공시업무규정','민원대응','조사·평가 매뉴얼'],perms:'읽기+쓰기'},{name:'법무지원그룹',type:'기능 그룹',members:6,areas:['법률/계약'],perms:'읽기 전용'},{name:'관리자 그룹',type:'시스템 그룹',members:3,areas:['전체 영역'],perms:'전체 권한'},{name:'외부 협력업체',type:'외부 그룹',members:12,areas:['교육자료 (일부)'],perms:'제한적 읽기'}].map(g=>(
               <div key={g.name} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-3"><div><span className="font-black text-[14px] text-gray-800 block">{g.name}</span><span className="text-[11px] text-gray-500">{g.type}</span></div><span className="text-[12px] font-bold text-gray-600">{g.members}명</span></div>
                 <div className="text-[12px] text-gray-600 mb-2"><span className="font-medium text-gray-500">접근 영역: </span>{g.areas.join(', ')}</div>
@@ -5812,7 +5812,6 @@ const App = ({ onSwitchToUser }) => {
     {id:'admin.hrsync', label:'HR 연계·그룹 관리', icon:UserCog},
     {id:'llmops', label:'LLM 운영', icon:Cpu, children:[
       {id:'admin.llm',     label:'LLM 설정'},
-      {id:'admin.filter',  label:'필터링 관리'},
       {id:'admin.trust',   label:'신뢰성 관리'},
       {id:'admin.quality', label:'AI 품질 관리'},
     ]},
@@ -5854,7 +5853,7 @@ const App = ({ onSwitchToUser }) => {
     'app.chat':<ChatAppPage/>,'app.report':<ReportGenPage/>,'app.analysis':<DataAnalysisPage/>,
     'ops.approval':<ApprovalPage/>,'ops.quota':<QuotaPage/>,
     'admin.manage':<AdminPage/>,'admin.users':<UserManagementPage/>,'admin.knowledge':<KnowledgeManagementPage/>,'admin.rag':<RagPipelinePage/>,
-    'admin.llm':<LlmManagePage/>,'admin.filter':<GuardrailFilterPage/>,
+    'admin.llm':<LlmManagePage/>,
     'admin.trust':<TrustManagePage/>,
     'admin.history':<UsageHistoryPage/>,'admin.satisfaction':<SatisfactionMgmtPage/>,
     'admin.stats':<UsageStatsPage/>,'admin.logs':<AccessLogPage/>,'admin.quality':<QualityManagementPage/>,
@@ -5896,7 +5895,7 @@ const App = ({ onSwitchToUser }) => {
         <div className="p-3 border-t">
           <div className="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-xs font-bold shadow-sm">김</div>
-            <div className="flex-1 min-w-0"><div className="text-sm font-bold truncate">김영빈·관리자</div><div className="text-xs text-gray-400 truncate">한국가스기술공사</div></div>
+            <div className="flex-1 min-w-0"><div className="text-sm font-bold truncate">김영빈·관리자</div><div className="text-xs text-gray-400 truncate">한국부동산원</div></div>
           </div>
         </div>
       </div>

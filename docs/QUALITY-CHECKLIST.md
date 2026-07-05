@@ -1,0 +1,85 @@
+# 품질 검수 체크리스트
+
+> **완료 보고 전 실행 필수.** "코드를 썼다"는 완료가 아니다 — 완료 = 빌드 통과 + 실행 검증 + 증거.
+> 각 절의 명령/스크립트는 복사해서 그대로 실행 가능하도록 유지한다 (코드가 바뀌면 이 문서도 갱신).
+
+## A. 모든 변경 공통
+
+- [ ] `cd /c/한국부동산원/genos-app && npx vite build` — "✓ N modules transformed" 확인 (기준 2,381±)
+- [ ] 프리뷰 서버로 변경 화면 진입, **DOM 텍스트로 확인** (스크린샷은 보조 증거)
+- [ ] 브라우저 콘솔 에러 0건
+- [ ] 의도치 않은 파일 변경 없는지 `git status --short` 확인 후 커밋(한국어, 무엇을·왜)
+- [ ] push 후 `gh run watch <id> --exit-status` 성공 + 라이브 URL 200
+
+## B. 도메인 전환 검수 (팩 추가·수정 시 필수)
+
+### B-1. 정적 검사
+
+- [ ] `src/domains/index.js`에 import + DOMAINS + DOMAIN_LIST 3곳 등록됨
+- [ ] 필수 12필드 전부 존재 (id/orgName/orgShort/platformTitle/brandColor/welcome/statusBadge/footerNote/userFeatures/user/workspaces/llmModels)
+- [ ] llmModels: [0]=Claude Fable 5(보안 게이트웨이) / 구축형+running ≥1 / blocked 클라우드 1
+- [ ] agentCatalog 키 10개가 고정 ID 목록과 일치 (오타는 조용히 무시됨)
+
+### B-2. 금칙어 DOM 스캔 (핵심 — 브라우저 프리뷰 콘솔/preview_eval에서 실행)
+
+새 도메인으로 전환 후 **일반→에이전트→보안 3개 탭 각각**에서 실행한다.
+`FORBIDDEN`은 "다른 도메인들의 고유 어휘"로 구성한다. **새 팩을 추가하면 그 팩의 어휘 목록도 여기에 추가하고 문서를 갱신할 것.**
+어휘 선정 기준(팩당 6개 이상): 인물명 / 핵심 부서명 / 문서번호 접두(HBP- 등) / 조직 약칭 / 도메인 전문용어 2개 이상.
+
+```js
+(async () => {
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  // 검사할 도메인이 아닌 나머지 도메인들의 고유 어휘
+  const FORBIDDEN = {
+    reb:          ['공시지가','표준지','부동산','김민준','KREA','부동산공시처','이의신청'],
+    manufacturing:['절삭유','프레스','MES','박태윤','HBP','생산기술팀','작업표준','예지보전'],
+    civic:        ['여권','조례','민원여권과','이서연','HSC','한성시','옥외광고','주무관'],
+  };
+  const my = localStorage.getItem('genos.activeDomain') || 'reb';
+  const bad = Object.entries(FORBIDDEN).filter(([k]) => k !== my).flatMap(([,v]) => v);
+  const out = {};
+  for (const tab of ['일반','에이전트','보안']) {
+    [...document.querySelectorAll('button')].find(b => b.textContent.trim() === tab)?.click();
+    await sleep(800);
+    const t = document.body.innerText;
+    out[tab] = bad.filter(k => t.includes(k));   // 전부 [] 이어야 통과
+  }
+  return out;
+})()
+```
+
+- [ ] 3개 탭 모두 `[]` (잔재 0건)
+- [ ] 잔재 발견 시: 코어 하드코딩이다 → 팩 필드+fallback으로 일반화 후 재검사 (팩에 땜질 금지)
+
+### B-3. 동작 검사 (새 도메인에서)
+
+- [ ] 포털: 스위처에 새 도메인 표시, 클릭 시 타이틀·브랜드색·배지·기능 4종 변경, 탭 제목 변경
+- [ ] 새로고침 후 도메인 유지 (localStorage)
+- [ ] 사용자 포털: 사용자명·부서, 워크스페이스 3종, 문서함 3건, 최근 대화 5건이 팩 콘텐츠
+- [ ] 제안 질의 클릭 → **~2초 후 도메인 답변** 출력 (기본 fallback 응답이면 keywords 불일치)
+- [ ] LLM 드롭다운: Claude Fable 5 기본 선택 + blocked 모델 차단 표시
+- [ ] 보안 탭 진입 → "로컬 LLM(구축형 모델명)으로 자동 전환" 토스트
+- [ ] 에이전트 탭: 카드 10개가 팩 명칭, 우측 활동 피드가 팩 콘텐츠
+
+### B-4. 회귀 검사 (기존 도메인 파손 여부)
+
+- [ ] REB로 전환 → 김민준 과장 / AX센터 TF / 표준지공시지가_조사지침.pdf / "공시지가 조사 기준" 클릭 시 "1월 1일" 포함 답변
+- [ ] 나머지 기존 도메인 1개 이상 스팟 체크 (B-2 스캔 포함)
+
+## C. 문서·체계 변경 검수 (이 문서들 자체를 고칠 때)
+
+- [ ] 문서의 모든 코드 조각·명령을 실제 실행해 통과 확인 (죽은 예제 금지)
+- [ ] 문서가 참조하는 파일 경로·필드명이 현재 코드와 일치 (`grep -ohE 'domain\??\.[a-zA-Z]+' src/RootApp.jsx src/UserApp.jsx src/App.jsx src/user/components/agents/AgentHub.jsx | sort -u`로 대조)
+- [ ] 필드명뿐 아니라 **타입·구조**도 가이드 §2와 일치 확인 (예: workspaces[].icon은 lucide 컴포넌트, sampleAnswers.answer는 {content, citations, steps} — 실제 팩 1개를 열어 스키마와 눈으로 대조)
+- [ ] 신선한 시각 검수: 해당 작업을 안 한 별도 에이전트/세션에게 문서만 주고 "이대로 실행 가능한가, 코드와 어긋난 곳은 없는가"를 검토시킬 것
+- [ ] CLAUDE.md "현재 상태" 갱신 + 메모리(MEMORY.md) 동기화
+
+## D. 자기검토 7문 (완료 보고 직전, 답을 적어볼 것)
+
+1. 요청 문장의 모든 명사가 결과물에 반영됐는가?
+2. 받는 사람이 처음 여는 순간 무엇이 보이는가? (그 화면을 실제로 열어봤는가)
+3. 이번 수정이 깨뜨릴 수 있는 연결부는? (도메인 전환·보안탭 전환·인용 클릭·배포 경로)
+4. 회의적 검토자가 지적할 1가지와 그에 대한 답은?
+5. 제시한 증거가 실행 결과인가, 추정인가?
+6. 롤백·삭제의 잔재(미사용 코드·임시 스크립트·옛 캐시)는 없는가?
+7. 다음 세션이 이어받을 기록(CLAUDE.md·메모리)을 남겼는가?

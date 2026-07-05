@@ -2,7 +2,8 @@
 
 **한국부동산원 생성형 AI 플랫폼 데모 v2.0** — 사용자 포털 + 관리자 시스템 + 10개 AI 에이전트
 
-> 🌐 **Live demo (v2.0)**: https://hyegeungim3-git.github.io/reb-ai-platform/
+> 🌐 **Live demo (개발 진행 중)**: https://hyegeungim3-git.github.io/reb-ai-platform/
+> 📌 **v2.0 스냅샷 보존판**: https://hyegeungim3-git.github.io/reb-ai-platform-v2/
 > 🔒 **v1.0 안정 버전**: https://hyegeungim3-git.github.io/genos-app/
 
 ---

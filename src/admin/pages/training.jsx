@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Search, Play } from 'lucide-react';
-import { MOCK_EMBEDDING_JOBS } from '../mocks.js';
+import { MOCK_EMBEDDING_JOBS, ADMIN_PERSONA } from '../mocks.js';
 import { StatusBadge, Modal, PageShell, useToast, ConfirmDialog, ToggleSwitch } from '../common.jsx';
 
 export const LlmTraining = () => {
@@ -155,7 +155,7 @@ export const EmbeddingPage = () => {
             <div><label className="block text-sm font-medium mb-1">유형</label><select value={form.plan} onChange={e=>setForm({...form,plan:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option>Fine-Tune</option><option>Pre-Train</option><option>Distillation</option></select></div>
             <div><label className="block text-sm font-medium mb-1">GPU</label><select value={form.gpu} onChange={e=>setForm({...form,gpu:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option>A100 x1</option><option>A100 x2</option><option>A100 x4</option></select></div>
           </div>
-          <button onClick={()=>{if(!form.name)return;setJobs(p=>[{id:p.length+1,name:form.name,plan:form.plan,creator:'김영빈',dept:'AI혁신TF',date:'2026-02-11',gpu:form.gpu,tbStatus:'정지',status:'대기 중'},...p]);setShowCreate(false);setForm({name:'',plan:'Fine-Tune',gpu:'A100 x1'});toast('임베딩 학습이 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
+          <button onClick={()=>{if(!form.name)return;setJobs(p=>[{id:p.length+1,name:form.name,plan:form.plan,creator:ADMIN_PERSONA.name,dept:ADMIN_PERSONA.dept,date:'2026-02-11',gpu:form.gpu,tbStatus:'정지',status:'대기 중'},...p]);setShowCreate(false);setForm({name:'',plan:'Fine-Tune',gpu:'A100 x1'});toast('임베딩 학습이 생성되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">생성</button>
         </div>
       </Modal>
       <Modal isOpen={!!detail} onClose={()=>setDetail(null)} title={detail?.name} size="lg">

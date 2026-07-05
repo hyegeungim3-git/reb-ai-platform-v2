@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Database, Cpu, Plus, Search, Shield, Save, Trash2, Eye, Check, XCircle, Filter, Power, RotateCcw, Bell, Gauge, TestTube2, TrendingUp, ThumbsUp, ThumbsDown, Edit3, AlertTriangle } from 'lucide-react';
-import { MOCK_GUARDRAIL_LOGS, MOCK_LLM_ADMIN_MODELS, MOCK_FILTER_RULES, MOCK_RERANK_PIPELINES, MOCK_RAG_GLOBAL, MOCK_RAG_AREAS, MOCK_OUTPUT_GUARDRAILS, MOCK_CONFIDENCE_CONFIG, MOCK_QUALITY_REVIEWS } from '../mocks.js';
+import { MOCK_GUARDRAIL_LOGS, MOCK_LLM_ADMIN_MODELS, MOCK_FILTER_RULES, MOCK_RERANK_PIPELINES, MOCK_RAG_GLOBAL, MOCK_RAG_AREAS, MOCK_OUTPUT_GUARDRAILS, MOCK_CONFIDENCE_CONFIG, MOCK_QUALITY_REVIEWS, ADMIN_PERSONA } from '../mocks.js';
 import { StatusBadge, Modal, PageShell, useToast, ConfirmDialog, ToggleSwitch } from '../common.jsx';
 
 export const LlmManagePage = () => {
@@ -22,7 +22,7 @@ export const LlmManagePage = () => {
     if(!sel)return;
     const parts=sel.version.split('.');const newMinor=parseInt(parts[2]||0)+1;
     const newVer=`${parts[0]}.${parts[1]}.${newMinor}`;
-    const newEntry={ver:newVer,date:new Date().toISOString().slice(0,16).replace('T',' '),author:'김영빈',note:editNote||'프롬프트 수정',content:editPrompt};
+    const newEntry={ver:newVer,date:new Date().toISOString().slice(0,16).replace('T',' '),author:ADMIN_PERSONA.name,note:editNote||'프롬프트 수정',content:editPrompt};
     setModels(prev=>prev.map(m=>m.id===sel.id?{...m,systemPrompt:editPrompt,version:newVer,promptHistory:[newEntry,...m.promptHistory]}:m));
     toast(`시스템 프롬프트 저장됨 (${newVer})`);setEditNote('');
   };

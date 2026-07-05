@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, X, Trash2, MessageSquare, Edit3 } from 'lucide-react';
-import { MOCK_NOTICES_MGMT, MOCK_QNA_MGMT, MOCK_SURVEYS_MGMT, MOCK_APIS, MOCK_API_APPROVALS, MOCK_PROMPTS_MGMT, MOCK_ANNOUNCEMENTS } from '../mocks.js';
+import { MOCK_NOTICES_MGMT, MOCK_QNA_MGMT, MOCK_SURVEYS_MGMT, MOCK_APIS, MOCK_API_APPROVALS, MOCK_PROMPTS_MGMT, MOCK_ANNOUNCEMENTS, ADMIN_PERSONA, ADMIN_PROMPT_PREVIEW_INTRO } from '../mocks.js';
 import { StatusBadge, Modal, PageShell, useToast, ToggleSwitch } from '../common.jsx';
 
 export const AnnouncementPage = () => {
@@ -42,7 +42,7 @@ export const AnnouncementPage = () => {
             <div><label className="block text-sm font-medium mb-1">종료일</label><input type="date" value={form.endDate} onChange={e=>setForm({...form,endDate:e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
           </div>
           <div><label className="block text-sm font-medium mb-1">내용</label><textarea value={form.content} onChange={e=>setForm({...form,content:e.target.value})} rows={5} placeholder="공지 내용을 입력하세요..." className="w-full border rounded-lg px-3 py-2 text-sm"/></div>
-          <button onClick={()=>{if(!form.title)return;setAnnouncements(p=>[{id:p.length+1,title:form.title,category:form.category,startDate:form.startDate,endDate:form.endDate,author:'김영빈',views:0,status:'게시 중',content:form.content},...p]);setShowCreate(false);setForm({title:'',category:'공지',content:'',startDate:'2026-02-11',endDate:'2026-03-11'});toast('공지가 등록되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">등록</button>
+          <button onClick={()=>{if(!form.title)return;setAnnouncements(p=>[{id:p.length+1,title:form.title,category:form.category,startDate:form.startDate,endDate:form.endDate,author:ADMIN_PERSONA.name,views:0,status:'게시 중',content:form.content},...p]);setShowCreate(false);setForm({title:'',category:'공지',content:'',startDate:'2026-02-11',endDate:'2026-03-11'});toast('공지가 등록되었습니다');}} className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium text-sm">등록</button>
         </div>
       </Modal>
       <Modal isOpen={!!detail} onClose={()=>setDetail(null)} title={detail?.title} size="lg">
@@ -105,7 +105,7 @@ export const ContentMgmtPage = () => {
               </select>
               <input value={newNotice.title} onChange={e=>setNewNotice(p=>({...p,title:e.target.value}))} placeholder="제목" className="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-[13px] mb-3 focus:outline-none focus:border-blue-400"/>
               <textarea value={newNotice.content} onChange={e=>setNewNotice(p=>({...p,content:e.target.value}))} placeholder="내용" rows={4} className="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-[13px] mb-4 resize-none focus:outline-none focus:border-blue-400"/>
-              <div className="flex gap-3"><button onClick={()=>setShowNoticeForm(false)} className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-bold text-[13px]">취소</button><button onClick={()=>{if(!newNotice.title){setToast({message:'제목을 입력하세요.'});return;}setNotices(ns=>[{id:`N-${Date.now()}`,title:newNotice.title,type:newNotice.type,author:'김영빈',date:new Date().toISOString().slice(0,10),views:0,pinned:false,active:true},...ns]);setShowNoticeForm(false);setNewNotice({title:'',type:'공지',content:''});setToast({message:'공지가 등록되었습니다.'});}} className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-black text-[13px] hover:bg-blue-700">등록</button></div>
+              <div className="flex gap-3"><button onClick={()=>setShowNoticeForm(false)} className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-bold text-[13px]">취소</button><button onClick={()=>{if(!newNotice.title){setToast({message:'제목을 입력하세요.'});return;}setNotices(ns=>[{id:`N-${Date.now()}`,title:newNotice.title,type:newNotice.type,author:ADMIN_PERSONA.name,date:new Date().toISOString().slice(0,10),views:0,pinned:false,active:true},...ns]);setShowNoticeForm(false);setNewNotice({title:'',type:'공지',content:''});setToast({message:'공지가 등록되었습니다.'});}} className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-black text-[13px] hover:bg-blue-700">등록</button></div>
             </div></div>
           )}
         </div>
@@ -236,7 +236,7 @@ export const ApiPromptPage = () => {
         <div className="flex gap-5">
           <div className="flex-1 space-y-4">
             {prompts.map(p=>(
-              <div key={p.id} onClick={()=>{setSelPrompt(p);setEditContent(`[${p.mode} 시스템 프롬프트 v${p.version}]\n\n당신은 한국부동산원의 AI 어시스턴트입니다.\n${p.desc}\n\n답변 시 반드시 출처 문서를 인용하고, 모르는 내용은 "관련 정보가 없습니다"라고 명확히 밝히세요.`);}} className={`bg-white rounded-2xl border-2 p-5 shadow-sm cursor-pointer transition-colors ${selPrompt?.id===p.id?'border-blue-500':'border-gray-100 hover:border-blue-200'}`}>
+              <div key={p.id} onClick={()=>{setSelPrompt(p);setEditContent(`[${p.mode} 시스템 프롬프트 v${p.version}]\n\n${ADMIN_PROMPT_PREVIEW_INTRO}\n${p.desc}\n\n답변 시 반드시 출처 문서를 인용하고, 모르는 내용은 "관련 정보가 없습니다"라고 명확히 밝히세요.`);}} className={`bg-white rounded-2xl border-2 p-5 shadow-sm cursor-pointer transition-colors ${selPrompt?.id===p.id?'border-blue-500':'border-gray-100 hover:border-blue-200'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2"><span className="font-black text-[14px] text-gray-800">{p.name}</span><span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[11px] font-bold">{p.mode}</span><span className="px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 text-[11px] font-bold">{p.version}</span></div>
                   <div className="flex items-center gap-2"><span className="text-[11px] text-gray-400">{p.tokens} tokens</span><ToggleSwitch on={p.active} onChange={v=>setPrompts(ps=>ps.map(x=>x.id===p.id?{...x,active:v}:x))} size="sm"/></div>

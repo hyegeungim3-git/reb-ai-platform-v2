@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Scale, ShieldAlert, Stamp, ClipboardCheck, CheckCircle2, XCircle, Clock, Eye, AlertTriangle, FileText, Landmark } from 'lucide-react';
-import { MOCK_AIACT_SYSTEMS, MOCK_AIACT_LABELING, MOCK_AIACT_ASSESSMENTS } from '../mocks.js';
+import { MOCK_AIACT_SYSTEMS, MOCK_AIACT_LABELING, MOCK_AIACT_ASSESSMENTS, AIACT_STD_PHRASE } from '../mocks.js';
 import { Modal, PageShell, useToast, ToggleSwitch } from '../common.jsx';
 
 const STATUS_MAP = {
@@ -187,7 +187,7 @@ export const AiActCompliancePage = () => {
             <div className="bg-white rounded-xl border p-5">
               <div className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5"><FileText size={13}/>텍스트·문서 고지문 (표준 문구)</div>
               <div className="bg-slate-50 rounded-lg p-4 text-sm text-slate-600 border border-dashed">
-                ⓘ 본 내용은 한국부동산원 생성형 AI 플랫폼(GenOS)을 활용하여 작성되었습니다. 중요한 의사결정에는 담당자의 검토·확인이 필요합니다.
+                ⓘ {AIACT_STD_PHRASE}
               </div>
             </div>
             <div className="bg-white rounded-xl border p-5">

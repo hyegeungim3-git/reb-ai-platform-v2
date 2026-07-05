@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Database, Settings, Server, Plus, FileText, CheckCircle, AlertCircle, ChevronRight, ChevronDown, Bot, RefreshCw, Shield, Users, Trash2, UploadCloud, CheckSquare, Globe, Lock, Download, Eye, RotateCcw, Wrench, Sparkles, History, SlidersHorizontal, TrendingUp, Edit3, FolderTree, AlertTriangle, Folder, ScanLine, FileCode2, Loader2, LayoutList } from 'lucide-react';
-import { MOCK_KB_FOLDERS, MOCK_KB_DOCS, MOCK_BATCH_JOBS, MOCK_SYNC_LOGS, MOCK_DATA_SOURCES_INT, MOCK_DATA_SOURCES_EXT, MOCK_DOC_PIPELINE, MOCK_CHUNK_QUALITY, MOCK_CHUNK_PREVIEW, MOCK_EMBED_STATUS, MOCK_REPROCESS_QUEUE, UPSTAGE_OCR_MOCK, UPSTAGE_PARSE_MOCK } from '../mocks.js';
+import { MOCK_KB_FOLDERS, MOCK_KB_DOCS, MOCK_BATCH_JOBS, MOCK_SYNC_LOGS, MOCK_DATA_SOURCES_INT, MOCK_DATA_SOURCES_EXT, MOCK_DOC_PIPELINE, MOCK_CHUNK_QUALITY, MOCK_CHUNK_PREVIEW, MOCK_EMBED_STATUS, MOCK_REPROCESS_QUEUE, UPSTAGE_OCR_MOCK, UPSTAGE_PARSE_MOCK, ADMIN_PERSONA, ADMIN_AGENT_FOLDER_LINKS } from '../mocks.js';
 import { Modal, PageShell, useToast, ToggleSwitch } from '../common.jsx';
+
+// 에이전트-폴더 연동 카드의 아이콘·색 (도메인 중립 시각 메타 — 콘텐츠는 ADMIN_AGENT_FOLDER_LINKS)
+const AGENT_LINK_META=[{icon:CheckSquare,color:'bg-indigo-50 text-indigo-700'},{icon:Wrench,color:'bg-blue-50 text-blue-700'},{icon:Users,color:'bg-green-50 text-green-700'}];
 
 export const KnowledgeManagementPage = () => {
   const [kbTab,setKbTab]=useState('folders');
@@ -57,7 +60,7 @@ export const KnowledgeManagementPage = () => {
   const PCLR={all:'bg-green-100 text-green-700',dept:'bg-blue-100 text-blue-700',specific:'bg-yellow-100 text-yellow-700',admin:'bg-red-100 text-red-700'};
   const SCLR={완료:'bg-green-100 text-green-700',처리중:'bg-yellow-100 text-yellow-700',오류:'bg-red-100 text-red-700'};
   const scan=()=>{setUpFile(p=>({...p,scanning:true,scanned:false}));setTimeout(()=>setUpFile(p=>({...p,scanning:false,scanned:true,pii:Math.random()>0.5})),1800);};
-  const doUpload=()=>{const nd={id:'d-'+Date.now(),name:upFile.name||'파일.pdf',size:'2.1MB',pii:upFile.pii,status:'처리중',chunks:0,uploaded:new Date().toISOString().slice(0,10),uploader:'김영빈'};setDocs(p=>({...p,[sel.id]:[...(p[sel.id]||[]),nd]}));setShowUp(false);setUpFile({name:'',pii:false,scanning:false,scanned:false});showToast('업로드 완료. 벡터 색인 중...','info');};
+  const doUpload=()=>{const nd={id:'d-'+Date.now(),name:upFile.name||'파일.pdf',size:'2.1MB',pii:upFile.pii,status:'처리중',chunks:0,uploaded:new Date().toISOString().slice(0,10),uploader:ADMIN_PERSONA.name};setDocs(p=>({...p,[sel.id]:[...(p[sel.id]||[]),nd]}));setShowUp(false);setUpFile({name:'',pii:false,scanning:false,scanned:false});showToast('업로드 완료. 벡터 색인 중...','info');};
   const delDoc=id=>{setDocs(p=>({...p,[sel.id]:p[sel.id].filter(d=>d.id!==id)}));showToast('삭제 및 벡터 DB 반영됨','success');};
   const toggleBatch=id=>setBatches(p=>p.map(b=>b.id===id?{...b,enabled:!b.enabled}:b));
   const FNode=({f,depth=0})=>{
@@ -169,10 +172,7 @@ export const KnowledgeManagementPage = () => {
     </div>}
     {/* Tab 3: 에이전트 연동 */}
     {kbTab==='agent'&&<div className="grid grid-cols-3 gap-4">
-      {[{agent:'사규 기반 문서 사전 검토',folders:['공시업무규정','법률/계약'],icon:CheckSquare,color:'bg-indigo-50 text-indigo-700'},
-        {agent:'가격 검증 어시스턴트',folders:['조사·평가 매뉴얼','공시업무규정'],icon:Wrench,color:'bg-blue-50 text-blue-700'},
-        {agent:'HR 질의응답 봇',folders:['인사규정','교육자료'],icon:Users,color:'bg-green-50 text-green-700'},
-      ].map((ag,i)=><div key={i} className="bg-white rounded-xl border shadow-sm p-5">
+      {ADMIN_AGENT_FOLDER_LINKS.map((a,i)=>({...a,...AGENT_LINK_META[i%AGENT_LINK_META.length]})).map((ag,i)=><div key={i} className="bg-white rounded-xl border shadow-sm p-5">
         <div className={`w-10 h-10 rounded-xl ${ag.color.split(' ')[0]} flex items-center justify-center mb-3`}><ag.icon size={20} className={ag.color.split(' ')[1]}/></div>
         <h3 className="font-bold text-sm mb-1">{ag.agent}</h3>
         <p className="text-xs text-gray-500 mb-3">연결된 지식 폴더</p>

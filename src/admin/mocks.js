@@ -1,5 +1,8 @@
 // 관리자 mock 데이터 (App.jsx에서 분리)
-export const MOCK_GPU_NODES = [
+// 관리자 데모 페르소나 — 사이드바·작성자·프로필 등 전역 사용 (팩 adminContent.ADMIN_PERSONA로 교체)
+export let ADMIN_PERSONA = { name: '김영빈', role: '관리자', dept: 'AI활용 업무혁신 TF', email: 'kim@reb.or.kr' };
+
+export let MOCK_GPU_NODES = [
   { id:'node-01',name:'genos-ai-01',model:'NVIDIA H200 NVL',count:4,memory:'141GB',
     gpus:[{id:0,util:82,memUtil:65,temp:72,power:650},{id:1,util:78,memUtil:62,temp:70,power:640},{id:2,util:95,memUtil:88,temp:78,power:680},{id:3,util:45,memUtil:30,temp:55,power:320}]},
   { id:'node-02',name:'genos-ai-02',model:'NVIDIA H200 NVL',count:4,memory:'141GB',
@@ -8,7 +11,7 @@ export const MOCK_GPU_NODES = [
     gpus:[{id:0,util:32,memUtil:45,temp:58,power:210},{id:1,util:28,memUtil:40,temp:56,power:190},{id:2,util:15,memUtil:20,temp:45,power:120},{id:3,util:10,memUtil:15,temp:42,power:110}]},
 ];
 
-export const MOCK_EMBEDDING_JOBS = [
+export let MOCK_EMBEDDING_JOBS = [
   {id:950,name:'공시지가 조사지침 임베딩 v3',plan:'KoE5-base',creator:'김세은',dept:'AI혁신TF',date:'2026-02-10 14:51:32',gpu:'A100 x1',tbStatus:'실행 중',status:'학습 완료'},
   {id:910,name:'감정평가 선례 임베딩 v2',plan:'KoE5-base',creator:'이준호',dept:'토지공시부',date:'2026-01-28 22:35:46',gpu:'A100 x1',tbStatus:'실행 중',status:'학습 완료'},
   {id:895,name:'내규·지침 통합 임베딩 v4',plan:'KoE5-large',creator:'박지현',dept:'경영지원팀',date:'2026-01-19 19:59:20',gpu:'A100 x2',tbStatus:'중지됨',status:'취소됨'},
@@ -20,7 +23,7 @@ export const MOCK_EMBEDDING_JOBS = [
   {id:838,name:'보상평가서 임베딩 v1',plan:'KoE5-base',creator:'정다은',dept:'보상지원부',date:'2025-12-18 20:46:38',gpu:'A100 x1',tbStatus:'중지됨',status:'오류 발생'},
 ];
 
-export const MOCK_MCP_TOOLS = [
+export let MOCK_MCP_TOOLS = [
   {id:162,name:'Search',desc:'사내 지식베이스 시맨틱 검색',creator:'김세은',dept:'AI혁신TF',date:'2026-01-29 22:06:28'},
   {id:159,name:'Web Search',desc:'검색 분야 설정 + 검색 분량 설정 추가',creator:'이준호',dept:'토지공시부',date:'2026-01-23 10:59:32'},
   {id:158,name:'Web Crawler',desc:'국토교통부·법제처 고시 수집',creator:'최민수',dept:'법무팀',date:'2026-01-21 18:36:52'},
@@ -33,7 +36,7 @@ export const MOCK_MCP_TOOLS = [
   {id:145,name:'Normality_Test',desc:'가격 분포 정규성 검정',creator:'이준호',dept:'부동산통계처',date:'2025-12-12 14:46:54'},
 ];
 
-export const MOCK_MODELS = [
+export let MOCK_MODELS = [
   {id:'gpt-oss',name:'GPT-OSS-120B',param:'120B',context:'128K',quant:'None (FP16)',status:'Running',loaded:'Node-01'},
   {id:'llama-3',name:'Llama-3-Kor-Instruct',param:'70B',context:'8K',quant:'AWQ-4bit',status:'Running',loaded:'Node-01'},
   {id:'exaone',name:'EXAONE-3.0-7.8B',param:'7.8B',context:'32K',quant:'FP16',status:'Running',loaded:'Node-02'},
@@ -41,7 +44,7 @@ export const MOCK_MODELS = [
   {id:'solar',name:'Solar-10.7B-v1.0',param:'10.7B',context:'4K',quant:'GGUF-Q5',status:'Running',loaded:'Node-02'},
 ];
 
-export const MOCK_PROMPTS = [
+export let MOCK_PROMPTS = [
   {id:385,name:'[전용] 공시지가 상담 RAG',desc:'표준지·개별공시지가 질의 응답용 RAG 프롬프트',dept:'부동산공시처',date:'2026-01-29 10:41:12'},
   {id:384,name:'이의신청 답변 초안 프롬프트',desc:'이의신청 회신문 표준 서식 초안 생성',dept:'토지공시부',date:'2026-01-27 10:54:11'},
   {id:383,name:'[전용] 나만의 RAG',desc:'개인 지식영역 기반 전용 채팅',dept:'AI혁신TF',date:'2026-01-22 14:10:12'},
@@ -51,7 +54,7 @@ export const MOCK_PROMPTS = [
   {id:378,name:'[전용] 보고서 자동 생성',desc:'전용 채팅 기능(주간 실적 보고 서식)',dept:'부동산통계처',date:'2026-01-13 18:11:50'},
 ];
 
-export const MOCK_CHAT_APPS = [
+export let MOCK_CHAT_APPS = [
   {id:1663,name:'공시지가 상담 챗봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'김세은',dept:'부동산공시처',addr:'/apps/notice-chat'},
   {id:1662,name:'이의신청 안내 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'이준호',dept:'토지공시부',addr:'/apps/appeal-guide'},
   {id:1661,name:'내규 Q&A 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'박지현',dept:'경영지원팀',addr:'/apps/reg-qa'},
@@ -64,13 +67,13 @@ export const MOCK_CHAT_APPS = [
   {id:1640,name:'현장조사 지원 챗봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'이준호',dept:'토지공시부',addr:'/apps/field-survey'},
 ];
 
-export const MOCK_NODES = [
+export let MOCK_NODES = [
   {name:'genos01',instance:'192.123.12.123:1234',os:'Linux',version:'X (Core)',release:'3.10.0-1234.12.1.el1.x86_64',cpu:0.28,mem:4.6},
   {name:'genos02',instance:'192.123.12.123:1234',os:'Linux',version:'X (Core)',release:'3.10.0-1234.12.1.el1.x86_64',cpu:13.0,mem:43.2},
   {name:'genos03',instance:'192.123.12.123:1234',os:'Linux',version:'X (Core)',release:'3.10.0-1234.12.1.el1.x86_64',cpu:4.69,mem:18.4},
 ];
 
-export const MOCK_GUARDRAIL_LOGS = [
+export let MOCK_GUARDRAIL_LOGS = [
   {id:1,time:'2026-02-10 11:23:45',user:'김직원',query:'회사 기밀정보 알려줘',rule:'기밀정보 요청',action:'차단'},
   {id:2,time:'2026-02-10 10:15:22',user:'이대리',query:'경쟁사 비밀 분석해줘',rule:'경쟁정보 수집',action:'차단'},
   {id:3,time:'2026-02-09 16:42:11',user:'박과장',query:'직원 급여 전체 목록',rule:'개인정보 접근',action:'차단'},
@@ -79,7 +82,7 @@ export const MOCK_GUARDRAIL_LOGS = [
 ];
 
 // ==================== LLM ADMIN MOCK DATA ====================
-export const MOCK_LLM_ADMIN_MODELS = [
+export let MOCK_LLM_ADMIN_MODELS = [
   {id:'m-001',name:'GPT-OSS-120B',baseModel:'Meta-Llama-3-405B-Instruct',version:'v2.4.1',
    desc:'한국부동산원 특화 파인튜닝 대용량 LLM — 규정 검색, 문서 요약, 에이전트 업무 자동화 최적화',
    status:'Active',temperature:0.3,maxTokens:4096,topP:0.9,contextWindow:'128K',
@@ -114,7 +117,7 @@ export const MOCK_LLM_ADMIN_MODELS = [
    systemPrompt:'',promptHistory:[]},
 ];
 
-export const MOCK_FILTER_RULES = [
+export let MOCK_FILTER_RULES = [
   {id:1,n:'기밀정보 요청',p:'기밀, 보안등급, 내부전용, 사내비밀',category:'기밀',severity:'danger',a:'차단',active:true,hitCount:23},
   {id:2,n:'개인정보 접근',p:'급여, 주민번호, 연봉, 개인식별',category:'개인정보',severity:'danger',a:'차단',active:true,hitCount:41},
   {id:3,n:'경쟁정보 수집',p:'경쟁사, 입찰가, 내부가격, 원가',category:'기밀',severity:'warning',a:'차단',active:true,hitCount:8},
@@ -125,7 +128,7 @@ export const MOCK_FILTER_RULES = [
 ];
 
 // ==================== 신뢰성 관리 MOCK DATA ====================
-export const MOCK_RERANK_PIPELINES = [
+export let MOCK_RERANK_PIPELINES = [
   {id:'rp-001',agent:'공시업무규정 검색 에이전트',model:'BGE-Reranker-v2',topK:5,threshold:0.70,enabled:true,improvement:18.4},
   {id:'rp-002',agent:'가격 검증 어시스턴트',model:'Cross-Encoder-KoE5',topK:3,threshold:0.75,enabled:true,improvement:12.1},
   {id:'rp-003',agent:'HR 질의응답 봇',model:'BGE-Reranker-v2',topK:5,threshold:0.65,enabled:true,improvement:9.8},
@@ -134,14 +137,14 @@ export const MOCK_RERANK_PIPELINES = [
   {id:'rp-006',agent:'직무 교육 튜터',model:'Cross-Encoder-KoE5',topK:4,threshold:0.68,enabled:true,improvement:7.5},
 ];
 
-export const MOCK_RAG_GLOBAL = {
+export let MOCK_RAG_GLOBAL = {
   chunkSize:512,chunkOverlap:64,topKRetrieve:10,topKAfterRerank:5,
   similarityThreshold:0.65,embeddingModel:'KoSimCSE-roberta-multitask',
   hybridSearch:true,bm25Weight:30,semanticWeight:70,
   citationRequired:true,minCitationSimilarity:75,
 };
 
-export const MOCK_RAG_AREAS = [
+export let MOCK_RAG_AREAS = [
   {id:'KA-001',area:'공시업무규정',topK:8,threshold:0.70,chunkSize:256,override:true,updated:'2026-02-12'},
   {id:'KA-002',area:'조사·평가 매뉴얼',topK:10,threshold:0.65,chunkSize:512,override:true,updated:'2026-02-10'},
   {id:'KA-003',area:'인사규정',topK:5,threshold:0.60,chunkSize:512,override:false,updated:'2026-02-08'},
@@ -150,7 +153,7 @@ export const MOCK_RAG_AREAS = [
   {id:'KA-006',area:'민원대응',topK:5,threshold:0.80,chunkSize:256,override:true,updated:'2026-01-28'},
 ];
 
-export const MOCK_OUTPUT_GUARDRAILS = [
+export let MOCK_OUTPUT_GUARDRAILS = [
   {id:'og-001',name:'인용 출처 필수',desc:'RAG 응답 시 반드시 참조 문서 출처를 포함해야 합니다.',category:'인용',action:'재생성 요청',enabled:true,hitCount:14},
   {id:'og-002',name:'숫자·날짜 팩트 검증',desc:'규정 조항 번호·날짜가 참조 문서와 일치하는지 검증합니다.',category:'팩트체크',action:'경고 표시',enabled:true,hitCount:8},
   {id:'og-003',name:'불확실 표현 감지',desc:'"아마도","추정","잘 모르겠" 등 불확실 표현 자동 감지합니다.',category:'팩트체크',action:'신뢰도 감점',enabled:true,hitCount:31},
@@ -160,7 +163,7 @@ export const MOCK_OUTPUT_GUARDRAILS = [
   {id:'og-007',name:'반복 루프 감지',desc:'동일한 문장이 3회 이상 반복될 경우 응답을 중단합니다.',category:'품질',action:'응답 중단',enabled:true,hitCount:3},
 ];
 
-export const MOCK_CONFIDENCE_CONFIG = {
+export let MOCK_CONFIDENCE_CONFIG = {
   autoAnswerThreshold:80,hitlThreshold:65,hallucinationWarnThreshold:55,
   factors:[
     {name:'RAG 유사도 점수',key:'rag',weight:40,desc:'벡터 검색 결과 상위 문서 평균 유사도'},
@@ -179,14 +182,14 @@ export const MOCK_CONFIDENCE_CONFIG = {
   ],
 };
 
-export const MOCK_CODESPACES = [
+export let MOCK_CODESPACES = [
   {id:1,name:'llm-finetune-env',image:'pytorch/pytorch:2.1-cuda12.1',status:'Running',gpu:'H200 x1',created:'2026-02-10'},
   {id:2,name:'rag-pipeline-dev',image:'python:3.11-slim',status:'Running',gpu:'-',created:'2026-02-08'},
   {id:3,name:'embedding-research',image:'nvidia/cuda:12.2-devel',status:'Stopped',gpu:'L40S x1',created:'2026-02-05'},
   {id:4,name:'agent-builder-test',image:'node:20-alpine',status:'Running',gpu:'-',created:'2026-01-28'},
 ];
 
-export const MOCK_VOLUMES = [
+export let MOCK_VOLUMES = [
   {name:'shared-models',size:'2.4 TB',mount:'/mnt/models',usedBy:'llm-finetune-env, rag-pipeline-dev',status:'Healthy'},
   {name:'dataset-store',size:'800 GB',mount:'/mnt/datasets',usedBy:'embedding-research',status:'Healthy'},
   {name:'vector-db-backup',size:'120 GB',mount:'/mnt/backup/vectordb',usedBy:'System',status:'Healthy'},
@@ -194,7 +197,7 @@ export const MOCK_VOLUMES = [
 ];
 
 // ==================== ADMIN MOCK DATA ====================
-export const MOCK_USERS = [
+export let MOCK_USERS = [
   {id:'USR-001',name:'김영빈',dept:'AI활용 업무혁신 TF',role:'시스템관리자',email:'kim@reb.or.kr',status:'Running',lastLogin:'2026-02-14 09:10',loginCount:342,apiCalls:1580},
   {id:'USR-002',name:'이준호',dept:'토지공시부',role:'부서관리자',email:'lee@reb.or.kr',status:'Running',lastLogin:'2026-02-14 08:45',loginCount:280,apiCalls:920},
   {id:'USR-003',name:'박지현',dept:'경영지원팀',role:'일반사용자',email:'park@reb.or.kr',status:'Running',lastLogin:'2026-02-13 17:30',loginCount:156,apiCalls:430},
@@ -205,14 +208,14 @@ export const MOCK_USERS = [
   {id:'USR-008',name:'한서윤',dept:'정보기술팀',role:'시스템관리자',email:'han@reb.or.kr',status:'Running',lastLogin:'2026-02-14 09:05',loginCount:450,apiCalls:2100},
 ];
 
-export const MOCK_PERMISSION_REQUESTS = [
+export let MOCK_PERMISSION_REQUESTS = [
   {id:'PRM-001',user:'박지현',dept:'경영지원팀',type:'지식영역 접근',target:'공시업무규정 DB',status:'대기 중',date:'2026-02-13'},
   {id:'PRM-002',user:'최민수',dept:'법무팀',type:'API 키 발급',target:'GPT-OSS-120B',status:'대기 중',date:'2026-02-12'},
   {id:'PRM-003',user:'장영수',dept:'주택공시부',type:'에이전트 배포',target:'현장조사 보고서 생성기',status:'완료',date:'2026-02-11'},
   {id:'PRM-004',user:'전하늘',dept:'인재개발부',type:'데이터셋 접근',target:'Notice_Guidelines_QA_v1',status:'완료',date:'2026-02-10'},
 ];
 
-export const MOCK_KNOWLEDGE_AREAS = [
+export let MOCK_KNOWLEDGE_AREAS = [
   {id:'KA-001',name:'공시업무규정',desc:'사내 공시업무규정 및 매뉴얼',docs:245,chunks:12400,size:'1.2 GB',owner:'부동산공시처',access:['AI연구소','토지공시부','부동산공시처'],updated:'2026-02-12',status:'Running'},
   {id:'KA-002',name:'조사·평가 매뉴얼',desc:'현장조사 및 평가 실무 문서',docs:180,chunks:9200,size:'850 MB',owner:'주택공시부',access:['토지공시부','주택공시부'],updated:'2026-02-10',status:'Running'},
   {id:'KA-003',name:'인사규정',desc:'복리후생, 급여, 인사 관련 규정',docs:120,chunks:6100,size:'320 MB',owner:'경영지원팀',access:['전체'],updated:'2026-02-08',status:'Running'},
@@ -221,7 +224,7 @@ export const MOCK_KNOWLEDGE_AREAS = [
   {id:'KA-006',name:'민원대응',desc:'비상 매뉴얼 및 대응 절차',docs:65,chunks:3200,size:'180 MB',owner:'부동산공시처',access:['전체'],updated:'2026-01-28',status:'Warning'},
 ];
 
-export const MOCK_KB_FOLDERS = [
+export let MOCK_KB_FOLDERS = [
   {id:'f-001',name:'공시업무규정',parent:null,docs:245,perm:'all',owner:'부동산공시처'},
   {id:'f-011',name:'실거래 검증',parent:'f-001',docs:120,perm:'dept',owner:'부동산공시처'},
   {id:'f-012',name:'시설안전',parent:'f-001',docs:125,perm:'dept',owner:'토지공시부'},
@@ -231,7 +234,7 @@ export const MOCK_KB_FOLDERS = [
   {id:'f-004',name:'법률/계약',parent:null,docs:95,perm:'specific',owner:'법무팀'},
   {id:'f-005',name:'교육자료',parent:null,docs:310,perm:'all',owner:'인재개발부'},
 ];
-export const MOCK_KB_DOCS = {
+export let MOCK_KB_DOCS = {
   'f-001':[
     {id:'d-001',name:'공시업무규정_2026.pdf',size:'4.2MB',pii:false,status:'완료',chunks:312,uploaded:'2026-02-12',uploader:'고성민'},
     {id:'d-002',name:'표준지공시지가_조사기준.pdf',size:'8.1MB',pii:false,status:'완료',chunks:580,uploaded:'2026-02-10',uploader:'고성민'},
@@ -251,13 +254,13 @@ export const MOCK_KB_DOCS = {
     {id:'d-042',name:'안전교육_2026_1분기.pdf',size:'5.8MB',pii:false,status:'완료',chunks:270,uploaded:'2026-02-11',uploader:'전하늘'},
   ],
 };
-export const MOCK_BATCH_JOBS = [
+export let MOCK_BATCH_JOBS = [
   {id:'bj-001',src:'그룹웨어',target:'공시업무규정',schedule:'매일 02:00',lastRun:'2026-02-25 02:00',lastResult:'성공',addedDocs:3,updatedDocs:1,deletedDocs:0,enabled:true},
   {id:'bj-002',src:'ERP',target:'인사규정',schedule:'매주 월 03:00',lastRun:'2026-02-24 03:00',lastResult:'성공',addedDocs:0,updatedDocs:2,deletedDocs:0,enabled:true},
   {id:'bj-003',src:'DMS',target:'법률/계약',schedule:'실시간 동기화',lastRun:'2026-02-25 09:15',lastResult:'성공',addedDocs:1,updatedDocs:0,deletedDocs:0,enabled:true},
   {id:'bj-004',src:'그룹웨어',target:'교육자료',schedule:'매일 04:00',lastRun:'2026-02-24 04:00',lastResult:'실패',addedDocs:0,updatedDocs:0,deletedDocs:0,enabled:false},
 ];
-export const MOCK_SYNC_LOGS = [
+export let MOCK_SYNC_LOGS = [
   {id:1,time:'2026-02-25 09:15:22',src:'DMS',folder:'법률/계약',file:'임시계약서_수정본.docx',action:'추가',pii:false,status:'완료'},
   {id:2,time:'2026-02-25 02:00:45',src:'그룹웨어',folder:'공시업무규정',file:'안전교육자료_2월.pdf',action:'추가',pii:false,status:'완료'},
   {id:3,time:'2026-02-25 02:00:43',src:'그룹웨어',folder:'공시업무규정',file:'안전점검일지_2월.xlsx',action:'업데이트',pii:true,status:'완료(마스킹)'},
@@ -265,7 +268,7 @@ export const MOCK_SYNC_LOGS = [
   {id:5,time:'2026-02-23 04:00:33',src:'그룹웨어',folder:'교육자료',file:'신입교육자료_2월.pptx',action:'추가',pii:false,status:'실패'},
 ];
 
-export const MOCK_USAGE_STATS = {
+export let MOCK_USAGE_STATS = {
   daily:[
     {date:'02-08',queries:1240,users:85},{date:'02-09',queries:980,users:72},{date:'02-10',queries:1560,users:102},
     {date:'02-11',queries:1890,users:115},{date:'02-12',queries:2100,users:128},{date:'02-13',queries:1780,users:110},{date:'02-14',queries:920,users:68}
@@ -275,7 +278,7 @@ export const MOCK_USAGE_STATS = {
   topKeywords:['공시업무규정','현장조사','실거래 검증','인사규정','계약검토','교육자료','민원대응','표준지 선정','복리후생','출장규정'],
 };
 
-export const MOCK_USAGE_HISTORY = [
+export let MOCK_USAGE_HISTORY = [
   {id:'uh-001',user:'김영빈',dept:'AI활용 업무혁신 TF',mode:'GENERAL',query:'표준지공시지가 정기 현장조사 시기가 어떻게 되나요?',answer:'표준지공시지가 조사지침(제2장)에 따르면, 표준지는 매년 1월 1일을 기준으로 현장조사를 실시하며, 가격변동이 큰 지역은 수시조사를 병행...',time:'2026-02-25 14:30',tokens:284,rating:5,errReport:false},
   {id:'uh-002',user:'이준호',dept:'토지공시부',mode:'REVIEW',query:'업로드한 출장 신청 기안문을 취업규칙과 대조해서 위반 소지 검토해줘',answer:'취업규칙 대조 결과: 5박 초과 시 임원 별도 승인 필요(제42조②), 출장비 신청서 누락...',time:'2026-02-25 13:20',tokens:412,rating:4,errReport:false},
   {id:'uh-003',user:'박지현',dept:'경영지원팀',mode:'TRANSLATE',query:'업로드한 영문 평가 기준서를 한국어로 번역해줘',answer:'시장가치의 정의 (IVS 국제평가기준) — 시장가치란 자발적인 매도인과 매수인 사이의 정상적인 거래에서 성립될 가능성이 가장 높은 가액...',time:'2026-02-25 11:05',tokens:556,rating:5,errReport:false},
@@ -283,7 +286,7 @@ export const MOCK_USAGE_HISTORY = [
   {id:'uh-005',user:'최민수',dept:'법무팀',mode:'REVIEW',query:'수의계약 한도액 기준 확인',answer:'수의계약은 추정가격이 2천만원 이하인 경우...',time:'2026-02-24 15:30',tokens:320,rating:3,errReport:false},
   {id:'uh-006',user:'전하늘',dept:'인재개발부',mode:'REPORT',query:'이번 주 표준지 현장조사 12건 완료, 이의신청 검토 2건 처리 완료를 주간 실적 보고서로 작성해줘',answer:'부동산공시처 주간 업무 실적 보고 | 보고 기간: 2026.02.17~02.21...',time:'2026-02-24 14:15',tokens:680,rating:5,errReport:false},
 ];
-export const MOCK_SATISFACTION_DATA = {
+export let MOCK_SATISFACTION_DATA = {
   avg:4.2, total:342,
   dist:[{stars:5,count:178,pct:52},{stars:4,count:95,pct:28},{stars:3,count:41,pct:12},{stars:2,count:18,pct:5},{stars:1,count:10,pct:3}],
   recent:[
@@ -296,19 +299,19 @@ export const MOCK_SATISFACTION_DATA = {
 };
 
 // ==================== RAG PIPELINE MOCK DATA ====================
-export const MOCK_DATA_SOURCES_INT = [
+export let MOCK_DATA_SOURCES_INT = [
   {id:'ds-i01',name:'그룹웨어 (WorksOn)',protocol:'REST API',target:'공시업무규정/교육자료',schedule:'매일 02:00',lastSync:'2026-02-25 02:01',status:'정상',docCount:555,newToday:5},
   {id:'ds-i02',name:'ERP (SAP S/4HANA)',protocol:'DB Direct',target:'인사규정',schedule:'매주 월 03:00',lastSync:'2026-02-24 03:02',status:'정상',docCount:120,newToday:0},
   {id:'ds-i03',name:'DMS (문서관리시스템)',protocol:'WebDAV',target:'법률/계약',schedule:'실시간 동기화',lastSync:'2026-02-25 09:15',status:'정상',docCount:95,newToday:1},
   {id:'ds-i04',name:'EDMS (전자결재시스템)',protocol:'REST API',target:'공시업무규정',schedule:'매일 01:00',lastSync:'2026-02-25 01:03',status:'경고',docCount:280,newToday:0},
 ];
-export const MOCK_DATA_SOURCES_EXT = [
+export let MOCK_DATA_SOURCES_EXT = [
   {id:'ds-e01',name:'법령정보센터 (법제처)',method:'Open API',url:'https://www.law.go.kr/DRF/lawService',target:'법률/계약',schedule:'매주 화 05:00',lastSync:'2026-02-25 05:00',status:'정상',docCount:1240,newToday:3},
   {id:'ds-e02',name:'나라장터 (조달청)',method:'Open API',url:'https://openapi.g2b.go.kr/',target:'법률/계약',schedule:'매일 06:00',lastSync:'2026-02-25 06:01',status:'정상',docCount:320,newToday:12},
   {id:'ds-e03',name:'국가법령 (산업안전)',method:'크롤링',url:'https://www.law.go.kr/',target:'공시업무규정',schedule:'매주 수 04:00',lastSync:'2026-02-19 04:00',status:'정상',docCount:88,newToday:0},
   {id:'ds-e04',name:'국토교통부 공시업무 규정',method:'크롤링',url:'https://www.molit.go.kr/',target:'공시업무규정',schedule:'매주 목 04:00',lastSync:'2026-02-20 04:00',status:'오류',docCount:42,newToday:0},
 ];
-export const MOCK_DOC_PIPELINE = [
+export let MOCK_DOC_PIPELINE = [
   {id:'dp-001',name:'공시업무규정_2026.pdf',folder:'공시업무규정',src:'그룹웨어',type:'PDF',size:'4.2MB',ingest:'2026-02-25 02:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:312,tokens:48200,pii:false,version:3,changeType:'업데이트'},
   {id:'dp-002',name:'안전교육자료_2월.pdf',folder:'공시업무규정',src:'그룹웨어',type:'PDF',size:'8.1MB',ingest:'2026-02-25 02:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:580,tokens:91000,pii:false,version:1,changeType:'신규'},
   {id:'dp-003',name:'급여기준표_개정.xlsx',folder:'인사규정',src:'ERP',type:'XLSX',size:'1.8MB',ingest:'2026-02-24 03:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:145,tokens:18500,pii:true,version:5,changeType:'업데이트'},
@@ -317,7 +320,7 @@ export const MOCK_DOC_PIPELINE = [
   {id:'dp-006',name:'산업안전보건법_개정.pdf',folder:'공시업무규정',src:'법령정보센터',type:'PDF',size:'3.2MB',ingest:'2026-02-25 05:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:210,tokens:33500,pii:false,version:1,changeType:'신규'},
   {id:'dp-007',name:'나라장터_입찰공고_0225.json',folder:'법률/계약',src:'조달청',type:'JSON',size:'1.1MB',ingest:'2026-02-25 06:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:28,tokens:4200,pii:false,version:1,changeType:'신규'},
 ];
-export const MOCK_CHUNK_QUALITY = [
+export let MOCK_CHUNK_QUALITY = [
   {docId:'d-001',name:'공시업무규정_2026.pdf',folder:'공시업무규정',avgLen:154,specialCharPct:1.2,dupPct:0.8,semanticScore:94,status:'양호'},
   {docId:'d-002',name:'표준지공시지가_조사기준.pdf',folder:'공시업무규정',avgLen:168,specialCharPct:2.1,dupPct:1.5,semanticScore:91,status:'양호'},
   {docId:'d-011',name:'현장조사_실무매뉴얼.pdf',folder:'조사·평가 매뉴얼',avgLen:142,specialCharPct:4.5,dupPct:3.2,semanticScore:78,status:'주의'},
@@ -325,12 +328,12 @@ export const MOCK_CHUNK_QUALITY = [
   {docId:'d-041',name:'신입교육과정.pptx',folder:'교육자료',avgLen:88,specialCharPct:8.2,dupPct:6.5,semanticScore:58,status:'경고'},
   {docId:'e-006',name:'산업안전보건법_개정.pdf',folder:'공시업무규정',avgLen:178,specialCharPct:1.9,dupPct:0.9,semanticScore:92,status:'양호'},
 ];
-export const MOCK_CHUNK_PREVIEW = [
+export let MOCK_CHUNK_PREVIEW = [
   {idx:1,text:'제1장 총칙 제1조(목적) 본 조사지침은 표준지공시지가의 조사·평가에 관한 세부 기준과 절차를 정하여 공시지가의 적정성과 균형성을 확보함을 목적으로 한다.',len:142,score:96},
   {idx:2,text:'제2조(적용범위) 이 지침은 전국 표준지 및 시·군·구 조사 담당자와 조사·평가를 위탁받은 감정평가법인등에 적용한다.',len:88,score:93},
   {idx:3,text:'제3조(정의) ① "표준지"란 토지의 가격공시를 위하여 선정한 대표성 있는 필지를 말한다. ② "현장조사"란 조사자가 대상 토지를 직접 방문하여 이용상황·주위환경 등을 확인하는 절차를 말한다.',len:165,score:97},
 ];
-export const MOCK_EMBED_STATUS = {
+export let MOCK_EMBED_STATUS = {
   today:{total:1420,success:1398,fail:8,pending:14,successRate:98.4},
   models:[
     {name:'KLUE-BERT-base',dim:768,docs:12400,lastUpdated:'2026-02-25 02:30',status:'정상',avgLatency:42},
@@ -346,7 +349,7 @@ export const MOCK_EMBED_STATUS = {
     {date:'02-22',success:890,fail:8},{date:'02-23',success:420,fail:12},{date:'02-24',success:1390,fail:6},{date:'02-25',success:1398,fail:8},
   ],
 };
-export const MOCK_REPROCESS_QUEUE = [
+export let MOCK_REPROCESS_QUEUE = [
   {id:'rq-001',doc:'신입교육자료_2월.pptx',folder:'교육자료',src:'그룹웨어',stage:'청킹',error:'PPTX 이미지 슬라이드 파싱 오류 (PIL 디코딩 실패)',failedAt:'2026-02-23 04:00',retryCount:2,status:'대기중',priority:'높음'},
   {id:'rq-002',doc:'국토교통부_공시업무규정.pdf',folder:'공시업무규정',src:'크롤링',stage:'임베딩',error:'임베딩 서버 응답 타임아웃 (>30s)',failedAt:'2026-02-20 04:15',retryCount:1,status:'대기중',priority:'보통'},
   {id:'rq-003',doc:'현장조사일지_1월.xlsx',folder:'조사·평가 매뉴얼',src:'그룹웨어',stage:'파싱',error:'암호화된 XLSX 파일 — 비밀번호 해제 필요',failedAt:'2026-02-18 02:05',retryCount:3,status:'수동처리필요',priority:'높음'},
@@ -354,7 +357,7 @@ export const MOCK_REPROCESS_QUEUE = [
 ];
 
 // ==================== 정보서비스·모니터링·HR MOCK DATA ====================
-export const MOCK_SERVICE_STATS = {
+export let MOCK_SERVICE_STATS = {
   summary:{users:842,newToday:12,conversations:15240,apiCalls:48920,linkCalls:3280,feedbacks:342},
   daily:[
     {date:'02-19',users:98,conv:1840,api:5820},{date:'02-20',users:115,conv:2100,api:6230},
@@ -376,43 +379,43 @@ export const MOCK_SERVICE_STATS = {
   ],
   peakHours:[0,0,0,0,0,2,8,42,112,168,145,98,120,145,160,182,195,188,142,95,68,42,18,5],
 };
-export const MOCK_NOTICES_MGMT = [
+export let MOCK_NOTICES_MGMT = [
   {id:'N-001',title:'[필독] 2026년 1분기 보안 업데이트 공지',type:'공지',author:'한서윤',date:'2026-02-25',views:248,pinned:true,active:true},
   {id:'N-002',title:'GPT-OSS-120B 모델 업그레이드 안내',type:'업데이트',author:'김영빈',date:'2026-02-22',views:182,pinned:false,active:true},
   {id:'N-003',title:'3월 정기 점검 (2026.03.08 02:00~06:00)',type:'점검',author:'한서윤',date:'2026-02-20',views:124,pinned:false,active:true},
   {id:'N-004',title:'AI 플랫폼 사용 매뉴얼 v2.1 배포',type:'매뉴얼',author:'김영빈',date:'2026-02-15',views:340,pinned:false,active:true},
 ];
-export const MOCK_QNA_MGMT = [
+export let MOCK_QNA_MGMT = [
   {id:'Q-001',title:'번역 기능에서 한→중 번역이 안됩니다',user:'박지현',dept:'경영지원팀',date:'2026-02-25',status:'답변완료',answer:'현재 한→중 번역은 베타 기능으로 일부 문장 유형에서 오류가 발생할 수 있습니다. v2.1 패치에서 개선될 예정입니다.'},
   {id:'Q-002',title:'에이전트가 공시 데이터에 접근하지 못하는 경우',user:'이준호',dept:'토지공시부',date:'2026-02-24',status:'처리중',answer:''},
   {id:'Q-003',title:'RAG 검색 시 유사도 점수 기준이 어떻게 되나요?',user:'고성민',dept:'부동산공시처',date:'2026-02-23',status:'답변완료',answer:'현재 코사인 유사도 0.75 이상인 문서가 검색 결과에 포함됩니다. 관리자 설정에서 임계값 조정이 가능합니다.'},
   {id:'Q-004',title:'보고서 자동 생성 길이 제한 변경 가능한가요?',user:'전하늘',dept:'인재개발부',date:'2026-02-21',status:'대기',answer:''},
 ];
-export const MOCK_SURVEYS_MGMT = [
+export let MOCK_SURVEYS_MGMT = [
   {id:'SV-001',title:'2026년 1분기 AI 플랫폼 만족도 조사',start:'2026-02-01',end:'2026-02-28',responses:248,target:450,status:'진행중'},
   {id:'SV-002',title:'신규 에이전트 기능 필요성 조사',start:'2026-01-15',end:'2026-01-31',responses:312,target:400,status:'완료'},
   {id:'SV-003',title:'사용자 온보딩 경험 개선 설문',start:'2026-03-01',end:'2026-03-31',responses:0,target:500,status:'예정'},
 ];
-export const MOCK_IP_BLOCKS = [
+export let MOCK_IP_BLOCKS = [
   {id:'ib-001',target:'192.168.100.45',type:'IP',reason:'비정상 반복 접속 (10분간 500회)',action:'차단',appliedBy:'한서윤',date:'2026-02-24',status:'활성'},
   {id:'ib-002',target:'10.20.30.99',type:'IP',reason:'권한 외 지식영역 접근 시도',action:'차단',appliedBy:'한서윤',date:'2026-02-22',status:'활성'},
   {id:'ib-003',target:'USR-EXT-012',type:'ID',reason:'퇴직 처리 미완료 계정',action:'차단',appliedBy:'김영빈',date:'2026-02-20',status:'활성'},
   {id:'ib-004',target:'192.168.200.0/24',type:'대역',reason:'협력업체 외부망 허용 대역',action:'허용',appliedBy:'한서윤',date:'2026-02-10',status:'활성'},
 ];
-export const MOCK_WORK_LOG = [
+export let MOCK_WORK_LOG = [
   {id:1,time:'2026-02-25 14:35',user:'김영빈',dept:'AI혁신TF',ip:'10.20.30.41',action:'문서 업로드',target:'공시업무규정_2026.pdf',detail:'공시업무규정 폴더 업로드 (4.2MB)'},
   {id:2,time:'2026-02-25 14:20',user:'한서윤',dept:'정보기술팀',ip:'10.20.30.10',action:'설정 변경',target:'GPT-OSS-120B',detail:'Temperature 0.3→0.2 변경'},
   {id:3,time:'2026-02-25 13:55',user:'이준호',dept:'토지공시부',ip:'10.20.30.55',action:'에이전트 호출',target:'가격검증봇',detail:'공시가격 검증 질의 (응답 2.1s)'},
   {id:4,time:'2026-02-25 11:30',user:'박지현',dept:'경영지원팀',ip:'10.20.30.78',action:'데이터 추출',target:'이용통계_0225.xlsx',detail:'통계 엑셀 다운로드 (48KB)'},
   {id:5,time:'2026-02-25 10:12',user:'고성민',dept:'부동산공시처',ip:'10.20.30.62',action:'지식영역 접근',target:'공시업무규정 DB',detail:'민원대응 관련 5건 검색'},
 ];
-export const MOCK_EXTRACT_LOG = [
+export let MOCK_EXTRACT_LOG = [
   {id:1,time:'2026-02-25 11:30',user:'박지현',dept:'경영지원팀',type:'통계 엑셀',file:'이용통계_0225.xlsx',size:'48KB',rows:340},
   {id:2,time:'2026-02-24 16:45',user:'김영빈',dept:'AI혁신TF',type:'로그 CSV',file:'접속로그_0224.csv',size:'1.2MB',rows:5820},
   {id:3,time:'2026-02-23 14:20',user:'한서윤',dept:'정보기술팀',type:'보고서 PDF',file:'월간리포트_202601.pdf',size:'3.4MB',rows:null},
   {id:4,time:'2026-02-22 10:05',user:'이준호',dept:'토지공시부',type:'질의이력 CSV',file:'질의이력_이준호_0222.csv',size:'89KB',rows:248},
 ];
-export const MOCK_USAGE_BY_DEPT = [
+export let MOCK_USAGE_BY_DEPT = [
   {dept:'AI활용 추진반',users:8,queries:3240,avgLen:245,tokens:812000,peakHour:'14:00',abuseSuspect:false},
   {dept:'토지공시부',users:15,queries:2880,avgLen:198,tokens:621000,peakHour:'10:00',abuseSuspect:false},
   {dept:'부동산공시처',users:12,queries:2240,avgLen:185,tokens:452000,peakHour:'09:00',abuseSuspect:false},
@@ -420,30 +423,30 @@ export const MOCK_USAGE_BY_DEPT = [
   {dept:'법무팀',users:6,queries:1480,avgLen:312,tokens:502000,peakHour:'11:00',abuseSuspect:false},
   {dept:'인재개발부',users:11,queries:1240,avgLen:168,tokens:228000,peakHour:'15:00',abuseSuspect:false},
 ];
-export const MOCK_ABUSE_ALERTS = [
+export let MOCK_ABUSE_ALERTS = [
   {id:'ab-001',user:'미확인',ip:'192.168.100.45',type:'반복 접속',detail:'10분간 500회 API 호출 (정상범위 100회/10분)',detected:'2026-02-25 11:18',status:'차단됨',severity:'위험'},
   {id:'ab-002',user:'USR-EXT-012',ip:'10.20.100.8',type:'권한 외 접근',detail:'법무/계약 지식영역 무단 접근 시도 12회',detected:'2026-02-24 15:30',status:'경고발송',severity:'주의'},
   {id:'ab-003',user:'장영수',ip:'10.20.30.75',type:'대량 추출',detail:'1시간 내 엑셀 추출 8회 (일 평균 0.3회)',detected:'2026-02-23 14:40',status:'모니터링',severity:'정보'},
 ];
-export const MOCK_APIS = [
+export let MOCK_APIS = [
   {id:'api-001',name:'GeNOS Chat API',endpoint:'/api/v1/chat',version:'v1.2',auth:'Bearer Token',status:'활성',callsToday:28420,approvedDate:'2026-01-05'},
   {id:'api-002',name:'RAG 검색 API',endpoint:'/api/v1/rag/search',version:'v1.0',auth:'Bearer Token',status:'활성',callsToday:12880,approvedDate:'2026-01-05'},
   {id:'api-003',name:'임베딩 API',endpoint:'/api/v1/embed',version:'v1.1',auth:'API Key',status:'활성',callsToday:4820,approvedDate:'2026-01-12'},
   {id:'api-004',name:'에이전트 실행 API',endpoint:'/api/v1/agent/run',version:'v0.9',auth:'Bearer Token',status:'베타',callsToday:1940,approvedDate:'2026-02-01'},
   {id:'api-005',name:'통계 조회 API',endpoint:'/api/v1/stats',version:'v1.0',auth:'API Key',status:'활성',callsToday:320,approvedDate:'2026-01-20'},
 ];
-export const MOCK_API_APPROVALS = [
+export let MOCK_API_APPROVALS = [
   {id:'apr-001',requester:'이준호',dept:'토지공시부',api:'에이전트 실행 API',purpose:'가격 검증 자동화 파이프라인 연동',requestDate:'2026-02-24',status:'대기'},
   {id:'apr-002',requester:'최민수',dept:'법무팀',api:'RAG 검색 API',purpose:'계약서 검토 자동화 연동',requestDate:'2026-02-22',status:'대기'},
   {id:'apr-003',requester:'전하늘',dept:'인재개발부',api:'임베딩 API',purpose:'교육자료 유사도 검색 시스템',requestDate:'2026-02-20',status:'승인'},
 ];
-export const MOCK_PROMPTS_MGMT = [
+export let MOCK_PROMPTS_MGMT = [
   {id:'pt-001',name:'공시업무규정 Q&A 시스템 프롬프트',mode:'GENERAL',version:'v2.1',tokens:342,lastUpdated:'2026-02-20',active:true,desc:'부동산 공시업무규정 전문 답변 프롬프트. 출처 인용 필수, 환각 방지 지시 포함.'},
   {id:'pt-002',name:'문서 검토 평가 프롬프트',mode:'REVIEW',version:'v1.4',tokens:518,lastUpdated:'2026-02-18',active:true,desc:'사내 규정 대조 문서 검토용. 위반 소지 항목을 조항 단위로 발췌하도록 지시.'},
   {id:'pt-003',name:'번역·요약 지시 프롬프트',mode:'TRANSLATE',version:'v1.0',tokens:285,lastUpdated:'2026-02-10',active:true,desc:'한/영/중/일 다국어 번역 및 요약 길이 제어 지시.'},
   {id:'pt-004',name:'보고서 생성 프롬프트',mode:'REPORT',version:'v2.0',tokens:624,lastUpdated:'2026-02-15',active:true,desc:'공문서 형식 기반 주간/월간/특수 보고서 자동 생성.'},
 ];
-export const MOCK_HR_SYNC = {
+export let MOCK_HR_SYNC = {
   lastSync:'2026-02-25 01:00:12',nextSync:'2026-02-26 01:00:00',status:'정상',
   summary:{total:842,new:3,retired:1,moved:5,concurrent:2,leave:4},
   recent:[
@@ -455,7 +458,7 @@ export const MOCK_HR_SYNC = {
     {id:'hr-006',name:'최재혁',type:'부재설정',dept:'토지공시부',syncDate:'2026-02-23',action:'임시 계정 잠금 (육아휴직)'},
   ],
 };
-export const MOCK_CONNECTED_SW = {
+export let MOCK_CONNECTED_SW = {
   rag:{status:'정상',qps:28.4,avgLatency:142,successRate:98.4,queueSize:14},
   ocr:{status:'정상',processed:342,avgLatency:890,successRate:99.2,queueSize:2},
   vectordb:{name:'Milvus 2.4',status:'정상',totalVectors:1824560,qps:45.2,avgQueryMs:8,diskUsage:'18.4GB'},
@@ -470,7 +473,7 @@ export const MOCK_CONNECTED_SW = {
   ],
 };
 
-export const MOCK_ACCESS_LOGS = [
+export let MOCK_ACCESS_LOGS = [
   {id:1,time:'2026-02-14 09:10:23',user:'김영빈',dept:'AI활용 업무혁신 TF',action:'로그인',ip:'10.20.30.41',detail:'SSO 인증 성공'},
   {id:2,time:'2026-02-14 09:08:15',user:'이준호',dept:'토지공시부',action:'에이전트 호출',ip:'10.20.30.55',detail:'가격 검증 어시스턴트 질의'},
   {id:3,time:'2026-02-14 08:55:02',user:'한서윤',dept:'정보기술팀',action:'모델 설정 변경',ip:'10.20.30.10',detail:'GPT-OSS-120B Temperature 0.3→0.2'},
@@ -481,7 +484,7 @@ export const MOCK_ACCESS_LOGS = [
   {id:8,time:'2026-02-13 17:30:22',user:'장영수',dept:'주택공시부',action:'로그아웃',ip:'10.20.30.33',detail:'세션 종료'},
 ];
 
-export const MOCK_QUALITY_REVIEWS = [
+export let MOCK_QUALITY_REVIEWS = [
   {id:'QR-001',query:'표준지 현장조사 주기는?',answer:'표준지는 연 1회 정기 현장조사를 실시하며...',agent:'공시업무규정 검색 에이전트',reviewer:'고성민',rating:'good',confidence:0.92,date:'2026-02-13',feedback:'정확한 규정 인용'},
   {id:'QR-002',query:'연차 계산 방법 알려줘',answer:'근로기준법에 따라 1년 미만 근로자는...',agent:'HR 질의응답 봇',reviewer:'박지현',rating:'edit',confidence:0.78,date:'2026-02-12',feedback:'공사 내규 추가 필요'},
   {id:'QR-003',query:'공동주택 공시가격 산정 기준',answer:'공동주택 공시가격은 실거래가와 시세 수준을 반영하여...',agent:'가격 검증 어시스턴트',reviewer:'이준호',rating:'good',confidence:0.95,date:'2026-02-11',feedback:''},
@@ -489,14 +492,14 @@ export const MOCK_QUALITY_REVIEWS = [
   {id:'QR-005',query:'수의계약 한도액 기준',answer:'수의계약은 추정가격이 2천만원 이하인 경우...',agent:'계약서 검토 에이전트',reviewer:'최민수',rating:'edit',confidence:0.82,date:'2026-02-09',feedback:'공사 내규 한도액 기준 상이'},
 ];
 
-export const MOCK_ANNOUNCEMENTS = [
+export let MOCK_ANNOUNCEMENTS = [
   {id:1,title:'GenOS AI 플랫폼 정식 오픈 안내',category:'공지',status:'Running',startDate:'2026-02-01',endDate:'2026-03-01',author:'한서윤',views:452},
   {id:2,title:'시스템 정기 점검 안내 (2/15 02:00~06:00)',category:'점검',status:'Running',startDate:'2026-02-13',endDate:'2026-02-15',author:'한서윤',views:128},
   {id:3,title:'신규 모델 Solar-10.7B 서비스 추가',category:'업데이트',status:'Running',startDate:'2026-02-10',endDate:'2026-02-28',author:'김영빈',views:89},
   {id:4,title:'개인 지식영역 기능 출시',category:'업데이트',status:'Stopped',startDate:'2026-01-15',endDate:'2026-02-01',author:'김영빈',views:310},
 ];
 
-export const MOCK_LINKED_SW = [
+export let MOCK_LINKED_SW = [
   {name:'Milvus Vector DB',version:'2.4.1',status:'Running',endpoint:'milvus.reb.internal:19530',cpu:12.5,memory:28.4,uptime:'30d 4h'},
   {name:'OCR Engine (Tesseract)',version:'5.3.3',status:'Running',endpoint:'ocr.reb.internal:8090',cpu:5.2,memory:8.1,uptime:'30d 4h'},
   {name:'vLLM Serving',version:'0.4.2',status:'Running',endpoint:'vllm.reb.internal:8000',cpu:45.0,memory:62.3,uptime:'14d 2h'},
@@ -506,7 +509,7 @@ export const MOCK_LINKED_SW = [
 ];
 
 // ==================== AGENT MOCK DATA ====================
-export const MOCK_AGENTS = [
+export let MOCK_AGENTS = [
   {id:'AGT-001',name:'공시업무규정 검색 에이전트',desc:'사내 공시업무규정 및 매뉴얼을 기반으로 질의응답을 수행합니다.',model:'GPT-OSS-120B',tools:['사내 규정 벡터 DB','웹 검색'],mcpTools:['MCP-Search','MCP-WebCrawler'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v2.1',creator:'김세은',dept:'AI연구소',created:'2026-01-15',updated:'2026-02-08',requests24h:342,avgLatency:'1.2s',successRate:98.5,confidence:0.92,systemPrompt:'당신은 한국부동산원의 공시 규정 전문가입니다. 사내 규정을 정확히 참조하여 답변하세요.',temperature:0.3,maxTokens:2048},
   {id:'AGT-002',name:'가격 검증 어시스턴트',desc:'공시가격 이상 징후를 분석하고 검증 절차를 안내합니다. 실거래가 데이터 연동으로 실시간 분석.',model:'Llama-3-Kor-Instruct',tools:['공시가격 이력 DB','실거래가 조회 API'],mcpTools:['MCP-RTMS','MCP-SearchFilter'],ragEnabled:true,hitl:true,a2a:true,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.8',creator:'이준호',dept:'토지공시부',created:'2026-01-20',updated:'2026-02-10',requests24h:189,avgLatency:'0.8s',successRate:97.2,confidence:0.88,systemPrompt:'공시가격 전문 검증 도우미입니다. 가격 이력과 실거래 데이터를 참조하여 검증 절차를 안내하세요.',temperature:0.2,maxTokens:4096},
   {id:'AGT-003',name:'HR 질의응답 봇',desc:'인사/복리후생/규정 관련 직원 문의에 자동 응답합니다.',model:'EXAONE-3.0-7.8B',tools:['HR 규정 벡터 DB'],mcpTools:['MCP-Search'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.3',creator:'박지현',dept:'경영지원팀',created:'2025-12-05',updated:'2026-02-03',requests24h:567,avgLatency:'0.5s',successRate:95.8,confidence:0.85,systemPrompt:'한국부동산원 인사 규정 전문 도우미입니다. 정확한 조항을 인용하여 답변하세요.',temperature:0.4,maxTokens:1024},
@@ -517,7 +520,7 @@ export const MOCK_AGENTS = [
   {id:'AGT-008',name:'회계전표 자동 작성',desc:'업무 지시를 받아 ERP 시스템에서 회계전표를 자동으로 작성합니다.',model:'GPT-OSS-120B',tools:['ERP 연동 API','회계 규정 DB'],mcpTools:['MCP-ERPConnector','MCP-GWSync'],ragEnabled:false,hitl:true,a2a:true,responseMode:'direct',actionable:true,status:'Running',version:'v1.0',creator:'한서윤',dept:'정보기술팀',created:'2026-02-05',updated:'2026-02-13',requests24h:78,avgLatency:'3.2s',successRate:96.0,confidence:0.90,systemPrompt:'회계전표 작성 전문 에이전트입니다. ERP 시스템과 연동하여 전표를 자동 생성합니다.',temperature:0.1,maxTokens:2048},
 ];
 
-export const MOCK_AGENT_DEPLOYS = [
+export let MOCK_AGENT_DEPLOYS = [
   {id:'DEP-001',agentId:'AGT-001',agentName:'공시업무규정 검색 에이전트',model:'GPT-OSS-120B',version:'v2.1',env:'Production',endpoint:'/api/agent/notice-reg',deployDate:'2026-02-08 14:30',deployer:'김세은',status:'Running',replicas:3,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'5d 12h',requests24h:342,errorRate:1.5},
   {id:'DEP-002',agentId:'AGT-002',agentName:'가격 검증 어시스턴트',model:'Llama-3-Kor-Instruct',version:'v1.8',env:'Production',endpoint:'/api/agent/price-verify',deployDate:'2026-02-10 09:15',deployer:'이준호',status:'Running',replicas:2,cpu:'4 Core',memory:'16 GB',gpu:'H200 x1',uptime:'3d 2h',requests24h:189,errorRate:2.8},
   {id:'DEP-003',agentId:'AGT-003',agentName:'HR 질의응답 봇',model:'EXAONE-3.0-7.8B',version:'v1.3',env:'Production',endpoint:'/api/agent/hr-qa',deployDate:'2026-02-03 11:00',deployer:'박지현',status:'Running',replicas:2,cpu:'1 Core',memory:'4 GB',gpu:'-',uptime:'10d 1h',requests24h:567,errorRate:4.2},
@@ -528,7 +531,7 @@ export const MOCK_AGENT_DEPLOYS = [
   {id:'DEP-008',agentId:'AGT-008',agentName:'회계전표 자동 작성',model:'GPT-OSS-120B',version:'v1.0',env:'Staging',endpoint:'/api/agent/accounting',deployDate:'2026-02-13 10:30',deployer:'한서윤',status:'Running',replicas:2,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'1d 0h',requests24h:78,errorRate:4.0},
 ];
 
-export const MOCK_WORKFLOWS = [
+export let MOCK_WORKFLOWS = [
   {id:'WF-001',name:'공시가격 이상 종합 대응',desc:'가격 이상 감지 → 검증 → 보고서 생성 → 알림 발송 (A2A 멀티에이전트)',status:'Running',creator:'김세은',created:'2026-02-01',lastRun:'2026-02-13 09:30',runs24h:8,successRate:95.0,protocol:'A2A',hitl:true,
     steps:[{id:'s1',name:'가격 변동 이상 감지',type:'trigger',agentId:null},{id:'s2',name:'가격 검증 어시스턴트',type:'agent',agentId:'AGT-002'},{id:'s3',name:'HITL 전문가 검토',type:'hitl',agentId:null},{id:'s4',name:'심각도 ≥ 높음',type:'condition',agentId:null},{id:'s5',name:'조사 보고서 생성',type:'agent',agentId:'AGT-005'},{id:'s6',name:'민원 대응 가이드',type:'agent',agentId:'AGT-007'},{id:'s7',name:'MCP 알림 발송',type:'mcp',agentId:null}]},
   {id:'WF-002',name:'신입사원 온보딩 자동화',desc:'HR 질의 → 교육 콘텐츠 추천 → 규정 안내 (MCP 그룹웨어 연동)',status:'Running',creator:'박지현',created:'2026-01-20',lastRun:'2026-02-12 15:00',runs24h:15,successRate:98.0,protocol:'MCP',hitl:false,
@@ -540,7 +543,7 @@ export const MOCK_WORKFLOWS = [
 ];
 
 // ==================== HELPER COMPONENTS ====================
-export const UPSTAGE_OCR_MOCK = {
+export let UPSTAGE_OCR_MOCK = {
   totalPages:3, totalBlocks:16, elapsed:2.4,
   pages:[
     {page:1,
@@ -575,7 +578,7 @@ export const UPSTAGE_OCR_MOCK = {
 };
 
 // ── Document Parse 시뮬레이션 결과 ──
-export const UPSTAGE_PARSE_MOCK = {
+export let UPSTAGE_PARSE_MOCK = {
   statistics:{paragraphs:24,headings:8,tables:3,figures:2,total:37},
   elements:[
     {category:'heading1',content:'공시업무규정',page:1},
@@ -599,7 +602,7 @@ export const UPSTAGE_PARSE_MOCK = {
 };
 
 // ── AI 기본법 대응 (「인공지능 발전과 신뢰 기반 조성 등에 관한 기본법」 2026-01-22 시행) ──
-export const MOCK_AIACT_SYSTEMS = [
+export let MOCK_AIACT_SYSTEMS = [
   {id:'hi-001',name:'공시가격 산정지원 AI',dept:'부동산공시처',status:'고영향 확인',confirmedAt:'2026-02-10',manager:'고성민 부장',
    purpose:'표준지공시지가·공동주택가격 산정 검증 및 비교 표준지 추천 지원',
    basis:'공공서비스 영역 — 공시가격은 조세·부담금 산정의 기초로 국민의 권리·의무에 중대한 영향',
@@ -662,7 +665,7 @@ export const MOCK_AIACT_SYSTEMS = [
    ]},
 ];
 
-export const MOCK_AIACT_LABELING = [
+export let MOCK_AIACT_LABELING = [
   {id:'lb-01',target:'GenOS 채팅 응답',type:'텍스트',method:'응답 하단 고지문 자동 삽입',enabled:true,coverage:100,weekly:12840},
   {id:'lb-02',target:'보고서 생성 에이전트 산출물',type:'문서',method:'표지 고지문 + 문서 속성 메타데이터 기록',enabled:true,coverage:100,weekly:342},
   {id:'lb-03',target:'회의록 초안',type:'문서',method:'머리말(헤더) 고지문 삽입',enabled:true,coverage:98.2,weekly:156},
@@ -671,7 +674,7 @@ export const MOCK_AIACT_LABELING = [
   {id:'lb-06',target:'대외 발송 공문 초안',type:'문서',method:'초안 단계 고지 → 담당자 검토 확인 시 최종본 전환',enabled:false,coverage:0,weekly:0,note:'법무팀 표시 문구 검토 중 — 2026-03 적용 예정'},
 ];
 
-export const MOCK_AIACT_ASSESSMENTS = [
+export let MOCK_AIACT_ASSESSMENTS = [
   {id:'ia-001',system:'공시가격 산정지원 AI',round:'2026 상반기 정기 영향평가',status:'완료',date:'2026-02-14',assessor:'외부 전문기관 합동평가',grade:'적합',
    scores:[['기본권 영향 관리',88],['안전성',92],['편향성 관리',85],['투명성·설명가능성',90],['책무성',86]],
    findings:[
@@ -688,3 +691,267 @@ export const MOCK_AIACT_ASSESSMENTS = [
    findings:[]},
 ];
 
+
+/* ── 페이지 인라인 이관 상수 (2026-07-06) — 관리자 페이지 파일에 하드코딩돼 있던 REB 콘텐츠 ── */
+// 채팅 앱 생성 모달 '관리 그룹' 선택지 — string[] (applications.jsx ChatAppPage)
+export let ADMIN_MGMT_GROUPS = ['AI Engineer','QA','토지공시부','경영지원팀'];
+// 보고서 생성 목록 초기 rows — [{id,title,type,template,status,date,pages}] (applications.jsx ReportGenPage)
+export let ADMIN_REPORT_ROWS = [
+  {id:'RPT-001',title:'2월 공시업무 현황 보고서',type:'요약',template:'공시업무',status:'완료',date:'2026-02-10',pages:12},
+  {id:'RPT-002',title:'공동주택 가격변동 분석 리포트',type:'분석',template:'현장조사',status:'완료',date:'2026-02-09',pages:24},
+  {id:'RPT-003',title:'1분기 AI 활용 성과보고',type:'보고서',template:'성과분석',status:'생성 중',date:'2026-02-11',pages:0},
+  {id:'RPT-004',title:'장비 유지보수 매뉴얼 번역',type:'번역',template:'기술문서',status:'완료',date:'2026-02-08',pages:45},
+  {id:'RPT-005',title:'신입사원 교육자료 요약',type:'요약',template:'교육',status:'대기 중',date:'2026-02-11',pages:0},
+];
+// 보고서 템플릿 선택지 — string[] ([0]이 생성 폼 기본값) (applications.jsx ReportGenPage)
+export let ADMIN_REPORT_TEMPLATES = ['공시업무','현장조사','성과분석','기술문서','교육'];
+// 프롬프트 편집 미리보기 도입부 문장 — string (content.jsx 프롬프트 탭)
+export let ADMIN_PROMPT_PREVIEW_INTRO = '당신은 한국부동산원의 AI 어시스턴트입니다.';
+// 에이전트 빌더 '내부 도구 연결' 목록 — [{name,desc}] 3건, [0]은 항상 활성 (deployment.jsx TaskflowBuilderPage)
+export let ADMIN_INTERNAL_TOOLS = [
+  {name:'사내 규정 벡터 DB',desc:'공시 규정 및 매뉴얼 검색'},
+  {name:'공시가격 이력 DB',desc:'공시가격 산정 이력 조회'},
+  {name:'알림 서비스 API',desc:'Slack/Email 알림 발송'},
+];
+// 에이전트 이름 예시 — string, 생성 모달 placeholder + 새 배포 기본 agentName (deployment.jsx)
+export let ADMIN_AGENT_NAME_EXAMPLE = '공시업무규정 검색 에이전트';
+// 워크플로우 이름 예시 placeholder — string (deployment.jsx WorkflowPage)
+export let ADMIN_WORKFLOW_NAME_EXAMPLE = '이의신청 자동 분류';
+// 데이터셋 목록 초기 rows — [{id,n:이름,d:설명,t:형식,s:크기,c:건수,date}] (infra.jsx DatasetPage)
+export let ADMIN_DATASET_ROWS = [
+  {id:1,n:'Notice_Guidelines_QA_v1',d:'공시 규정 QA 데이터셋',t:'JSONL',s:'124MB',c:'15,000',date:'2026-02-10'},
+  {id:2,n:'Maintenance_Manual_Corpus',d:'장비 유지보수 매뉴얼',t:'TXT',s:'512MB',c:'N/A',date:'2026-02-09'},
+  {id:3,n:'Employee_Inquiry_Logs',d:'임직원 질의 로그',t:'CSV',s:'45MB',c:'8,200',date:'2026-02-08'},
+  {id:4,n:'Gemma_Instruction_Tuning',d:'Gemma 한국어 인스트럭션',t:'JSONL',s:'230MB',c:'25,000',date:'2026-02-07'},
+  {id:5,n:'EXAONE_Finance_Report',d:'재무 보고서 요약 학습',t:'Parquet',s:'1.2GB',c:'5,000',date:'2026-02-06'},
+];
+// 벡터 검색 데모 결과 — [{id,score,content}] 3건 (infra.jsx VectorDbPage)
+export let ADMIN_VECTOR_SEARCH_RESULTS = [
+  {id:'vec_8a1',score:0.92,content:'...본 규정은 한국부동산원의 부동산 가격공시 업무 수행에 필요한 사항을 규정함을 목적으로 한다...'},
+  {id:'vec_3b2',score:0.88,content:'...제 2 조 (적용범위) 이 규정은 공사의 전 임직원 및 사업장 내 협력업체에 적용하며...'},
+  {id:'vec_9c3',score:0.75,content:'...표준지 현장조사는 연 1회 정기 실시를 원칙으로 하며...'},
+];
+// 지식폴더-에이전트 연동 카드 — [{agent,folders:string[]}] 3건, 아이콘·색은 페이지 소유 (knowledge.jsx)
+export let ADMIN_AGENT_FOLDER_LINKS = [
+  {agent:'사규 기반 문서 사전 검토',folders:['공시업무규정','법률/계약']},
+  {agent:'가격 검증 어시스턴트',folders:['조사·평가 매뉴얼','공시업무규정']},
+  {agent:'HR 질의응답 봇',folders:['인사규정','교육자료']},
+];
+// 관리자 개인 지식영역 문서 — [{name,size,date}] (system.jsx UserPage)
+export let ADMIN_MY_DOCS = [
+  {name:'공시업무_규정_요약.pdf',size:'2.4MB',date:'2026-02-08'},
+  {name:'현장조사_매뉴얼.docx',size:'5.1MB',date:'2026-02-05'},
+  {name:'AI_활용_사례집.pptx',size:'12MB',date:'2026-01-28'},
+];
+// 승인 관리 초기 rows — [{id,type,user,dept,date,status,desc}] (users.jsx ApprovalPage)
+export let ADMIN_APPROVAL_ROWS = [
+  {id:'APR-101',type:'모델 배포',user:'김철수',dept:'AI연구소',date:'2026-02-09',status:'대기 중',desc:'GPT-OSS-120B 모델 운영 환경 배포 요청'},
+  {id:'APR-102',type:'GPU 할당',user:'이영희',dept:'개발팀',date:'2026-02-10',status:'대기 중',desc:'VLM 학습을 위한 A100 x4 GPU 할당 요청'},
+  {id:'APR-100',type:'GPU 할당',user:'이영희',dept:'개발팀',date:'2026-02-08',status:'승인',desc:'임베딩 학습용 GPU 할당'},
+  {id:'APR-099',type:'데이터 접근',user:'박지민',dept:'부동산공시처',date:'2026-02-07',status:'승인',desc:'공시 규정 데이터셋 접근 권한 요청'},
+  {id:'APR-098',type:'API 키 발급',user:'최준호',dept:'경영기획',date:'2026-02-06',status:'거부',desc:'외부 API 키 발급 요청'},
+];
+// 부서별 리소스 할당량 rows — [{id,name,gpu:{used,total},mem:{used,total},storage:{used,total}}] (users.jsx QuotaPage)
+export let ADMIN_QUOTA_DEPTS = [
+  {id:1,name:'AI연구소',gpu:{used:4,total:8},mem:{used:256,total:512},storage:{used:8,total:10}},
+  {id:2,name:'IT개발팀',gpu:{used:1,total:2},mem:{used:64,total:256},storage:{used:3,total:5}},
+  {id:3,name:'데이터분석팀',gpu:{used:2,total:4},mem:{used:180,total:256},storage:{used:4.5,total:5}},
+  {id:4,name:'서비스운영팀',gpu:{used:0,total:1},mem:{used:32,total:128},storage:{used:1,total:5}},
+  {id:5,name:'경영기획팀',gpu:{used:0,total:1},mem:{used:16,total:64},storage:{used:0.5,total:2}},
+  {id:6,name:'부동산공시처',gpu:{used:1,total:2},mem:{used:96,total:128},storage:{used:2,total:3}},
+];
+// 지식영역×부서 권한 매트릭스 — {headers:string[6], rows:[{dept,perm:boolean[6]}]} (users.jsx AccessSecurityPage)
+export let ADMIN_PERM_MATRIX = {
+  headers:['공시업무규정','조사·평가 매뉴얼','인사규정','법률/계약','교육자료','민원대응'],
+  rows:[
+    {dept:'부동산공시처',perm:[true,true,false,false,true,true]},
+    {dept:'토지공시부',perm:[true,true,false,false,true,true]},
+    {dept:'경영지원팀',perm:[false,false,true,false,true,false]},
+    {dept:'법무팀',perm:[false,false,false,true,false,false]},
+    {dept:'인재개발부',perm:[false,false,false,false,true,false]},
+    {dept:'주택공시부',perm:[false,true,false,false,false,true]},
+  ],
+};
+// 사용량 모니터링 할당량 권장 문구 — string, '할당량 관리 권장:' 라벨 뒤 본문 (users.jsx UsageMonitorPage)
+export let ADMIN_QUOTA_ADVICE = 'AI활용 추진반(3,240건/월)과 토지공시부(2,880건/월)이 전체 사용량의 45%를 차지합니다. 부서별 할당량 설정을 통해 리소스를 균형 있게 배분하세요.';
+// 그룹 관리 카드 — [{name,type,members,areas:string[],perms}] 4건 (users.jsx HrSyncPage)
+export let ADMIN_USER_GROUPS = [
+  {name:'공시가격본부',type:'부서 그룹',members:27,areas:['공시업무규정','민원대응','조사·평가 매뉴얼'],perms:'읽기+쓰기'},
+  {name:'법무지원그룹',type:'기능 그룹',members:6,areas:['법률/계약'],perms:'읽기 전용'},
+  {name:'관리자 그룹',type:'시스템 그룹',members:3,areas:['전체 영역'],perms:'전체 권한'},
+  {name:'외부 협력업체',type:'외부 그룹',members:12,areas:['교육자료 (일부)'],perms:'제한적 읽기'},
+];
+// AI기본법 텍스트·문서 표준 고지문 — string, 'ⓘ ' 접두는 페이지 소유 (compliance.jsx)
+export let AIACT_STD_PHRASE = '본 내용은 한국부동산원 생성형 AI 플랫폼(GenOS)을 활용하여 작성되었습니다. 중요한 의사결정에는 담당자의 검토·확인이 필요합니다.';
+
+/* ════════════════════════════════════════════════════════════════
+   도메인 리졸버 — 관리자 콘텐츠 이관 (2026-07-06)
+   위 export let 상수들은 REB 기본값. App.jsx가 렌더 시작 시
+   applyAdminDomain(domain)을 호출하면 domain.adminContent의 동일
+   키(상수명 그대로)로 오버라이드된다. 새 상수 추가 시 이 블록의
+   __REB_DEFAULTS와 applyAdminDomain 두 곳에도 반드시 등록할 것.
+   ════════════════════════════════════════════════════════════════ */
+// __RESOLVER_START__
+const __REB_DEFAULTS = {
+  ADMIN_PERSONA,
+  MOCK_GPU_NODES,
+  MOCK_EMBEDDING_JOBS,
+  MOCK_MCP_TOOLS,
+  MOCK_MODELS,
+  MOCK_PROMPTS,
+  MOCK_CHAT_APPS,
+  MOCK_NODES,
+  MOCK_GUARDRAIL_LOGS,
+  MOCK_LLM_ADMIN_MODELS,
+  MOCK_FILTER_RULES,
+  MOCK_RERANK_PIPELINES,
+  MOCK_RAG_GLOBAL,
+  MOCK_RAG_AREAS,
+  MOCK_OUTPUT_GUARDRAILS,
+  MOCK_CONFIDENCE_CONFIG,
+  MOCK_CODESPACES,
+  MOCK_VOLUMES,
+  MOCK_USERS,
+  MOCK_PERMISSION_REQUESTS,
+  MOCK_KNOWLEDGE_AREAS,
+  MOCK_KB_FOLDERS,
+  MOCK_KB_DOCS,
+  MOCK_BATCH_JOBS,
+  MOCK_SYNC_LOGS,
+  MOCK_USAGE_STATS,
+  MOCK_USAGE_HISTORY,
+  MOCK_SATISFACTION_DATA,
+  MOCK_DATA_SOURCES_INT,
+  MOCK_DATA_SOURCES_EXT,
+  MOCK_DOC_PIPELINE,
+  MOCK_CHUNK_QUALITY,
+  MOCK_CHUNK_PREVIEW,
+  MOCK_EMBED_STATUS,
+  MOCK_REPROCESS_QUEUE,
+  MOCK_SERVICE_STATS,
+  MOCK_NOTICES_MGMT,
+  MOCK_QNA_MGMT,
+  MOCK_SURVEYS_MGMT,
+  MOCK_IP_BLOCKS,
+  MOCK_WORK_LOG,
+  MOCK_EXTRACT_LOG,
+  MOCK_USAGE_BY_DEPT,
+  MOCK_ABUSE_ALERTS,
+  MOCK_APIS,
+  MOCK_API_APPROVALS,
+  MOCK_PROMPTS_MGMT,
+  MOCK_HR_SYNC,
+  MOCK_CONNECTED_SW,
+  MOCK_ACCESS_LOGS,
+  MOCK_QUALITY_REVIEWS,
+  MOCK_ANNOUNCEMENTS,
+  MOCK_LINKED_SW,
+  MOCK_AGENTS,
+  MOCK_AGENT_DEPLOYS,
+  MOCK_WORKFLOWS,
+  UPSTAGE_OCR_MOCK,
+  UPSTAGE_PARSE_MOCK,
+  MOCK_AIACT_SYSTEMS,
+  MOCK_AIACT_LABELING,
+  MOCK_AIACT_ASSESSMENTS,
+  ADMIN_MGMT_GROUPS,
+  ADMIN_REPORT_ROWS,
+  ADMIN_REPORT_TEMPLATES,
+  ADMIN_PROMPT_PREVIEW_INTRO,
+  ADMIN_INTERNAL_TOOLS,
+  ADMIN_AGENT_NAME_EXAMPLE,
+  ADMIN_WORKFLOW_NAME_EXAMPLE,
+  ADMIN_DATASET_ROWS,
+  ADMIN_VECTOR_SEARCH_RESULTS,
+  ADMIN_AGENT_FOLDER_LINKS,
+  ADMIN_MY_DOCS,
+  ADMIN_APPROVAL_ROWS,
+  ADMIN_QUOTA_DEPTS,
+  ADMIN_PERM_MATRIX,
+  ADMIN_QUOTA_ADVICE,
+  ADMIN_USER_GROUPS,
+  AIACT_STD_PHRASE,
+};
+
+export function applyAdminDomain(domain) {
+  const o = (domain && domain.adminContent) || {};
+  ADMIN_PERSONA = o.ADMIN_PERSONA !== undefined ? o.ADMIN_PERSONA : __REB_DEFAULTS.ADMIN_PERSONA;
+  MOCK_GPU_NODES = o.MOCK_GPU_NODES !== undefined ? o.MOCK_GPU_NODES : __REB_DEFAULTS.MOCK_GPU_NODES;
+  MOCK_EMBEDDING_JOBS = o.MOCK_EMBEDDING_JOBS !== undefined ? o.MOCK_EMBEDDING_JOBS : __REB_DEFAULTS.MOCK_EMBEDDING_JOBS;
+  MOCK_MCP_TOOLS = o.MOCK_MCP_TOOLS !== undefined ? o.MOCK_MCP_TOOLS : __REB_DEFAULTS.MOCK_MCP_TOOLS;
+  MOCK_MODELS = o.MOCK_MODELS !== undefined ? o.MOCK_MODELS : __REB_DEFAULTS.MOCK_MODELS;
+  MOCK_PROMPTS = o.MOCK_PROMPTS !== undefined ? o.MOCK_PROMPTS : __REB_DEFAULTS.MOCK_PROMPTS;
+  MOCK_CHAT_APPS = o.MOCK_CHAT_APPS !== undefined ? o.MOCK_CHAT_APPS : __REB_DEFAULTS.MOCK_CHAT_APPS;
+  MOCK_NODES = o.MOCK_NODES !== undefined ? o.MOCK_NODES : __REB_DEFAULTS.MOCK_NODES;
+  MOCK_GUARDRAIL_LOGS = o.MOCK_GUARDRAIL_LOGS !== undefined ? o.MOCK_GUARDRAIL_LOGS : __REB_DEFAULTS.MOCK_GUARDRAIL_LOGS;
+  MOCK_LLM_ADMIN_MODELS = o.MOCK_LLM_ADMIN_MODELS !== undefined ? o.MOCK_LLM_ADMIN_MODELS : __REB_DEFAULTS.MOCK_LLM_ADMIN_MODELS;
+  MOCK_FILTER_RULES = o.MOCK_FILTER_RULES !== undefined ? o.MOCK_FILTER_RULES : __REB_DEFAULTS.MOCK_FILTER_RULES;
+  MOCK_RERANK_PIPELINES = o.MOCK_RERANK_PIPELINES !== undefined ? o.MOCK_RERANK_PIPELINES : __REB_DEFAULTS.MOCK_RERANK_PIPELINES;
+  MOCK_RAG_GLOBAL = o.MOCK_RAG_GLOBAL !== undefined ? o.MOCK_RAG_GLOBAL : __REB_DEFAULTS.MOCK_RAG_GLOBAL;
+  MOCK_RAG_AREAS = o.MOCK_RAG_AREAS !== undefined ? o.MOCK_RAG_AREAS : __REB_DEFAULTS.MOCK_RAG_AREAS;
+  MOCK_OUTPUT_GUARDRAILS = o.MOCK_OUTPUT_GUARDRAILS !== undefined ? o.MOCK_OUTPUT_GUARDRAILS : __REB_DEFAULTS.MOCK_OUTPUT_GUARDRAILS;
+  MOCK_CONFIDENCE_CONFIG = o.MOCK_CONFIDENCE_CONFIG !== undefined ? o.MOCK_CONFIDENCE_CONFIG : __REB_DEFAULTS.MOCK_CONFIDENCE_CONFIG;
+  MOCK_CODESPACES = o.MOCK_CODESPACES !== undefined ? o.MOCK_CODESPACES : __REB_DEFAULTS.MOCK_CODESPACES;
+  MOCK_VOLUMES = o.MOCK_VOLUMES !== undefined ? o.MOCK_VOLUMES : __REB_DEFAULTS.MOCK_VOLUMES;
+  MOCK_USERS = o.MOCK_USERS !== undefined ? o.MOCK_USERS : __REB_DEFAULTS.MOCK_USERS;
+  MOCK_PERMISSION_REQUESTS = o.MOCK_PERMISSION_REQUESTS !== undefined ? o.MOCK_PERMISSION_REQUESTS : __REB_DEFAULTS.MOCK_PERMISSION_REQUESTS;
+  MOCK_KNOWLEDGE_AREAS = o.MOCK_KNOWLEDGE_AREAS !== undefined ? o.MOCK_KNOWLEDGE_AREAS : __REB_DEFAULTS.MOCK_KNOWLEDGE_AREAS;
+  MOCK_KB_FOLDERS = o.MOCK_KB_FOLDERS !== undefined ? o.MOCK_KB_FOLDERS : __REB_DEFAULTS.MOCK_KB_FOLDERS;
+  MOCK_KB_DOCS = o.MOCK_KB_DOCS !== undefined ? o.MOCK_KB_DOCS : __REB_DEFAULTS.MOCK_KB_DOCS;
+  MOCK_BATCH_JOBS = o.MOCK_BATCH_JOBS !== undefined ? o.MOCK_BATCH_JOBS : __REB_DEFAULTS.MOCK_BATCH_JOBS;
+  MOCK_SYNC_LOGS = o.MOCK_SYNC_LOGS !== undefined ? o.MOCK_SYNC_LOGS : __REB_DEFAULTS.MOCK_SYNC_LOGS;
+  MOCK_USAGE_STATS = o.MOCK_USAGE_STATS !== undefined ? o.MOCK_USAGE_STATS : __REB_DEFAULTS.MOCK_USAGE_STATS;
+  MOCK_USAGE_HISTORY = o.MOCK_USAGE_HISTORY !== undefined ? o.MOCK_USAGE_HISTORY : __REB_DEFAULTS.MOCK_USAGE_HISTORY;
+  MOCK_SATISFACTION_DATA = o.MOCK_SATISFACTION_DATA !== undefined ? o.MOCK_SATISFACTION_DATA : __REB_DEFAULTS.MOCK_SATISFACTION_DATA;
+  MOCK_DATA_SOURCES_INT = o.MOCK_DATA_SOURCES_INT !== undefined ? o.MOCK_DATA_SOURCES_INT : __REB_DEFAULTS.MOCK_DATA_SOURCES_INT;
+  MOCK_DATA_SOURCES_EXT = o.MOCK_DATA_SOURCES_EXT !== undefined ? o.MOCK_DATA_SOURCES_EXT : __REB_DEFAULTS.MOCK_DATA_SOURCES_EXT;
+  MOCK_DOC_PIPELINE = o.MOCK_DOC_PIPELINE !== undefined ? o.MOCK_DOC_PIPELINE : __REB_DEFAULTS.MOCK_DOC_PIPELINE;
+  MOCK_CHUNK_QUALITY = o.MOCK_CHUNK_QUALITY !== undefined ? o.MOCK_CHUNK_QUALITY : __REB_DEFAULTS.MOCK_CHUNK_QUALITY;
+  MOCK_CHUNK_PREVIEW = o.MOCK_CHUNK_PREVIEW !== undefined ? o.MOCK_CHUNK_PREVIEW : __REB_DEFAULTS.MOCK_CHUNK_PREVIEW;
+  MOCK_EMBED_STATUS = o.MOCK_EMBED_STATUS !== undefined ? o.MOCK_EMBED_STATUS : __REB_DEFAULTS.MOCK_EMBED_STATUS;
+  MOCK_REPROCESS_QUEUE = o.MOCK_REPROCESS_QUEUE !== undefined ? o.MOCK_REPROCESS_QUEUE : __REB_DEFAULTS.MOCK_REPROCESS_QUEUE;
+  MOCK_SERVICE_STATS = o.MOCK_SERVICE_STATS !== undefined ? o.MOCK_SERVICE_STATS : __REB_DEFAULTS.MOCK_SERVICE_STATS;
+  MOCK_NOTICES_MGMT = o.MOCK_NOTICES_MGMT !== undefined ? o.MOCK_NOTICES_MGMT : __REB_DEFAULTS.MOCK_NOTICES_MGMT;
+  MOCK_QNA_MGMT = o.MOCK_QNA_MGMT !== undefined ? o.MOCK_QNA_MGMT : __REB_DEFAULTS.MOCK_QNA_MGMT;
+  MOCK_SURVEYS_MGMT = o.MOCK_SURVEYS_MGMT !== undefined ? o.MOCK_SURVEYS_MGMT : __REB_DEFAULTS.MOCK_SURVEYS_MGMT;
+  MOCK_IP_BLOCKS = o.MOCK_IP_BLOCKS !== undefined ? o.MOCK_IP_BLOCKS : __REB_DEFAULTS.MOCK_IP_BLOCKS;
+  MOCK_WORK_LOG = o.MOCK_WORK_LOG !== undefined ? o.MOCK_WORK_LOG : __REB_DEFAULTS.MOCK_WORK_LOG;
+  MOCK_EXTRACT_LOG = o.MOCK_EXTRACT_LOG !== undefined ? o.MOCK_EXTRACT_LOG : __REB_DEFAULTS.MOCK_EXTRACT_LOG;
+  MOCK_USAGE_BY_DEPT = o.MOCK_USAGE_BY_DEPT !== undefined ? o.MOCK_USAGE_BY_DEPT : __REB_DEFAULTS.MOCK_USAGE_BY_DEPT;
+  MOCK_ABUSE_ALERTS = o.MOCK_ABUSE_ALERTS !== undefined ? o.MOCK_ABUSE_ALERTS : __REB_DEFAULTS.MOCK_ABUSE_ALERTS;
+  MOCK_APIS = o.MOCK_APIS !== undefined ? o.MOCK_APIS : __REB_DEFAULTS.MOCK_APIS;
+  MOCK_API_APPROVALS = o.MOCK_API_APPROVALS !== undefined ? o.MOCK_API_APPROVALS : __REB_DEFAULTS.MOCK_API_APPROVALS;
+  MOCK_PROMPTS_MGMT = o.MOCK_PROMPTS_MGMT !== undefined ? o.MOCK_PROMPTS_MGMT : __REB_DEFAULTS.MOCK_PROMPTS_MGMT;
+  MOCK_HR_SYNC = o.MOCK_HR_SYNC !== undefined ? o.MOCK_HR_SYNC : __REB_DEFAULTS.MOCK_HR_SYNC;
+  MOCK_CONNECTED_SW = o.MOCK_CONNECTED_SW !== undefined ? o.MOCK_CONNECTED_SW : __REB_DEFAULTS.MOCK_CONNECTED_SW;
+  MOCK_ACCESS_LOGS = o.MOCK_ACCESS_LOGS !== undefined ? o.MOCK_ACCESS_LOGS : __REB_DEFAULTS.MOCK_ACCESS_LOGS;
+  MOCK_QUALITY_REVIEWS = o.MOCK_QUALITY_REVIEWS !== undefined ? o.MOCK_QUALITY_REVIEWS : __REB_DEFAULTS.MOCK_QUALITY_REVIEWS;
+  MOCK_ANNOUNCEMENTS = o.MOCK_ANNOUNCEMENTS !== undefined ? o.MOCK_ANNOUNCEMENTS : __REB_DEFAULTS.MOCK_ANNOUNCEMENTS;
+  MOCK_LINKED_SW = o.MOCK_LINKED_SW !== undefined ? o.MOCK_LINKED_SW : __REB_DEFAULTS.MOCK_LINKED_SW;
+  MOCK_AGENTS = o.MOCK_AGENTS !== undefined ? o.MOCK_AGENTS : __REB_DEFAULTS.MOCK_AGENTS;
+  MOCK_AGENT_DEPLOYS = o.MOCK_AGENT_DEPLOYS !== undefined ? o.MOCK_AGENT_DEPLOYS : __REB_DEFAULTS.MOCK_AGENT_DEPLOYS;
+  MOCK_WORKFLOWS = o.MOCK_WORKFLOWS !== undefined ? o.MOCK_WORKFLOWS : __REB_DEFAULTS.MOCK_WORKFLOWS;
+  UPSTAGE_OCR_MOCK = o.UPSTAGE_OCR_MOCK !== undefined ? o.UPSTAGE_OCR_MOCK : __REB_DEFAULTS.UPSTAGE_OCR_MOCK;
+  UPSTAGE_PARSE_MOCK = o.UPSTAGE_PARSE_MOCK !== undefined ? o.UPSTAGE_PARSE_MOCK : __REB_DEFAULTS.UPSTAGE_PARSE_MOCK;
+  MOCK_AIACT_SYSTEMS = o.MOCK_AIACT_SYSTEMS !== undefined ? o.MOCK_AIACT_SYSTEMS : __REB_DEFAULTS.MOCK_AIACT_SYSTEMS;
+  MOCK_AIACT_LABELING = o.MOCK_AIACT_LABELING !== undefined ? o.MOCK_AIACT_LABELING : __REB_DEFAULTS.MOCK_AIACT_LABELING;
+  MOCK_AIACT_ASSESSMENTS = o.MOCK_AIACT_ASSESSMENTS !== undefined ? o.MOCK_AIACT_ASSESSMENTS : __REB_DEFAULTS.MOCK_AIACT_ASSESSMENTS;
+  ADMIN_MGMT_GROUPS = o.ADMIN_MGMT_GROUPS !== undefined ? o.ADMIN_MGMT_GROUPS : __REB_DEFAULTS.ADMIN_MGMT_GROUPS;
+  ADMIN_REPORT_ROWS = o.ADMIN_REPORT_ROWS !== undefined ? o.ADMIN_REPORT_ROWS : __REB_DEFAULTS.ADMIN_REPORT_ROWS;
+  ADMIN_REPORT_TEMPLATES = o.ADMIN_REPORT_TEMPLATES !== undefined ? o.ADMIN_REPORT_TEMPLATES : __REB_DEFAULTS.ADMIN_REPORT_TEMPLATES;
+  ADMIN_PROMPT_PREVIEW_INTRO = o.ADMIN_PROMPT_PREVIEW_INTRO !== undefined ? o.ADMIN_PROMPT_PREVIEW_INTRO : __REB_DEFAULTS.ADMIN_PROMPT_PREVIEW_INTRO;
+  ADMIN_INTERNAL_TOOLS = o.ADMIN_INTERNAL_TOOLS !== undefined ? o.ADMIN_INTERNAL_TOOLS : __REB_DEFAULTS.ADMIN_INTERNAL_TOOLS;
+  ADMIN_AGENT_NAME_EXAMPLE = o.ADMIN_AGENT_NAME_EXAMPLE !== undefined ? o.ADMIN_AGENT_NAME_EXAMPLE : __REB_DEFAULTS.ADMIN_AGENT_NAME_EXAMPLE;
+  ADMIN_WORKFLOW_NAME_EXAMPLE = o.ADMIN_WORKFLOW_NAME_EXAMPLE !== undefined ? o.ADMIN_WORKFLOW_NAME_EXAMPLE : __REB_DEFAULTS.ADMIN_WORKFLOW_NAME_EXAMPLE;
+  ADMIN_DATASET_ROWS = o.ADMIN_DATASET_ROWS !== undefined ? o.ADMIN_DATASET_ROWS : __REB_DEFAULTS.ADMIN_DATASET_ROWS;
+  ADMIN_VECTOR_SEARCH_RESULTS = o.ADMIN_VECTOR_SEARCH_RESULTS !== undefined ? o.ADMIN_VECTOR_SEARCH_RESULTS : __REB_DEFAULTS.ADMIN_VECTOR_SEARCH_RESULTS;
+  ADMIN_AGENT_FOLDER_LINKS = o.ADMIN_AGENT_FOLDER_LINKS !== undefined ? o.ADMIN_AGENT_FOLDER_LINKS : __REB_DEFAULTS.ADMIN_AGENT_FOLDER_LINKS;
+  ADMIN_MY_DOCS = o.ADMIN_MY_DOCS !== undefined ? o.ADMIN_MY_DOCS : __REB_DEFAULTS.ADMIN_MY_DOCS;
+  ADMIN_APPROVAL_ROWS = o.ADMIN_APPROVAL_ROWS !== undefined ? o.ADMIN_APPROVAL_ROWS : __REB_DEFAULTS.ADMIN_APPROVAL_ROWS;
+  ADMIN_QUOTA_DEPTS = o.ADMIN_QUOTA_DEPTS !== undefined ? o.ADMIN_QUOTA_DEPTS : __REB_DEFAULTS.ADMIN_QUOTA_DEPTS;
+  ADMIN_PERM_MATRIX = o.ADMIN_PERM_MATRIX !== undefined ? o.ADMIN_PERM_MATRIX : __REB_DEFAULTS.ADMIN_PERM_MATRIX;
+  ADMIN_QUOTA_ADVICE = o.ADMIN_QUOTA_ADVICE !== undefined ? o.ADMIN_QUOTA_ADVICE : __REB_DEFAULTS.ADMIN_QUOTA_ADVICE;
+  ADMIN_USER_GROUPS = o.ADMIN_USER_GROUPS !== undefined ? o.ADMIN_USER_GROUPS : __REB_DEFAULTS.ADMIN_USER_GROUPS;
+  AIACT_STD_PHRASE = o.AIACT_STD_PHRASE !== undefined ? o.AIACT_STD_PHRASE : __REB_DEFAULTS.AIACT_STD_PHRASE;
+}
+// __RESOLVER_END__

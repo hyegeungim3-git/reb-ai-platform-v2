@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { Activity, Plus, Search, AlertCircle, X, Shield, Trash2, Download, Check, RotateCcw, Edit3, UserPlus, Info } from 'lucide-react';
-import { MOCK_USERS, MOCK_PERMISSION_REQUESTS, MOCK_USAGE_HISTORY, MOCK_SERVICE_STATS, MOCK_IP_BLOCKS, MOCK_WORK_LOG, MOCK_EXTRACT_LOG, MOCK_USAGE_BY_DEPT, MOCK_ABUSE_ALERTS, MOCK_HR_SYNC, MOCK_ACCESS_LOGS } from '../mocks.js';
+import { MOCK_USERS, MOCK_PERMISSION_REQUESTS, MOCK_USAGE_HISTORY, MOCK_SERVICE_STATS, MOCK_IP_BLOCKS, MOCK_WORK_LOG, MOCK_EXTRACT_LOG, MOCK_USAGE_BY_DEPT, MOCK_ABUSE_ALERTS, MOCK_HR_SYNC, MOCK_ACCESS_LOGS, ADMIN_PERSONA, ADMIN_APPROVAL_ROWS, ADMIN_QUOTA_DEPTS, ADMIN_PERM_MATRIX, ADMIN_QUOTA_ADVICE, ADMIN_USER_GROUPS } from '../mocks.js';
 import { StatusBadge, Modal, PageShell, useToast, ConfirmDialog } from '../common.jsx';
 
 export const ApprovalPage = () => {
   const toast=useToast();
-  const [requests,setRequests]=useState([
-    {id:'APR-101',type:'모델 배포',user:'김철수',dept:'AI연구소',date:'2026-02-09',status:'대기 중',desc:'GPT-OSS-120B 모델 운영 환경 배포 요청'},
-    {id:'APR-102',type:'GPU 할당',user:'이영희',dept:'개발팀',date:'2026-02-10',status:'대기 중',desc:'VLM 학습을 위한 A100 x4 GPU 할당 요청'},
-    {id:'APR-100',type:'GPU 할당',user:'이영희',dept:'개발팀',date:'2026-02-08',status:'승인',desc:'임베딩 학습용 GPU 할당'},
-    {id:'APR-099',type:'데이터 접근',user:'박지민',dept:'부동산공시처',date:'2026-02-07',status:'승인',desc:'공시 규정 데이터셋 접근 권한 요청'},
-    {id:'APR-098',type:'API 키 발급',user:'최준호',dept:'경영기획',date:'2026-02-06',status:'거부',desc:'외부 API 키 발급 요청'},
-  ]);
+  const [requests,setRequests]=useState(ADMIN_APPROVAL_ROWS.map(r=>({...r})));
   const [tab,setTab]=useState('전체');const [confirmAction,setConfirmAction]=useState(null);const [rejectReason,setRejectReason]=useState('');
   const filtered=tab==='전체'?requests:requests.filter(r=>r.status===tab);
   const counts={total:requests.length,pending:requests.filter(r=>r.status==='대기 중').length,approved:requests.filter(r=>r.status==='승인').length,rejected:requests.filter(r=>r.status==='거부').length};
@@ -54,14 +48,7 @@ export const ApprovalPage = () => {
 
 export const QuotaPage = () => {
   const toast=useToast();
-  const [depts,setDepts]=useState([
-    {id:1,name:'AI연구소',gpu:{used:4,total:8},mem:{used:256,total:512},storage:{used:8,total:10}},
-    {id:2,name:'IT개발팀',gpu:{used:1,total:2},mem:{used:64,total:256},storage:{used:3,total:5}},
-    {id:3,name:'데이터분석팀',gpu:{used:2,total:4},mem:{used:180,total:256},storage:{used:4.5,total:5}},
-    {id:4,name:'서비스운영팀',gpu:{used:0,total:1},mem:{used:32,total:128},storage:{used:1,total:5}},
-    {id:5,name:'경영기획팀',gpu:{used:0,total:1},mem:{used:16,total:64},storage:{used:0.5,total:2}},
-    {id:6,name:'부동산공시처',gpu:{used:1,total:2},mem:{used:96,total:128},storage:{used:2,total:3}},
-  ]);
+  const [depts,setDepts]=useState(ADMIN_QUOTA_DEPTS.map(d=>({...d,gpu:{...d.gpu},mem:{...d.mem},storage:{...d.storage}})));
   const [editDept,setEditDept]=useState(null);
   const pct=(u,t)=>Math.round(u/t*100);
   return (
@@ -254,16 +241,9 @@ export const AccessSecurityPage = () => {
             <table className="w-full text-[12px]">
               <thead><tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left font-bold text-gray-500 py-2 px-3 text-[11px]">부서/그룹</th>
-                {['공시업무규정','조사·평가 매뉴얼','인사규정','법률/계약','교육자료','민원대응'].map(ka=><th key={ka} className="text-center font-bold text-gray-500 py-2 px-2 text-[11px] whitespace-nowrap">{ka}</th>)}
+                {ADMIN_PERM_MATRIX.headers.map(ka=><th key={ka} className="text-center font-bold text-gray-500 py-2 px-2 text-[11px] whitespace-nowrap">{ka}</th>)}
               </tr></thead>
-              <tbody>{[
-                {dept:'부동산공시처',perm:[true,true,false,false,true,true]},
-                {dept:'토지공시부',perm:[true,true,false,false,true,true]},
-                {dept:'경영지원팀',perm:[false,false,true,false,true,false]},
-                {dept:'법무팀',perm:[false,false,false,true,false,false]},
-                {dept:'인재개발부',perm:[false,false,false,false,true,false]},
-                {dept:'주택공시부',perm:[false,true,false,false,false,true]},
-              ].map(r=>(
+              <tbody>{ADMIN_PERM_MATRIX.rows.map(r=>(
                 <tr key={r.dept} className="border-b border-gray-50 hover:bg-gray-50">
                   <td className="py-2.5 px-3 font-bold text-gray-800">{r.dept}</td>
                   {r.perm.map((p,i)=>(
@@ -316,7 +296,7 @@ export const AccessSecurityPage = () => {
                 <input value={newBlock.target} onChange={e=>setNewBlock(p=>({...p,target:e.target.value}))} placeholder="IP 주소 또는 사용자 ID" className="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-[13px] focus:outline-none focus:border-blue-400"/>
                 <input value={newBlock.reason} onChange={e=>setNewBlock(p=>({...p,reason:e.target.value}))} placeholder="사유" className="w-full border-2 border-gray-200 rounded-xl px-3 py-2 text-[13px] focus:outline-none focus:border-blue-400"/>
               </div>
-              <div className="flex gap-3 mt-5"><button onClick={()=>setShowAdd(false)} className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-bold text-[13px]">취소</button><button onClick={()=>{if(!newBlock.target||!newBlock.reason){setToast({message:'대상과 사유를 입력하세요.'});return;}setBlocks(bs=>[{id:`ib-${Date.now()}`,target:newBlock.target,type:newBlock.type,reason:newBlock.reason,action:newBlock.action,appliedBy:'김영빈',date:new Date().toISOString().slice(0,10),status:'활성'},...bs]);setShowAdd(false);setNewBlock({target:'',type:'IP',reason:'',action:'차단'});setToast({message:'규칙이 추가되었습니다.'});}} className={`flex-1 py-2.5 rounded-xl font-black text-[13px] text-white ${newBlock.action==='차단'?'bg-red-600 hover:bg-red-700':'bg-green-600 hover:bg-green-700'}`}>추가</button></div>
+              <div className="flex gap-3 mt-5"><button onClick={()=>setShowAdd(false)} className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-bold text-[13px]">취소</button><button onClick={()=>{if(!newBlock.target||!newBlock.reason){setToast({message:'대상과 사유를 입력하세요.'});return;}setBlocks(bs=>[{id:`ib-${Date.now()}`,target:newBlock.target,type:newBlock.type,reason:newBlock.reason,action:newBlock.action,appliedBy:ADMIN_PERSONA.name,date:new Date().toISOString().slice(0,10),status:'활성'},...bs]);setShowAdd(false);setNewBlock({target:'',type:'IP',reason:'',action:'차단'});setToast({message:'규칙이 추가되었습니다.'});}} className={`flex-1 py-2.5 rounded-xl font-black text-[13px] text-white ${newBlock.action==='차단'?'bg-red-600 hover:bg-red-700':'bg-green-600 hover:bg-green-700'}`}>추가</button></div>
             </div></div>
           )}
         </div>
@@ -456,7 +436,7 @@ export const UsageMonitorPage = () => {
           </div>
           <div className="bg-blue-50 border-2 border-blue-100 rounded-2xl p-4 flex items-start gap-3">
             <Activity className="w-5 h-5 text-blue-500 shrink-0 mt-0.5"/>
-            <div className="text-[13px] text-blue-800 font-medium"><strong>할당량 관리 권장:</strong> AI활용 추진반(3,240건/월)과 토지공시부(2,880건/월)이 전체 사용량의 45%를 차지합니다. 부서별 할당량 설정을 통해 리소스를 균형 있게 배분하세요.</div>
+            <div className="text-[13px] text-blue-800 font-medium"><strong>할당량 관리 권장:</strong> {ADMIN_QUOTA_ADVICE}</div>
           </div>
         </div>
       )}
@@ -555,7 +535,7 @@ export const HrSyncPage = () => {
         <div className="space-y-4">
           <div className="flex justify-end"><button onClick={()=>setToast({message:'그룹 생성 다이얼로그가 열립니다.'})} className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-xl text-[13px] font-bold hover:bg-indigo-700 shadow-sm"><Plus className="w-4 h-4"/> 그룹 생성</button></div>
           <div className="grid grid-cols-2 gap-4">
-            {[{name:'공시가격본부',type:'부서 그룹',members:27,areas:['공시업무규정','민원대응','조사·평가 매뉴얼'],perms:'읽기+쓰기'},{name:'법무지원그룹',type:'기능 그룹',members:6,areas:['법률/계약'],perms:'읽기 전용'},{name:'관리자 그룹',type:'시스템 그룹',members:3,areas:['전체 영역'],perms:'전체 권한'},{name:'외부 협력업체',type:'외부 그룹',members:12,areas:['교육자료 (일부)'],perms:'제한적 읽기'}].map(g=>(
+            {ADMIN_USER_GROUPS.map(g=>(
               <div key={g.name} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-3"><div><span className="font-black text-[14px] text-gray-800 block">{g.name}</span><span className="text-[11px] text-gray-500">{g.type}</span></div><span className="text-[12px] font-bold text-gray-600">{g.members}명</span></div>
                 <div className="text-[12px] text-gray-600 mb-2"><span className="font-medium text-gray-500">접근 영역: </span>{g.areas.join(', ')}</div>

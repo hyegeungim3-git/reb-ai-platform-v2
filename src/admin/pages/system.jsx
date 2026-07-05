@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Database, Settings, FileText, AlertCircle, Bot, Shield, Users, UploadCloud, RotateCcw, BookOpen, TrendingUp, Megaphone, FolderTree, Link2, Star } from 'lucide-react';
-import { MOCK_USERS, MOCK_KNOWLEDGE_AREAS, MOCK_CONNECTED_SW, MOCK_QUALITY_REVIEWS, MOCK_ANNOUNCEMENTS, MOCK_LINKED_SW } from '../mocks.js';
+import { MOCK_USERS, MOCK_KNOWLEDGE_AREAS, MOCK_CONNECTED_SW, MOCK_QUALITY_REVIEWS, MOCK_ANNOUNCEMENTS, MOCK_LINKED_SW, ADMIN_PERSONA, ADMIN_MY_DOCS } from '../mocks.js';
 import { StatusBadge, Modal, PageShell, useToast } from '../common.jsx';
 
 export const SystemMonitorPage = () => (
@@ -75,9 +75,9 @@ export const AdminPage = () => (
 
 export const UserPage = () => {
   const toast=useToast();
-  const [profile,setProfile]=useState({name:'김영빈',dept:'AI활용 업무혁신 TF',role:'관리자',email:'kim@reb.or.kr',phone:'02-2100-0000'});
+  const [profile,setProfile]=useState({name:ADMIN_PERSONA.name,dept:ADMIN_PERSONA.dept,role:ADMIN_PERSONA.role,email:ADMIN_PERSONA.email,phone:'02-2100-0000'});
   const [showEdit,setShowEdit]=useState(false);const [editForm,setEditForm]=useState({...profile});
-  const [docs]=useState([{name:'공시업무_규정_요약.pdf',size:'2.4MB',date:'2026-02-08'},{name:'현장조사_매뉴얼.docx',size:'5.1MB',date:'2026-02-05'},{name:'AI_활용_사례집.pptx',size:'12MB',date:'2026-01-28'}]);
+  const [docs]=useState(ADMIN_MY_DOCS);
   const [apiKey]=useState('genos-api-xxxx-xxxx-1a2b');const [showKey,setShowKey]=useState(false);
   return (
     <PageShell breadcrumb={['사용자 페이지']} title="내 정보 및 개인 지식영역">

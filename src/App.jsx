@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LayoutDashboard, Database, Settings, Cpu, ChevronDown, Bot, Box, Layers, Code, BarChart2, Shield, Briefcase, Users, Grid, List, PieChart, Wrench, Bell, Columns, Monitor, FolderOpen, UserCog, Unplug, Megaphone, Scale } from 'lucide-react';
 import { ToastProvider, SidebarItem } from './admin/common.jsx';
+import { applyAdminDomain, ADMIN_PERSONA } from './admin/mocks.js';
 import { UsageHistoryPage, SatisfactionMgmtPage, UsageStatsPage, InfoServiceStatsPage } from './admin/pages/analytics.jsx';
 import { ChatAppPage, ReportGenPage, DataAnalysisPage } from './admin/pages/applications.jsx';
 import { AnnouncementPage, ContentMgmtPage, ApiPromptPage } from './admin/pages/content.jsx';
@@ -15,7 +16,10 @@ import { LlmTraining, VlmTraining, EmbeddingPage, RerankingPage, LeaderboardPage
 import { ApprovalPage, QuotaPage, UserManagementPage, AccessLogPage, AccessSecurityPage, WorkLogPage, UsageMonitorPage, HrSyncPage } from './admin/pages/users.jsx';
 
 const App = ({ onSwitchToUser, domain }) => {
+  // 도메인 리졸버: 하위 페이지들이 import하는 mocks.js 상수를 팩 adminContent로 교체 (렌더 최상단에서 호출 — 페이지 렌더보다 먼저)
+  applyAdminDomain(domain);
   const orgName = domain?.orgName || '한국부동산원';
+  const admin = ADMIN_PERSONA;
   const [activeId,setActiveId]=useState('dashboard.system');
 
   const menu = [
@@ -186,8 +190,8 @@ const App = ({ onSwitchToUser, domain }) => {
         </div>
         <div className="p-3 border-t">
           <div className="flex items-center space-x-2.5 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-xs font-bold shadow-sm">김</div>
-            <div className="flex-1 min-w-0"><div className="text-sm font-bold truncate">김영빈·관리자</div><div className="text-xs text-gray-400 truncate">{orgName}</div></div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-xs font-bold shadow-sm">{admin.name.charAt(0)}</div>
+            <div className="flex-1 min-w-0"><div className="text-sm font-bold truncate">{admin.name}·{admin.role}</div><div className="text-xs text-gray-400 truncate">{orgName}</div></div>
           </div>
         </div>
       </div>
@@ -205,8 +209,8 @@ const App = ({ onSwitchToUser, domain }) => {
           <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"><Settings size={18}/></button>
           <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg relative"><Bell size={18}/><span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"/></button>
           <div className="flex items-center space-x-2 ml-3 pl-3 border-l text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-[10px] font-bold">김</div>
-            <span>김영빈</span><ChevronDown size={14}/>
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white text-[10px] font-bold">{admin.name.charAt(0)}</div>
+            <span>{admin.name}</span><ChevronDown size={14}/>
           </div>
         </div>
         <div className="flex-1 overflow-hidden bg-[#F8F9FA]">

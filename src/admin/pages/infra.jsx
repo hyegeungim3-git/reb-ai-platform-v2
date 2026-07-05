@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { Database, Plus, Search } from 'lucide-react';
-import { MOCK_MODELS, MOCK_CODESPACES, MOCK_VOLUMES } from '../mocks.js';
+import { MOCK_MODELS, MOCK_CODESPACES, MOCK_VOLUMES, ADMIN_DATASET_ROWS, ADMIN_VECTOR_SEARCH_RESULTS } from '../mocks.js';
 import { StatusBadge, Modal, PageShell, useToast, ConfirmDialog, ToggleSwitch } from '../common.jsx';
 
 export const DatasetPage = () => {
   const toast=useToast();
-  const [datasets,setDatasets]=useState([
-    {id:1,n:'Notice_Guidelines_QA_v1',d:'공시 규정 QA 데이터셋',t:'JSONL',s:'124MB',c:'15,000',date:'2026-02-10'},
-    {id:2,n:'Maintenance_Manual_Corpus',d:'장비 유지보수 매뉴얼',t:'TXT',s:'512MB',c:'N/A',date:'2026-02-09'},
-    {id:3,n:'Employee_Inquiry_Logs',d:'임직원 질의 로그',t:'CSV',s:'45MB',c:'8,200',date:'2026-02-08'},
-    {id:4,n:'Gemma_Instruction_Tuning',d:'Gemma 한국어 인스트럭션',t:'JSONL',s:'230MB',c:'25,000',date:'2026-02-07'},
-    {id:5,n:'EXAONE_Finance_Report',d:'재무 보고서 요약 학습',t:'Parquet',s:'1.2GB',c:'5,000',date:'2026-02-06'},
-  ]);
+  const [datasets,setDatasets]=useState(ADMIN_DATASET_ROWS.map(r=>({...r})));
   const [search,setSearch]=useState('');const [showCreate,setShowCreate]=useState(false);const [detail,setDetail]=useState(null);const [confirmDel,setConfirmDel]=useState(null);
   const [form,setForm]=useState({name:'',desc:'',type:'JSONL'});
   const filtered=datasets.filter(d=>d.n.toLowerCase().includes(search.toLowerCase())||d.d.includes(search));
@@ -57,11 +51,7 @@ export const VectorDbPage = () => {
     {name:'financial_reports',vectors:'210K',dim:1024,status:'Active',updated:'2026-02-08'},
     {name:'training_materials',vectors:'240K',dim:768,status:'Building',updated:'2026-02-11'},
   ]);
-  const doSearch=()=>{if(!query.trim())return;setSearching(true);setTimeout(()=>{setResults([
-    {id:'vec_8a1',score:0.92,content:'...본 규정은 한국부동산원의 부동산 가격공시 업무 수행에 필요한 사항을 규정함을 목적으로 한다...'},
-    {id:'vec_3b2',score:0.88,content:'...제 2 조 (적용범위) 이 규정은 공사의 전 임직원 및 사업장 내 협력업체에 적용하며...'},
-    {id:'vec_9c3',score:0.75,content:'...표준지 현장조사는 연 1회 정기 실시를 원칙으로 하며...'},
-  ]);setSearching(false);},800);};
+  const doSearch=()=>{if(!query.trim())return;setSearching(true);setTimeout(()=>{setResults(ADMIN_VECTOR_SEARCH_RESULTS.map(r=>({...r})));setSearching(false);},800);};
   return (
     <PageShell breadcrumb={['데이터','벡터 DB']}>
       <div className="grid grid-cols-3 gap-4 mb-6">

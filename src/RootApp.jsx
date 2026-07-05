@@ -239,7 +239,7 @@ const RootApp = () => {
   if (view === "ADMIN") {
     return (
       <Suspense fallback={<LoadingFallback domain={domain} />}>
-        <GenOSAdmin domain={domain} onSwitchToUser={() => setView("USER")} />
+        <GenOSAdmin key={domainId} domain={domain} onSwitchToUser={() => setView("USER")} />
       </Suspense>
     );
   }

@@ -66,10 +66,11 @@ sampleAnswers: [ /* suggestions와 짝. 최소 2개 */
 
 modeDesc: { GENERAL: "…에 대해 자유롭게 질문하세요" },  // REVIEW/TRANSLATE/REPORT도 교체 가능
 
-agentCatalog: { // 10개 전부 override. key는 아래 에이전트 ID 고정 목록
+agentCatalog: { // 13개 전부 override. key는 아래 에이전트 ID 고정 목록
   "agent-chatbot":      { name: "…챗봇", shortName: "…", desc: "…합니다." },
   // agent-report / agent-meeting / agent-knowledge / agent-internalreg
   // agent-ocr / agent-dbquery / agent-address / agent-dataanalysis / agent-summary
+  // agent-translate / agent-review / agent-safety
 },  // name·shortName·desc만 교체됨. workflow 등 내부 단계는 base 유지 (한계: §4)
 
 docs: [ /* 3개 — 우측 문서함 */ { id: "d1", name: "파일명.pdf", size: "2.8 MB",
@@ -90,7 +91,7 @@ agentFeed: { // 에이전트 탭 우측 활동 피드
 ```
 
 **에이전트 ID 고정 목록** (오타 시 조용히 무시되므로 주의):
-`agent-chatbot` `agent-report` `agent-meeting` `agent-knowledge` `agent-internalreg` `agent-ocr` `agent-dbquery` `agent-address` `agent-dataanalysis` `agent-summary`
+`agent-chatbot` `agent-report` `agent-meeting` `agent-knowledge` `agent-internalreg` `agent-ocr` `agent-dbquery` `agent-address` `agent-dataanalysis` `agent-summary` `agent-translate` `agent-review` `agent-safety`
 
 ## 3. 콘텐츠 품질 기준 (모델 무관 동일 수준을 위한 규칙)
 

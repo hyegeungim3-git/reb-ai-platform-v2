@@ -79,6 +79,9 @@ const template = {
     "agent-address":      { name: "기준정보 표준화 에이전트", shortName: "표준화", desc: "…" },
     "agent-dataanalysis": { name: "데이터 분석 에이전트", shortName: "데이터 분석", desc: "…" },
     "agent-summary":      { name: "문서 요약 에이전트", shortName: "문서 요약", desc: "…" },
+    "agent-translate":    { name: "번역·요약 에이전트", shortName: "번역·요약", desc: "…" },
+    "agent-review":       { name: "문서 사전 검토 에이전트", shortName: "문서 검토", desc: "…" },
+    "agent-safety":       { name: "안전관리계획 에이전트", shortName: "안전계획", desc: "…" },
   },
   docs: [
     // 3개. secLevel은 C/S/O 하나씩, 3번째는 내규 hwp 관례

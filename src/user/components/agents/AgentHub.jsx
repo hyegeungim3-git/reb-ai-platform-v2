@@ -26,6 +26,7 @@ const USAGE_COUNTS = {
   'agent-chatbot':21,'agent-report':7,'agent-meeting':6,
   'agent-internalreg':8,'agent-ocr':11,'agent-knowledge':5,
   'agent-dbquery':12,'agent-address':4,'agent-dataanalysis':3,'agent-summary':9,
+  'agent-translate':5,'agent-review':7,'agent-safety':4,
 };
 
 const AgentHub = ({ onLaunch, agents = AGENT_TEAMS, orgName = "한국부동산원" }) => {

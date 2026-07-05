@@ -38,6 +38,9 @@ const DBQueryAgent = lazy(() => import("./user/components/agents/DBQueryAgent.js
 const AddressAgent = lazy(() => import("./user/components/agents/AddressAgent.jsx"));
 const DataAnalysisAgent = lazy(() => import("./user/components/agents/DataAnalysisAgent.jsx"));
 const SummaryAgent = lazy(() => import("./user/components/agents/SummaryAgent.jsx"));
+const TranslateAgent = lazy(() => import("./user/components/agents/TranslateAgent.jsx"));
+const DocReviewAgent = lazy(() => import("./user/components/agents/DocReviewAgent.jsx"));
+const SafetyPlanAgent = lazy(() => import("./user/components/agents/SafetyPlanAgent.jsx"));
 
 // 에이전트 로딩 폴백
 const AgentLoadingFallback = () => (
@@ -808,6 +811,9 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
                activeAgentId === "agent-address"      ? <AddressAgent      onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-dataanalysis" ? <DataAnalysisAgent onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-summary"      ? <SummaryAgent      onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-translate"    ? <TranslateAgent    onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-review"       ? <DocReviewAgent    onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-safety"       ? <SafetyPlanAgent   onBack={() => setActiveAgentId(null)} /> :
                <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} />}
             </Suspense>
           )}

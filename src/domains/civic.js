@@ -90,6 +90,9 @@ const civic = {
     "agent-address":      { name: "주소 정제 에이전트", shortName: "주소 정제", desc: "민원 서류의 지번·도로명 주소를 표준화하고 행정동 코드와 좌표를 매핑합니다." },
     "agent-dataanalysis": { name: "시정 데이터 분석 에이전트", shortName: "시정 분석", desc: "민원·인구·예산 데이터를 업로드하면 추이 분석과 시각화 리포트를 생성합니다." },
     "agent-summary":      { name: "문서 요약 에이전트", shortName: "문서 요약", desc: "감사 보고서, 연구 용역 보고서, 국·과 업무보고를 유형별로 요약하고 개정본을 비교합니다." },
+    "agent-translate":    { name: "다국어 민원 번역 에이전트", shortName: "민원 번역", desc: "외국인 민원 서류와 안내문을 한·영·중·일로 번역하고 행정 용어집을 적용합니다." },
+    "agent-review":       { name: "공문 사전 검토 에이전트", shortName: "공문 검토", desc: "기안문·공문서를 조례·규칙 및 복무규정과 자동 대조하여 절차 하자를 검토합니다." },
+    "agent-safety":       { name: "행사·점검 안전계획 에이전트", shortName: "안전계획", desc: "지역 행사와 현장점검의 위험 요소를 평가하고 재난안전법 기반 안전계획서를 생성합니다." },
   },
 };
 

@@ -90,6 +90,9 @@ const manufacturing = {
     "agent-address":      { name: "자재코드 표준화 에이전트", shortName: "자재코드", desc: "비정형 자재 명칭을 표준 품목코드로 매핑하고 중복·오기 코드를 정비합니다." },
     "agent-dataanalysis": { name: "공정 데이터 분석 에이전트", shortName: "공정 분석", desc: "공정 센서·품질 데이터를 업로드하면 통계 분석과 이상 원인 후보를 시각화합니다." },
     "agent-summary":      { name: "기술문서 요약 에이전트", shortName: "문서 요약", desc: "사양서, 감사 보고서, 고객 클레임 문서를 유형·길이별로 요약하고 개정본을 비교합니다." },
+    "agent-translate":    { name: "수출문서 번역 에이전트", shortName: "수출 번역", desc: "수출 사양서, 계약서, 기술 매뉴얼을 용어집 기반으로 번역하고 역번역으로 검증합니다." },
+    "agent-review":       { name: "기안문 사전 검토 에이전트", shortName: "기안 검토", desc: "기안문·품의서를 사규 및 품질·안전 규정과 자동 대조하여 위반 소지를 검토합니다." },
+    "agent-safety":       { name: "작업 위험성평가 에이전트", shortName: "위험성평가", desc: "공정·설비 작업의 위험 요소를 평가하고 산업안전보건법 기반 안전관리계획서를 생성합니다." },
   },
 };
 

@@ -221,6 +221,36 @@ export const AGENT_TEAMS = [
       { step: 3, role: "키워드 추출", name: "키워드 분석기",        prompt: "문서 전체에서 핵심 키워드·전문용어·고유명사를 추출하고 중요도를 산출하십시오.", tool: "EXAONE 3.0 78B" },
     ]
   },
+  {
+    id: "agent-translate", name: "번역·요약 에이전트", shortName: "번역·요약",
+    desc: "한·영·중·일 문서를 의미 단위로 분할해 번역하고, 용어집 적용·역번역 검증·요약까지 한 번에 처리합니다.",
+    icon: Languages, color: "violet", tech: ["번역", "청킹", "용어집"],
+    workflow: [
+      { step: 1, role: "문서 분할",   name: "청킹 에이전트",       prompt: "문맥이 끊기지 않도록 문서를 의미 단위로 분할하십시오.",                       tool: "GPT-OSS 120B" },
+      { step: 2, role: "번역 수행",   name: "번역 LLM 에이전트",   prompt: "사내 용어집을 우선 적용하여 대상 언어로 번역하십시오.",                       tool: "Llama-3-Korean 70B" },
+      { step: 3, role: "문체 검수",   name: "검수 에이전트",       prompt: "공기업 표준 문체로 다듬고 용어 일관성과 누락 여부를 검수하십시오.",            tool: "EXAONE 3.0 78B" },
+    ]
+  },
+  {
+    id: "agent-review", name: "문서 사전 검토 에이전트", shortName: "문서 검토",
+    desc: "기안문·보고서를 업로드하면 취업규칙·업무처리지침 등 사규와 자동 대조하여 위반 소지를 심각도별로 검토합니다.",
+    icon: FileCheck, color: "indigo", tech: ["RAG", "사규 대조", "DRM"],
+    workflow: [
+      { step: 1, role: "문서 해제",   name: "DRM 해제 에이전트",   prompt: "업로드 문서의 DRM을 해제하고 텍스트·표 데이터를 추출하십시오.",               tool: "DRM_자동_복호화_모듈" },
+      { step: 2, role: "규정 검색",   name: "규정 검색 에이전트",  prompt: "문서 내용과 관련된 사내 규정 조항을 시맨틱 검색으로 추출하십시오.",            tool: "사내_지식_검색망" },
+      { step: 3, role: "위반 검토",   name: "위반사항 검토 에이전트", prompt: "규정 조항과 대조하여 위반 소지를 심각도(높음·중간·낮음)별로 분석하십시오.",  tool: "GPT-OSS 120B" },
+    ]
+  },
+  {
+    id: "agent-safety", name: "안전관리계획 에이전트", shortName: "안전계획",
+    desc: "현장 업무 정보와 위험 요소를 입력하면 위험성평가 매트릭스와 관련 법령 기반의 안전관리계획서를 자동 생성합니다.",
+    icon: ShieldCheck, color: "orange", tech: ["위험성평가", "법령 RAG", "체크리스트"],
+    workflow: [
+      { step: 1, role: "위험 분석",   name: "위험성평가 에이전트", prompt: "입력된 위험 요소별 심각도×발생빈도 매트릭스를 산출하십시오.",                  tool: "GPT-OSS 120B" },
+      { step: 2, role: "법령 검색",   name: "법령·지침 검색 에이전트", prompt: "산업안전보건법 등 관련 법령과 사내 안전지침을 검색하십시오.",             tool: "사내_지식_검색망" },
+      { step: 3, role: "계획 생성",   name: "계획서 작성 에이전트", prompt: "평가 결과와 법령 근거를 반영한 안전관리계획서를 표준 양식으로 작성하십시오.",  tool: "Llama-3-Korean 70B" },
+    ]
+  },
 ];
 
 export const MCP_TOOLS = [

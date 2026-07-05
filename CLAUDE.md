@@ -51,9 +51,11 @@ src/
 2. git 커밋 메시지에 쌍따옴표(") 금지 — here-string `@'...'@` 사용 (닫는 `'@`는 줄 시작).
 3. Bash 도구의 상대경로는 매 호출 초기화됨 — `cd /c/한국부동산원/genos-app && ...` 형태로.
 4. **완료 = 빌드 통과 + 브라우저 DOM 검증 + 증거 제시.** "될 겁니다" 금지.
-   - 빌드: `npx vite build` (2,381 모듈 기준)
-   - 실행: 프리뷰 서버(.claude/launch.json `genos-app`). 포트는 launch.json상 5174이나 점유 시 5173 등으로 배정되므로 **시작 로그의 실제 포트를 따를 것**
-   - DOM 검증이 스크린샷보다 우선. 검증 스크립트는 QUALITY-CHECKLIST.md 참조.
+   - **⚠️ 이 머신에서 `npx vite build`는 한글 경로(C:\한국부동산원) 때문에 "✓ N modules transformed" 직후 네이티브 크래시(0xC0000409)로 조용히 죽는다** (Tailwind v4 네이티브 모듈 × 한글 cwd, 2026-07-05 진단). "transformed" 라인만 보고 통과 판정 금지 — **종료 코드 0 + "✓ built in Xs" + dist/ 타임스탬프 갱신**까지 확인할 것.
+   - 로컬 빌드 검증법: 프로젝트를 ASCII 경로로 복사 후 빌드 — `robocopy C:\한국부동산원\genos-app %TEMP%\genos-build /E /XD .git dist` → 그 폴더에서 `node node_modules\vite\bin\vite.js build` (약 5초, EXIT 0 확인) → 복사본 삭제. 또는 push 후 CI 빌드(`gh run watch`)로 갈음.
+   - 빌드: `npx vite build` (2,411 모듈 기준, 2-C 이후)
+   - 실행: 프리뷰 서버(.claude/launch.json `genos-app`). 포트는 launch.json상 5174이나 점유 시 다른 포트로 배정되므로 **시작 로그의 실제 포트를 따를 것**. 다른 세션의 dev 서버가 점유 중이면 `PORT=<빈포트> npm run dev`를 백그라운드로 직접 기동.
+   - DOM 검증이 스크린샷보다 우선. 검증 스크립트는 QUALITY-CHECKLIST.md 참조. Chrome 확장 미연결 시 puppeteer-core(스크래치패드에 설치) + 로컬 Chrome headless로 검증 가능.
 5. 하드코딩 금지 원칙: 조직·업무 콘텐츠를 코어 파일(UserApp/AgentHub/App)에 문자열로 넣지 말 것.
    도메인 팩 필드로 공급하고, 코어에는 REB 기본값 fallback만 남긴다.
 
@@ -64,7 +66,7 @@ src/
 - ✅ 2-A: App.jsx 5,935줄 → admin/(mocks.js + common.jsx + pages/12그룹) + 라우팅 223줄. 분해 중 잠복 버그 발견·수정(HrSyncPage Info 아이콘 미임포트 → HR 메뉴 클릭 시 관리자 전체 크래시였음)
 - ✅ 2-B: useAgentSimulation 훅(src/user/hooks/)으로 8개 에이전트 시뮬레이션 통합, cn() 14곳 → utils.jsx 단일화
 - ✅ 허브 13종 확장: 미사용이던 Translate·DocReview·SafetyPlan을 재등록 (agent-translate·agent-review·agent-safety, 도메인 팩 3곳 오버라이드 완비)
-- ⬜ 2-C: UserApp 2,137줄 분해 (탭·패널·모달 단위 — 상태 얽힘이 커서 별도 세션 권장)
+- ✅ 2-C: UserApp 2,173줄 → 430줄(상태·핸들러·조립) + layout 5모듈(Sidebar·ChatHeader·ChatMessages·ChatInput·RightPanel) + modals 7모듈 + guardrails.js. 동작 변화 없음(전 회귀 통과). 우측 패널 전용 상태(panelTab·내RAG)는 RightPanel로 이관, 죽은 상태 pilotService 제거. 부수 발견: 이 머신 로컬 빌드가 한글 경로 탓에 7주간 조용히 깨져 있었음(작업 규칙 4 참조) + 락파일에 이전 세션의 rollup 4.59 잔재 정리 + tailwind 4.1.18→4.3.2
 - ⬜ 도메인화 잔여(팩으로 미이관): ①에이전트 10종 내부 mock ②관리자 45페이지 콘텐츠 ③REVIEW/TRANSLATE/REPORT 모드 응답·공문서 템플릿(responses.js) ④FILE_DATA 인용 문서 ⑤SECURE_SUGGESTIONS
 - ⬜ 3단계 신규: 지도 인텔리전스, 멀티에이전트 오케스트레이션 시나리오, AI 기본법 대시보드
 - ⬜ 4단계 P2: 반응형(고정폭 사이드바), 접근성(aria 0건), 상태 유지, HISTORY 탭 구현

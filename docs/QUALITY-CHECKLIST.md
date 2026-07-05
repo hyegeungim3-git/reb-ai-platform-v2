@@ -5,7 +5,13 @@
 
 ## A. 모든 변경 공통
 
-- [ ] `cd /c/한국부동산원/genos-app && npx vite build` — "✓ N modules transformed" 확인 (기준 2,381±)
+- [ ] 빌드 통과 확인 — **"transformed" 라인이 아니라 종료 코드로 판정할 것.** 이 머신은 한글 경로 탓에 transform 직후 조용히 크래시한다(CLAUDE.md 작업 규칙 4).
+  ```powershell
+  robocopy C:\한국부동산원\genos-app $env:TEMP\genos-build /E /XD .git dist | Out-Null
+  cd $env:TEMP\genos-build; node node_modules\vite\bin\vite.js build; "EXIT=$LASTEXITCODE"   # EXIT=0 + "✓ built in Xs" 필수
+  cd C:\; Remove-Item -Recurse -Force $env:TEMP\genos-build
+  ```
+  (기준 2,411± 모듈. push 후 CI 빌드 성공으로 갈음 가능)
 - [ ] 프리뷰 서버로 변경 화면 진입, **DOM 텍스트로 확인** (스크린샷은 보조 증거)
 - [ ] 브라우저 콘솔 에러 0건
 - [ ] 의도치 않은 파일 변경 없는지 `git status --short` 확인 후 커밋(한국어, 무엇을·왜)

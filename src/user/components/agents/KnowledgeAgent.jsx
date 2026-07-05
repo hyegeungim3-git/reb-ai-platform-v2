@@ -7,8 +7,8 @@ import {
 } from "lucide-react";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const AGENTS=[
   {icon:Hash,     label:'질의 임베딩',    sub:'자연어 질의 벡터화 중',         color:'bg-violet-600', ms:800},

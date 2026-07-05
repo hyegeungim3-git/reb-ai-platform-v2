@@ -8,8 +8,9 @@ import ApprovalModal from "../ApprovalModal.jsx";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
 import { REB_LOGO } from "../../data/logos.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const APV_LINE=[
   {name:'김민준',dept:'부동산공시처',title:'과장',role:'작성자'},
@@ -90,12 +91,23 @@ const HIGHLIGHT_SEGS=[
 ];
 
 const DocReviewAgent=({onBack})=>{
-  const [step,setStep]=useState(1);
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS,{
+    // RAG 검색 단계(i=2)의 문서 스캔 티커 + 각 단계 종료 시 RAG 패널 비활성화
+    onStepStart:(i,prev,ag)=>{
+      setTimeout(()=>setRagActive(false),prev+ag.ms);
+      if(i===2){
+        setTimeout(()=>setRagActive(true),prev+400);
+        let rd=prev+400;
+        RAG_DOCS.forEach((_,ri)=>{
+          rd+=360;
+          setTimeout(()=>setRagIdx(ri),rd);
+        });
+      }
+    },
+  });
   const [files,setFiles]=useState([]);
   const [drag,setDrag]=useState(false);
   const [checkedRegs,setCheckedRegs]=useState({r1:true,r2:true,r3:false,r4:false,r5:false});
-  const [agentIdx,setAgentIdx]=useState(-1);
-  const [doneIdx,setDoneIdx]=useState([]);
   const [ragActive,setRagActive]=useState(false);
   const [ragIdx,setRagIdx]=useState(0);
   const [viewMode,setViewMode]=useState('doc');
@@ -112,30 +124,9 @@ const DocReviewAgent=({onBack})=>{
 
   const removeFile=i=>setFiles(p=>p.filter((_,j)=>j!==i));
 
-  const startProcess=()=>{
-    setStep(2);setAgentIdx(0);setDoneIdx([]);setRagActive(false);setRagIdx(0);
-    let delay=0;
-    AGENTS.forEach((ag,i)=>{
-      const prev=delay;
-      delay+=ag.ms;
-      if(i===2){
-        setTimeout(()=>setRagActive(true),prev+400);
-        let rd=prev+400;
-        RAG_DOCS.forEach((_,ri)=>{
-          rd+=360;
-          setTimeout(()=>setRagIdx(ri),rd);
-        });
-      }
-      setTimeout(()=>{
-        setRagActive(false);
-        setAgentIdx(i+1<AGENTS.length?i+1:-1);
-        setDoneIdx(p=>[...p,i]);
-        if(i===AGENTS.length-1)setTimeout(()=>setStep(3),600);
-      },delay);
-    });
-  };
+  const startProcess=()=>{setRagActive(false);setRagIdx(0);startSim();};
 
-  const reset=()=>{setStep(1);setFiles([]);setAgentIdx(-1);setDoneIdx([]);setApvState(null);setApvMsg('사규 검토 결과 검토 요청드립니다.');};
+  const reset=()=>{resetSim();setFiles([]);setApvState(null);setApvMsg('사규 검토 결과 검토 요청드립니다.');};
   const submitApv=()=>{setApvState('submitting');setTimeout(()=>setApvState('done'),1600);};
 
   // STEP 1

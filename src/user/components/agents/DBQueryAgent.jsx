@@ -7,8 +7,8 @@ import {
 } from "lucide-react";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c) { return c.filter(Boolean).join(' '); }
 
 /* ── 데이터 소스 ── */
 const DB_SOURCES = [

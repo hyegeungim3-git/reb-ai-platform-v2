@@ -6,8 +6,8 @@ import {
   Star, Clock, TrendingUp
 } from "lucide-react";
 import { AGENT_TEAMS, MCP_TOOLS } from "../../data/constants.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c) { return c.filter(Boolean).join(" "); }
 
 const COLOR_MAP = {
   indigo: { bg: "bg-indigo-600",   light: "bg-indigo-50",  border: "border-indigo-200",  text: "text-indigo-700",  hover: "hover:border-indigo-400 hover:bg-indigo-50/60",  bar: "bg-indigo-600", tag: "bg-indigo-100 text-indigo-700" },

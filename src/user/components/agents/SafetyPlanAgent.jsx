@@ -10,16 +10,15 @@ import { SAFE_AGENTS, SAFE_RISK_OPTIONS, SAFE_RESULT, APV_LINE_SAFE } from "../.
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
 import { REB_LOGO } from "../../data/logos.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
 
 const SafetyPlanAgent = ({ onBack }) => {
-  const [step,setStep]=useState(1);
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(SAFE_AGENTS);
   const [projName,setProjName]=useState('표준지공시지가 현장조사 (서울·경기 북부권)');
   const [projType,setProjType]=useState('현장 실사');
   const [projLoc,setProjLoc]=useState('서울 노원구 일대');
   const [duration,setDuration]=useState('3개월');
   const [selectedRisks,setSelectedRisks]=useState(['낙상·추락','교통사고','폭염·한파 노출']);
-  const [agentIdx,setAgentIdx]=useState(-1);
-  const [doneIdx,setDoneIdx]=useState([]);
   const [result,setResult]=useState(SAFE_RESULT);
   const [safeViewMode,setSafeViewMode]=useState('doc');
   const [checkState,setCheckState]=useState({});
@@ -38,20 +37,9 @@ const SafetyPlanAgent = ({ onBack }) => {
 
   const toggleRisk=(r)=>setSelectedRisks(p=>p.includes(r)?p.filter(x=>x!==r):[...p,r]);
 
-  const startProcess=()=>{
-    setStep(2);setAgentIdx(0);setDoneIdx([]);
-    let delay=0;
-    SAFE_AGENTS.forEach((ag,i)=>{
-      delay+=ag.ms;
-      setTimeout(()=>{
-        setAgentIdx(i+1<SAFE_AGENTS.length?i+1:-1);
-        setDoneIdx(p=>[...p,i]);
-        if(i===SAFE_AGENTS.length-1) setTimeout(()=>setStep(3),600);
-      },delay);
-    });
-  };
+  const startProcess=()=>startSim();
 
-  const reset=()=>{setStep(1);setAgentIdx(-1);setDoneIdx([]);setUploadedFiles([]);setApvState(null);setApvMsg('검토 요청드립니다.');};
+  const reset=()=>{resetSim();setUploadedFiles([]);setApvState(null);setApvMsg('검토 요청드립니다.');};
   const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
 
   const RISK_DATA={

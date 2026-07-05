@@ -13,8 +13,9 @@ import SelfCheckModal from "../SelfCheckModal.jsx";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
 import { REB_LOGO } from "../../data/logos.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const APV_LINE=[
   {name:'김민준',dept:'부동산공시처',title:'과장',role:'작성자'},
@@ -149,7 +150,9 @@ const CustomTooltip=({active,payload,label})=>{
 };
 
 const ReportAgent=({onBack})=>{
-  const [step,setStep]=useState(1);
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS,{
+    onComplete:()=>setEditResult(buildRawText()),
+  });
   const [reportType,setReportType]=useState('weekly');
   const [dept,setDept]=useState('부동산공시처');
   const [period,setPeriod]=useState('2026. 03. 09. ~ 03. 13.');
@@ -160,8 +163,6 @@ const ReportAgent=({onBack})=>{
     '- 표준지공시지가 현장조사 12건 예정 (서울 도봉구·중랑구)\n- 분기 실적 집계 및 보고서 작성\n- 이의신청 처리 결과 통보 3건'
   );
   const [special,setSpecial]=useState('- 노원구 일부 표준지 현황 변동 사항 발생 (재조사 필요 2건)');
-  const [agentIdx,setAgentIdx]=useState(-1);
-  const [doneIdx,setDoneIdx]=useState([]);
   const [viewMode,setViewMode]=useState('doc');
   const [apvState,setApvState]=useState(null);
   const [apvMsg,setApvMsg]=useState('검토 요청드립니다.');
@@ -183,24 +184,9 @@ const ReportAgent=({onBack})=>{
     setSpecial(d.special);
   },[reportType]);
 
-  const startProcess=()=>{
-    setStep(2);setAgentIdx(0);setDoneIdx([]);
-    let delay=0;
-    AGENTS.forEach((ag,i)=>{
-      delay+=ag.ms;
-      setTimeout(()=>{
-        setAgentIdx(i+1<AGENTS.length?i+1:-1);
-        setDoneIdx(p=>[...p,i]);
-        if(i===AGENTS.length-1){
-          const raw=buildRawText();
-          setEditResult(raw);
-          setTimeout(()=>setStep(3),600);
-        }
-      },delay);
-    });
-  };
+  const startProcess=()=>startSim();
 
-  const reset=()=>{setStep(1);setAgentIdx(-1);setDoneIdx([]);setApvState(null);setApvMsg('검토 요청드립니다.');setShowExportMenu(false);};
+  const reset=()=>{resetSim();setApvState(null);setApvMsg('검토 요청드립니다.');setShowExportMenu(false);};
   const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
 
   const buildRawText=()=>`[${REPORT_TYPES.find(t=>t.id===reportType)?.label||'주간실적보고'}]

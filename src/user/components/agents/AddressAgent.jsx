@@ -10,8 +10,9 @@ import {
 } from "lucide-react";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const AGENTS=[
   {icon:Cpu,      label:'주소 파서',        sub:'주소 구성요소 분해 중',    color:'bg-rose-600',  ms:1200},
@@ -163,14 +164,12 @@ const MatchStatusBadge=({status})=>{
 const AddressAgent=({onBack})=>{
   const [mode,setMode]=useState('single');
   const [inputTab,setInputTab]=useState('address'); // 'address' | 'apt'
-  const [step,setStep]=useState(1);
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS);
   const [address,setAddress]=useState('서울 강남구 도곡동 946-1');
   const [aptQuery,setAptQuery]=useState('서울 강남구 도곡동 도곡렉슬아파트');
   const [aptResult,setAptResult]=useState(null);
   const [selectedDong,setSelectedDong]=useState(0);
   const [selectedHo,setSelectedHo]=useState(0);
-  const [agentIdx,setAgentIdx]=useState(-1);
-  const [doneIdx,setDoneIdx]=useState([]);
   const [copiedField,setCopiedField]=useState(null);
   const [batchText,setBatchText]=useState(SAMPLE_BATCH);
   const [batchProcessed,setBatchProcessed]=useState(false);
@@ -221,19 +220,10 @@ const AddressAgent=({onBack})=>{
       setStep(3);
       return;
     }
-    setStep(2);setAgentIdx(0);setDoneIdx([]);
-    let delay=0;
-    AGENTS.forEach((ag,i)=>{
-      delay+=ag.ms;
-      setTimeout(()=>{
-        setAgentIdx(i+1<AGENTS.length?i+1:-1);
-        setDoneIdx(p=>[...p,i]);
-        if(i===AGENTS.length-1) setTimeout(()=>setStep(3),600);
-      },delay);
-    });
+    startSim();
   };
 
-  const reset=()=>{setStep(1);setAgentIdx(-1);setDoneIdx([]);setCopiedField(null);setMapOpen(false);setAptResult(null);};
+  const reset=()=>{resetSim();setCopiedField(null);setMapOpen(false);setAptResult(null);};
 
   const copyField=(key,val)=>{
     navigator.clipboard?.writeText(val);

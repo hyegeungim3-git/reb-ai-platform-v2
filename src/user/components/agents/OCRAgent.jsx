@@ -6,8 +6,9 @@ import {
 } from "lucide-react";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const MOCK_FILES = [
   {name:'현장조사_보고서_스캔.pdf', size:'2.3MB', pages:3, type:'pdf'},
@@ -129,7 +130,16 @@ const CONFIDENCE_MAP = [
 ];
 
 const OCRAgent = ({ onBack }) => {
-  const [step, setStep] = useState(1);
+  const {step, setStep, agentIdx, doneIdx, start: startSim, resetSim} = useAgentSimulation(AGENTS, {
+    // Vision OCR 단계(i=1) 동안 페이지 진행 티커
+    onStepStart: (i, prev, ag) => {
+      if (i === 1) {
+        for (let p = 1; p <= totalPages; p++) {
+          setTimeout(() => setOcrPage(p), prev + (ag.ms / totalPages) * p);
+        }
+      }
+    },
+  });
   const [files, setFiles] = useState(MOCK_FILES);
   const [fileDrag, setFileDrag] = useState(false);
   const [ocrLang, setOcrLang] = useState('한국어(기본)');
@@ -138,8 +148,6 @@ const OCRAgent = ({ onBack }) => {
   const [maskPII, setMaskPII] = useState(false);
   const [docMode, setDocMode] = useState('standard');
   const [resultFormat, setResultFormat] = useState('일반 텍스트');
-  const [agentIdx, setAgentIdx] = useState(-1);
-  const [doneIdx, setDoneIdx] = useState([]);
   const [ocrPage, setOcrPage] = useState(0);
   const [activeTab, setActiveTab] = useState('text');
   const [copied, setCopied] = useState(false);
@@ -156,26 +164,9 @@ const OCRAgent = ({ onBack }) => {
     });
   };
 
-  const startProcess = () => {
-    setStep(2); setAgentIdx(0); setDoneIdx([]); setOcrPage(0);
-    let delay = 0;
-    AGENTS.forEach((ag, i) => {
-      delay += ag.ms;
-      if (i === 1) {
-        for (let p = 1; p <= totalPages; p++) {
-          const t = delay - ag.ms + (ag.ms / totalPages) * p;
-          setTimeout(() => setOcrPage(p), t);
-        }
-      }
-      setTimeout(() => {
-        setAgentIdx(i + 1 < AGENTS.length ? i + 1 : -1);
-        setDoneIdx(prev => [...prev, i]);
-        if (i === AGENTS.length - 1) setTimeout(() => setStep(3), 600);
-      }, delay);
-    });
-  };
+  const startProcess = () => { setOcrPage(0); startSim(); };
 
-  const reset = () => { setStep(1); setAgentIdx(-1); setDoneIdx([]); setOcrPage(0); setFiles(MOCK_FILES); setActiveTab('text'); setCopied(false); };
+  const reset = () => { resetSim(); setOcrPage(0); setFiles(MOCK_FILES); setActiveTab('text'); setCopied(false); };
   const handleCopy = () => { navigator.clipboard?.writeText(EXTRACTED_TEXT).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
   const getScoreColor = (level) => level === 'high' ? 'bg-emerald-500' : level === 'med' ? 'bg-yellow-400' : 'bg-red-400';

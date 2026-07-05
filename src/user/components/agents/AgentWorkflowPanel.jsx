@@ -5,8 +5,8 @@ import {
   Globe, Server, Box, Loader2, Activity, Wifi,
 } from "lucide-react";
 import { AGENT_TEAMS, MCP_TOOLS } from "../../data/constants.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c) { return c.filter(Boolean).join(" "); }
 
 const TYPE_STYLE = {
   "벡터 DB":   { icon: Database, color: "text-indigo-600", bg: "bg-indigo-100", border: "border-indigo-200", dot: "bg-indigo-400" },

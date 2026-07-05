@@ -8,8 +8,8 @@ import {
 } from "lucide-react";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c) { return c.filter(Boolean).join(' '); }
 
 /* ─── 에이전트 파이프라인 ─── */
 const AGENTS = [

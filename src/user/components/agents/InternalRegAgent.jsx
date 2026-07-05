@@ -7,8 +7,8 @@ import {
 import ApprovalModal from "../ApprovalModal.jsx";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const REG_CATEGORIES = ['취업규칙','복무규정','업무처리지침','개인정보처리방침','보안정책','계약·조달 규정','조직·직제규정','회계규정'];
 const SUGGESTIONS = ['연차 사용 기준','출장비 정산','복무 이탈 처리','징계 절차','성과평가 기준'];

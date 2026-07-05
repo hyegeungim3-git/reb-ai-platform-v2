@@ -7,8 +7,9 @@ import {
 } from "lucide-react";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const AGENTS=[
   {icon:Layers,    label:'구조 파악 에이전트',  sub:'문서 구조 및 핵심 주제 파악 중',   color:'bg-amber-600',  ms:2000},
@@ -102,7 +103,7 @@ const SectionTree=({sections})=>{
 };
 
 const SummaryAgent=({onBack})=>{
-  const [step,setStep]=useState(1);
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS);
   const [inputMode,setInputMode]=useState('file');
   const [textInput,setTextInput]=useState('');
   const [fileDrag,setFileDrag]=useState(false);
@@ -111,27 +112,14 @@ const SummaryAgent=({onBack})=>{
   const [targetLength,setTargetLength]=useState('300자');
   const [language,setLanguage]=useState('한국어');
   const [focusAreas,setFocusAreas]=useState([]);
-  const [agentIdx,setAgentIdx]=useState(-1);
-  const [doneIdx,setDoneIdx]=useState([]);
   const [copied,setCopied]=useState(false);
   const fileRef=useRef(null);
 
   const toggleFocus=(f)=>setFocusAreas(p=>p.includes(f)?p.filter(x=>x!==f):[...p,f]);
 
-  const startProcess=()=>{
-    setStep(2);setAgentIdx(0);setDoneIdx([]);
-    let delay=0;
-    AGENTS.forEach((ag,i)=>{
-      delay+=ag.ms;
-      setTimeout(()=>{
-        setAgentIdx(i+1<AGENTS.length?i+1:-1);
-        setDoneIdx(p=>[...p,i]);
-        if(i===AGENTS.length-1) setTimeout(()=>setStep(3),600);
-      },delay);
-    });
-  };
+  const startProcess=()=>startSim();
 
-  const reset=()=>{setStep(1);setAgentIdx(-1);setDoneIdx([]);setCopied(false);};
+  const reset=()=>{resetSim();setCopied(false);};
 
   const handleCopy=()=>{
     navigator.clipboard?.writeText(SUMMARY_CONTENT.replace(/\*\*/g,''));

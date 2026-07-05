@@ -10,9 +10,10 @@ import { MEET_AGENTS, MEET_RESULT, APV_LINE_MEET } from "../../data/responses.js
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
 import { REB_LOGO } from "../../data/logos.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
 
 const MeetingMinutesAgent = ({ onBack }) => {
-  const [step,setStep]=useState(1);
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(MEET_AGENTS);
   const [title,setTitle]=useState('표준지공시지가 조사·평가 방법론 개선 회의');
   const [meetDate,setMeetDate]=useState('2026-03-14');
   const [place,setPlace]=useState('본사 9층 대회의실 (904호)');
@@ -27,8 +28,6 @@ const MeetingMinutesAgent = ({ onBack }) => {
   const [audioDrag,setAudioDrag]=useState(false);
   const [refFile,setRefFile]=useState(null);
   const [refDrag,setRefDrag]=useState(false);
-  const [agentIdx,setAgentIdx]=useState(-1);
-  const [doneIdx,setDoneIdx]=useState([]);
   const [result,setResult]=useState(MEET_RESULT);
   const [viewMode,setViewMode]=useState('doc');
   const [apvState,setApvState]=useState(null);
@@ -59,20 +58,9 @@ const MeetingMinutesAgent = ({ onBack }) => {
   const addAgenda=()=>setAgenda(p=>[...p,'']);
   const removeAgenda=(i)=>setAgenda(p=>p.filter((_,j)=>j!==i));
 
-  const startProcess=()=>{
-    setStep(2);setAgentIdx(0);setDoneIdx([]);
-    let delay=0;
-    MEET_AGENTS.forEach((ag,i)=>{
-      delay+=ag.ms;
-      setTimeout(()=>{
-        setAgentIdx(i+1<MEET_AGENTS.length?i+1:-1);
-        setDoneIdx(p=>[...p,i]);
-        if(i===MEET_AGENTS.length-1) setTimeout(()=>setStep(3),600);
-      },delay);
-    });
-  };
+  const startProcess=()=>startSim();
 
-  const reset=()=>{setStep(1);setAgentIdx(-1);setDoneIdx([]);setAudioFile(null);setRefFile(null);setApvState(null);setApvMsg('검토 요청드립니다.');};
+  const reset=()=>{resetSim();setAudioFile(null);setRefFile(null);setApvState(null);setApvMsg('검토 요청드립니다.');};
   const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
 
   /* ── Mock Speaker Diarization data ─────────────────── */

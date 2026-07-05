@@ -6,8 +6,9 @@ import {
 } from "lucide-react";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const LANG_PAIRS=[
   {id:'ko-en',label:'한 → 영',src:'한국어',tgt:'English'},
@@ -64,7 +65,17 @@ const DEFAULT_GLOSSARY=[
 ];
 
 const TranslateAgent=({onBack})=>{
-  const [step,setStep]=useState(1);
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS,{
+    // 번역 단계(i=1) 동안 청크 진행 티커
+    onStepStart:(i,prev)=>{
+      if(i===1){
+        CHUNKS.forEach((_,ci)=>{
+          setTimeout(()=>setChunkIdx(ci),prev+400+ci*580);
+        });
+      }
+    },
+    completeDelay:500,
+  });
   const [langPair,setLangPair]=useState('ko-en');
   const [summaryMode,setSummaryMode]=useState(false);
   const [summaryLen,setSummaryLen]=useState(300);
@@ -72,8 +83,6 @@ const TranslateAgent=({onBack})=>{
   const [srcText,setSrcText]=useState(SOURCE_TEXT);
   const [uploadFile,setUploadFile]=useState(null);
   const [drag,setDrag]=useState(false);
-  const [agentIdx,setAgentIdx]=useState(-1);
-  const [doneIdx,setDoneIdx]=useState([]);
   const [chunkIdx,setChunkIdx]=useState(-1);
   const [copied,setCopied]=useState(false);
   const fileRef=useRef(null);
@@ -87,26 +96,9 @@ const TranslateAgent=({onBack})=>{
 
   const lp=LANG_PAIRS.find(l=>l.id===langPair)||LANG_PAIRS[0];
 
-  const startProcess=()=>{
-    setStep(2);setAgentIdx(0);setDoneIdx([]);setChunkIdx(-1);
-    let delay=0;
-    AGENTS.forEach((ag,i)=>{
-      const prev=delay;
-      delay+=ag.ms;
-      if(i===1){
-        CHUNKS.forEach((_,ci)=>{
-          setTimeout(()=>setChunkIdx(ci),prev+400+ci*580);
-        });
-      }
-      setTimeout(()=>{
-        setAgentIdx(i+1<AGENTS.length?i+1:-1);
-        setDoneIdx(p=>[...p,i]);
-        if(i===AGENTS.length-1)setTimeout(()=>setStep(3),500);
-      },delay);
-    });
-  };
+  const startProcess=()=>{setChunkIdx(-1);startSim();};
 
-  const reset=()=>{setStep(1);setAgentIdx(-1);setDoneIdx([]);setChunkIdx(-1);setUploadFile(null);setCopied(false);};
+  const reset=()=>{resetSim();setChunkIdx(-1);setUploadFile(null);setCopied(false);};
 
   const copyAll=()=>{
     navigator.clipboard.writeText(langPair==='ko-en'?TRANSLATED_TEXT:TRANSLATED_TEXT).catch(()=>{});

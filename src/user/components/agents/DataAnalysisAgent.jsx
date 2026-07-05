@@ -10,8 +10,8 @@ import {
 } from "recharts";
 import AgentWorkflowPanel from "./AgentWorkflowPanel.jsx";
 import { AGENT_TEAMS } from "../../data/constants.js";
+import { cn } from "../../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const AGENTS=[
   {icon:FileSpreadsheet, label:'데이터 파싱 에이전트', sub:'CSV/Excel 구조 파악·정제 중', color:'bg-orange-500', ms:1100},

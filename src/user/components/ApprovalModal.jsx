@@ -1,8 +1,8 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { FileCheck, Globe, X, Send, Loader2, ArrowRight, MessageCircle, CheckCircle, Clock, Timer } from "lucide-react";
+import { cn } from "../utils.jsx";
 
-function cn(...c){return c.filter(Boolean).join(' ')}
 
 const ApprovalModal = ({docTitle,docNum,apvLine,apvMsg,setApvMsg,onClose,onSubmit,submitting,accentBg,accentBtn}) => createPortal(
   <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[300] flex items-center justify-center p-4"

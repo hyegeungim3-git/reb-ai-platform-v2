@@ -1566,6 +1566,638 @@ LIMIT 50;`,
     "agent-review":       { name: "공문 사전 검토 에이전트", shortName: "공문 검토", desc: "기안문·공문서를 조례·규칙 및 복무규정과 자동 대조하여 절차 하자를 검토합니다." },
     "agent-safety":       { name: "행사·점검 안전계획 에이전트", shortName: "안전계획", desc: "지역 행사와 현장점검의 위험 요소를 평가하고 재난안전법 기반 안전계획서를 생성합니다." },
   },
+  /* ── 관리자 콘텐츠 오버라이드 (adminContent) ──
+     키는 src/admin/mocks.js 상수명 그대로 — App.jsx applyAdminDomain()이 렌더 시 교체.
+     shape·항목 수·필드 키·코드 계약 문자열(status 등)은 REB 기본값과 동일 계약.
+     의도적 제외(도메인 중립 인프라 — REB 기본값 노출): MOCK_GPU_NODES, MOCK_MODELS,
+     MOCK_NODES, MOCK_FILTER_RULES, MOCK_RAG_GLOBAL, MOCK_OUTPUT_GUARDRAILS,
+     MOCK_CONFIDENCE_CONFIG, MOCK_CODESPACES, MOCK_VOLUMES, MOCK_EMBED_STATUS,
+     MOCK_SURVEYS_MGMT, MOCK_APIS, MOCK_CONNECTED_SW, MOCK_AIACT_LABELING */
+  adminContent: {
+    // 관리자 데모 페르소나 — 사이드바·작성자·프로필 전역
+    ADMIN_PERSONA: { name: '강수진', role: '관리자', dept: '정보통신과', email: 'kang@hansung.go.kr' },
+
+    MOCK_EMBEDDING_JOBS: [
+      {id:950,name:'민원사무편람 임베딩 v3',plan:'KoE5-base',creator:'강수진',dept:'정보통신과',date:'2026-02-10 14:51:32',gpu:'A100 x1',tbStatus:'실행 중',status:'학습 완료'},
+      {id:910,name:'자치법규(조례·규칙) 임베딩 v2',plan:'KoE5-base',creator:'윤지우',dept:'자치행정과',date:'2026-01-28 22:35:46',gpu:'A100 x1',tbStatus:'실행 중',status:'학습 완료'},
+      {id:895,name:'훈령·예규 통합 임베딩 v4',plan:'KoE5-large',creator:'윤지우',dept:'자치행정과',date:'2026-01-19 19:59:20',gpu:'A100 x2',tbStatus:'중지됨',status:'취소됨'},
+      {id:874,name:'정보공개 결정례 임베딩 v1',plan:'KoE5-base',creator:'홍은지',dept:'기획예산과',date:'2026-01-19 19:40:26',gpu:'A100 x1',tbStatus:'중지됨',status:'학습 완료'},
+      {id:856,name:'인허가 대장 임베딩 v2',plan:'BGE-m3-ko',creator:'김도윤',dept:'민원여권과',date:'2026-01-12 12:00:38',gpu:'A100 x1',tbStatus:'중지됨',status:'학습 완료'},
+      {id:853,name:'민원 상담 사례 임베딩 v1',plan:'BGE-m3-ko',creator:'서지혜',dept:'복지정책과',date:'2026-01-11 11:37:59',gpu:'A100 x1',tbStatus:'중지됨',status:'오류 발생'},
+      {id:847,name:'법령·판례 임베딩 v2',plan:'KoE5-large',creator:'유경석',dept:'안전총괄과',date:'2025-12-18 21:42:03',gpu:'A100 x2',tbStatus:'중지됨',status:'대기 중'},
+      {id:844,name:'감사 사례집 임베딩 v1',plan:'KoE5-base',creator:'노태건',dept:'정보통신과',date:'2025-12-18 20:58:53',gpu:'A100 x1',tbStatus:'중지됨',status:'오류 발생'},
+      {id:838,name:'재난 대응 매뉴얼 임베딩 v1',plan:'KoE5-base',creator:'조현우',dept:'안전총괄과',date:'2025-12-18 20:46:38',gpu:'A100 x1',tbStatus:'중지됨',status:'오류 발생'},
+    ],
+
+    MOCK_MCP_TOOLS: [
+      {id:162,name:'Search',desc:'시청 지식베이스 시맨틱 검색',creator:'강수진',dept:'정보통신과',date:'2026-01-29 22:06:28'},
+      {id:159,name:'Web Search',desc:'검색 분야 설정 + 검색 분량 설정 추가',creator:'이서연',dept:'민원여권과',date:'2026-01-23 10:59:32'},
+      {id:158,name:'Web Crawler',desc:'행정안전부·법제처 고시 수집',creator:'윤지우',dept:'자치행정과',date:'2026-01-21 18:36:52'},
+      {id:155,name:'Dynamic SearchFilter',desc:'보안등급별 검색 결과 필터링',creator:'노태건',dept:'정보통신과',date:'2026-01-20 15:27:50'},
+      {id:153,name:'Dynamic Filter',desc:'부서 권한 기반 응답 필터링',creator:'홍은지',dept:'기획예산과',date:'2026-01-17 18:01:51'},
+      {id:151,name:'CodeDev',desc:'민원 통계 분석 코드 실행 샌드박스',creator:'서지혜',dept:'복지정책과',date:'2025-12-26 14:28:00'},
+      {id:150,name:'DocConverter',desc:'HWP·PDF 문서 변환기',creator:'윤지우',dept:'자치행정과',date:'2025-12-24 16:24:45'},
+      {id:148,name:'SearchFilter',desc:'자치법규 검색 범위 제한',creator:'이서연',dept:'민원여권과',date:'2025-12-18 17:56:05'},
+      {id:146,name:'AddrGeocoder',desc:'주소 표준화·행정동 코드 매핑',creator:'김도윤',dept:'민원여권과',date:'2025-12-12 16:17:30'},
+      {id:145,name:'Normality_Test',desc:'민원 통계 분포 정규성 검정',creator:'홍은지',dept:'기획예산과',date:'2025-12-12 14:46:54'},
+    ],
+
+    MOCK_PROMPTS: [
+      {id:385,name:'[전용] 민원 상담 RAG',desc:'민원 처리 절차·구비서류 질의 응답용 RAG 프롬프트',dept:'민원여권과',date:'2026-01-29 10:41:12'},
+      {id:384,name:'처리기한 연장 통지문 프롬프트',desc:'연장 통지문 표준 서식 초안 생성',dept:'민원여권과',date:'2026-01-27 10:54:11'},
+      {id:383,name:'[전용] 나만의 RAG',desc:'개인 지식영역 기반 전용 채팅',dept:'정보통신과',date:'2026-01-22 14:10:12'},
+      {id:382,name:'보도자료 요약 프롬프트',desc:'주간 보도자료 3줄 요약 생성',dept:'기획예산과',date:'2026-01-22 04:30:28'},
+      {id:381,name:'신규 임용자 교육용 프롬프트',desc:'민원 응대 입문 교육 질의응답 자료',dept:'자치행정과',date:'2026-01-22 04:27:45'},
+      {id:380,name:'[전용] 조례 원문 뷰어',desc:'전용 채팅 기능(조례 원문 인용·조항 이동)',dept:'자치행정과',date:'2026-01-20 18:30:11'},
+      {id:378,name:'[전용] 보고서 자동 생성',desc:'전용 채팅 기능(주간 시정 보고 서식)',dept:'기획예산과',date:'2026-01-13 18:11:50'},
+    ],
+
+    MOCK_CHAT_APPS: [
+      {id:1663,name:'민원 상담 챗봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'이서연',dept:'민원여권과',addr:'/apps/minwon-chat'},
+      {id:1662,name:'여권 발급 안내 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'김도윤',dept:'민원여권과',addr:'/apps/passport-guide'},
+      {id:1661,name:'조례 Q&A 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'윤지우',dept:'자치행정과',addr:'/apps/ordinance-qa'},
+      {id:1656,name:'인허가 진행 조회 도우미',type:'전용 채팅',status:'Online',deploy:'배포',creator:'박정호',dept:'민원여권과',addr:'/apps/permit-status'},
+      {id:1655,name:'외국인 민원 번역 봇 (시범)',type:'전용 채팅',status:'Offline',deploy:'배포중지',creator:'서지혜',dept:'복지정책과',addr:'/apps/foreign-translate'},
+      {id:1650,name:'정보공개 청구 안내 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'홍은지',dept:'기획예산과',addr:'/apps/openinfo'},
+      {id:1649,name:'시정 통계 조회 어시스턴트',type:'전용 채팅',status:'Online',deploy:'배포',creator:'홍은지',dept:'기획예산과',addr:'/apps/stats-query'},
+      {id:1645,name:'리모트 RAG 채팅',type:'전용 채팅',status:'Offline',deploy:'배포중지',creator:'노태건',dept:'정보통신과',addr:'/apps/remote-rag'},
+      {id:1643,name:'복지 급여 안내 봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'서지혜',dept:'복지정책과',addr:'/apps/welfare-guide'},
+      {id:1640,name:'현장 점검 지원 챗봇',type:'전용 채팅',status:'Online',deploy:'배포',creator:'조현우',dept:'안전총괄과',addr:'/apps/field-check'},
+    ],
+
+    // 승격: REB 기본값의 user·query가 기업(회사·경쟁사) 어휘 — 행정 어휘로 교체
+    MOCK_GUARDRAIL_LOGS: [
+      {id:1,time:'2026-02-10 11:23:45',user:'김주무관',query:'비공개 대상 문서 원문 알려줘',rule:'기밀정보 요청',action:'차단'},
+      {id:2,time:'2026-02-10 10:15:22',user:'이주무관',query:'타 지자체 공모 대응 전략 내부자료 분석해줘',rule:'경쟁정보 수집',action:'차단'},
+      {id:3,time:'2026-02-09 16:42:11',user:'박팀장',query:'직원 수당 지급 명세 전체 목록',rule:'개인정보 접근',action:'차단'},
+      {id:4,time:'2026-02-09 14:30:05',user:'최주무관',query:'보안 시스템 우회 방법',rule:'보안 우회 시도',action:'차단'},
+      {id:5,time:'2026-02-08 09:12:33',user:'정주무관',query:'퇴직 공무원 연락처 전체',rule:'개인정보 접근',action:'경고'},
+    ],
+
+    MOCK_LLM_ADMIN_MODELS: [
+      {id:'m-001',name:'GPT-OSS-120B',baseModel:'Meta-Llama-3-405B-Instruct',version:'v2.4.1',
+       desc:'한성시 특화 파인튜닝 대용량 LLM — 자치법규 검색, 문서 요약, 에이전트 업무 자동화 최적화',
+       status:'Active',temperature:0.3,maxTokens:4096,topP:0.9,contextWindow:'128K',
+       systemPrompt:'당신은 한성시청의 전문 AI 어시스턴트입니다.\n\n규칙:\n1. 반드시 자치법규·행정 지침을 우선 참조합니다.\n2. 불확실한 내용은 "확인이 필요합니다"로 답변합니다.\n3. 개인정보 및 비공개 정보는 절대 제공하지 않습니다.\n4. 모든 답변은 공문서 형식을 따릅니다.',
+       promptHistory:[
+        {ver:'v2.4.1',date:'2026-02-10 14:30',author:'강수진',note:'보안 규칙 4항 추가',
+         content:'당신은 한성시청의 전문 AI 어시스턴트입니다.\n\n규칙:\n1. 반드시 자치법규·행정 지침을 우선 참조합니다.\n2. 불확실한 내용은 "확인이 필요합니다"로 답변합니다.\n3. 개인정보 및 비공개 정보는 절대 제공하지 않습니다.\n4. 모든 답변은 공문서 형식을 따릅니다.'},
+        {ver:'v2.3.0',date:'2026-01-15 09:00',author:'노태건',note:'처리기한 안내 규칙 개선',
+         content:'당신은 한성시청의 AI 어시스턴트입니다.\n\n자치법규를 참조하여 답변하고, 불확실한 내용은 확인 필요 안내를 제공하세요.'},
+        {ver:'v2.0.0',date:'2025-12-01 10:00',author:'강수진',note:'초기 배포 버전',
+         content:'한성시청 AI 어시스턴트입니다. 전문적이고 정확한 정보를 제공합니다.'},
+      ]},
+      {id:'m-002',name:'Llama-3-Kor-Instruct',baseModel:'Meta-Llama-3-70B',version:'v1.8.0',
+       desc:'70B 한국어 특화 경량 모델 — 복무 질의, 교육 안내 등 빠른 응답 업무에 활용',
+       status:'Active',temperature:0.5,maxTokens:2048,topP:0.95,contextWindow:'8K',
+       systemPrompt:'한성시청 직원 지원 AI입니다. 복무규정, 맞춤형 복지, 교육 안내를 친절하게 제공합니다.',
+       promptHistory:[
+        {ver:'v1.8.0',date:'2026-02-01 11:00',author:'윤지우',note:'복무규정 2026 개정 반영',
+         content:'한성시청 직원 지원 AI입니다. 복무규정, 맞춤형 복지, 교육 안내를 친절하게 제공합니다.'},
+        {ver:'v1.5.0',date:'2025-11-10 09:00',author:'서지혜',note:'교육 안내 기능 추가',content:'한성시청 복무 지원 어시스턴트입니다.'},
+      ]},
+      {id:'m-003',name:'EXAONE-3.0-7.8B',baseModel:'LG-EXAONE-3.0-7.8B',version:'v1.3.2',
+       desc:'LG AI Research 7.8B 경량 모델 — 저지연 실시간 응답, 단순 질의 최적',
+       status:'Active',temperature:0.6,maxTokens:1024,topP:0.9,contextWindow:'32K',
+       systemPrompt:'한성시 정보 안내 AI입니다. 간결하고 정확하게 답변합니다.',
+       promptHistory:[
+        {ver:'v1.3.2',date:'2026-01-20 14:00',author:'강수진',note:'응답 간결화 지시어 추가',content:'한성시 정보 안내 AI입니다. 간결하고 정확하게 답변합니다.'},
+      ]},
+      {id:'m-004',name:'Solar-10.7B-v1.0',baseModel:'Upstage-Solar-Pro-10.7B',version:'v1.0.0',
+       desc:'Upstage Solar 10.7B — 비활성화 (성능 평가 후 재도입 예정)',
+       status:'Inactive',temperature:0.5,maxTokens:2048,topP:0.9,contextWindow:'4K',
+       systemPrompt:'',promptHistory:[]},
+    ],
+
+    MOCK_RERANK_PIPELINES: [
+      {id:'rp-001',agent:'자치법규 검색 에이전트',model:'BGE-Reranker-v2',topK:5,threshold:0.70,enabled:true,improvement:18.4},
+      {id:'rp-002',agent:'민원 분류 어시스턴트',model:'Cross-Encoder-KoE5',topK:3,threshold:0.75,enabled:true,improvement:12.1},
+      {id:'rp-003',agent:'복무규정 질의응답 봇',model:'BGE-Reranker-v2',topK:5,threshold:0.65,enabled:true,improvement:9.8},
+      {id:'rp-004',agent:'계약서 검토 에이전트',model:'ColBERT-v2-Kor',topK:8,threshold:0.80,enabled:false,improvement:0},
+      {id:'rp-005',agent:'민원 대응 가이드',model:'BGE-Reranker-v2',topK:5,threshold:0.85,enabled:true,improvement:22.3},
+      {id:'rp-006',agent:'신규 임용자 교육 튜터',model:'Cross-Encoder-KoE5',topK:4,threshold:0.68,enabled:true,improvement:7.5},
+    ],
+
+    MOCK_RAG_AREAS: [
+      {id:'KA-001',area:'자치법규',topK:8,threshold:0.70,chunkSize:256,override:true,updated:'2026-02-12'},
+      {id:'KA-002',area:'민원사무편람',topK:10,threshold:0.65,chunkSize:512,override:true,updated:'2026-02-10'},
+      {id:'KA-003',area:'복무·인사규정',topK:5,threshold:0.60,chunkSize:512,override:false,updated:'2026-02-08'},
+      {id:'KA-004',area:'계약·회계',topK:6,threshold:0.75,chunkSize:256,override:true,updated:'2026-02-05'},
+      {id:'KA-005',area:'교육자료',topK:7,threshold:0.62,chunkSize:512,override:false,updated:'2026-02-11'},
+      {id:'KA-006',area:'재난·안전 대응',topK:5,threshold:0.80,chunkSize:256,override:true,updated:'2026-01-28'},
+    ],
+
+    MOCK_USERS: [
+      {id:'USR-001',name:'강수진',dept:'정보통신과',role:'시스템관리자',email:'kang@hansung.go.kr',status:'Running',lastLogin:'2026-02-14 09:10',loginCount:342,apiCalls:1580},
+      {id:'USR-002',name:'김도윤',dept:'민원여권과',role:'부서관리자',email:'kimdy@hansung.go.kr',status:'Running',lastLogin:'2026-02-14 08:45',loginCount:280,apiCalls:920},
+      {id:'USR-003',name:'이서연',dept:'민원여권과',role:'일반사용자',email:'lee@hansung.go.kr',status:'Running',lastLogin:'2026-02-13 17:30',loginCount:156,apiCalls:430},
+      {id:'USR-004',name:'조현우',dept:'안전총괄과',role:'일반사용자',email:'cho@hansung.go.kr',status:'Running',lastLogin:'2026-02-14 07:20',loginCount:98,apiCalls:210},
+      {id:'USR-005',name:'윤지우',dept:'자치행정과',role:'부서관리자',email:'yoon@hansung.go.kr',status:'Stopped',lastLogin:'2026-02-10 14:00',loginCount:45,apiCalls:80},
+      {id:'USR-006',name:'서지혜',dept:'복지정책과',role:'일반사용자',email:'seo@hansung.go.kr',status:'Running',lastLogin:'2026-02-13 16:55',loginCount:201,apiCalls:560},
+      {id:'USR-007',name:'홍은지',dept:'기획예산과',role:'부서관리자',email:'hong@hansung.go.kr',status:'Running',lastLogin:'2026-02-14 08:00',loginCount:310,apiCalls:1200},
+      {id:'USR-008',name:'노태건',dept:'정보통신과',role:'시스템관리자',email:'noh@hansung.go.kr',status:'Running',lastLogin:'2026-02-14 09:05',loginCount:450,apiCalls:2100},
+    ],
+
+    MOCK_PERMISSION_REQUESTS: [
+      {id:'PRM-001',user:'이서연',dept:'민원여권과',type:'지식영역 접근',target:'자치법규 DB',status:'대기 중',date:'2026-02-13'},
+      {id:'PRM-002',user:'조현우',dept:'안전총괄과',type:'API 키 발급',target:'GPT-OSS-120B',status:'대기 중',date:'2026-02-12'},
+      {id:'PRM-003',user:'홍은지',dept:'기획예산과',type:'에이전트 배포',target:'현장 점검 보고서 생성기',status:'완료',date:'2026-02-11'},
+      {id:'PRM-004',user:'윤지우',dept:'자치행정과',type:'데이터셋 접근',target:'Minwon_Manual_QA_v1',status:'완료',date:'2026-02-10'},
+    ],
+
+    MOCK_KNOWLEDGE_AREAS: [
+      {id:'KA-001',name:'자치법규',desc:'한성시 조례·규칙·훈령·예규',docs:245,chunks:12400,size:'1.2 GB',owner:'자치행정과',access:['자치행정과','민원여권과','기획예산과'],updated:'2026-02-12',status:'Running'},
+      {id:'KA-002',name:'민원사무편람',desc:'민원 접수·처리 실무 문서',docs:180,chunks:9200,size:'850 MB',owner:'민원여권과',access:['민원여권과','복지정책과'],updated:'2026-02-10',status:'Running'},
+      {id:'KA-003',name:'복무·인사규정',desc:'복무, 수당, 맞춤형 복지 관련 규정',docs:120,chunks:6100,size:'320 MB',owner:'자치행정과',access:['전체'],updated:'2026-02-08',status:'Running'},
+      {id:'KA-004',name:'계약·회계',desc:'계약 서식 및 회계 예규 문서',docs:95,chunks:4800,size:'450 MB',owner:'기획예산과',access:['기획예산과','자치행정과'],updated:'2026-02-05',status:'Running'},
+      {id:'KA-005',name:'교육자료',desc:'신규 임용자 교육 및 직무 교육 자료',docs:310,chunks:15600,size:'2.1 GB',owner:'자치행정과',access:['전체'],updated:'2026-02-11',status:'Running'},
+      {id:'KA-006',name:'재난·안전 대응',desc:'재난 대응 매뉴얼 및 상황 전파 절차',docs:65,chunks:3200,size:'180 MB',owner:'안전총괄과',access:['전체'],updated:'2026-01-28',status:'Warning'},
+    ],
+
+    MOCK_KB_FOLDERS: [
+      {id:'f-001',name:'민원사무편람',parent:null,docs:245,perm:'all',owner:'민원여권과'},
+      {id:'f-011',name:'여권·증명 발급',parent:'f-001',docs:120,perm:'dept',owner:'민원여권과'},
+      {id:'f-012',name:'인허가 민원',parent:'f-001',docs:125,perm:'dept',owner:'민원여권과'},
+      {id:'f-002',name:'자치법규',parent:null,docs:180,perm:'dept',owner:'자치행정과'},
+      {id:'f-021',name:'개정 이력',parent:'f-002',docs:80,perm:'dept',owner:'자치행정과'},
+      {id:'f-003',name:'복무·인사규정',parent:null,docs:120,perm:'all',owner:'자치행정과'},
+      {id:'f-004',name:'계약·회계',parent:null,docs:95,perm:'specific',owner:'기획예산과'},
+      {id:'f-005',name:'교육자료',parent:null,docs:310,perm:'all',owner:'자치행정과'},
+    ],
+    MOCK_KB_DOCS: {
+      'f-001':[
+        {id:'d-001',name:'민원사무편람_2026.pdf',size:'4.2MB',pii:false,status:'완료',chunks:312,uploaded:'2026-02-12',uploader:'김도윤'},
+        {id:'d-002',name:'여권발급업무지침.pdf',size:'8.1MB',pii:false,status:'완료',chunks:580,uploaded:'2026-02-10',uploader:'김도윤'},
+        {id:'d-003',name:'민원창구_점검체크리스트.xlsx',size:'1.2MB',pii:true,status:'완료',chunks:85,uploaded:'2026-02-08',uploader:'이서연'},
+      ],
+      'f-002':[
+        {id:'d-011',name:'한성시_자치법규집_2026.pdf',size:'12.3MB',pii:false,status:'완료',chunks:820,uploaded:'2026-02-10',uploader:'윤지우'},
+        {id:'d-012',name:'2025_조례개정이력.xlsx',size:'2.8MB',pii:true,status:'처리중',chunks:190,uploaded:'2026-02-11',uploader:'윤지우'},
+      ],
+      'f-003':[
+        {id:'d-021',name:'한성시_복무규정_2026_개정안.pdf',size:'2.4MB',pii:true,status:'완료',chunks:145,uploaded:'2026-02-14',uploader:'윤지우'},
+        {id:'d-022',name:'맞춤형복지제도안내.pdf',size:'1.8MB',pii:false,status:'완료',chunks:98,uploaded:'2026-01-20',uploader:'서지혜'},
+      ],
+      'f-004':[{id:'d-031',name:'표준계약서_2026.docx',size:'580KB',pii:false,status:'완료',chunks:62,uploaded:'2026-02-05',uploader:'홍은지'}],
+      'f-005':[
+        {id:'d-041',name:'신규임용자교육과정.pptx',size:'22.5MB',pii:false,status:'완료',chunks:410,uploaded:'2026-02-01',uploader:'윤지우'},
+        {id:'d-042',name:'안전교육_2026_1분기.pdf',size:'5.8MB',pii:false,status:'완료',chunks:270,uploaded:'2026-02-11',uploader:'조현우'},
+      ],
+    },
+    MOCK_BATCH_JOBS: [
+      {id:'bj-001',src:'온나라',target:'민원사무편람',schedule:'매일 02:00',lastRun:'2026-02-25 02:00',lastResult:'성공',addedDocs:3,updatedDocs:1,deletedDocs:0,enabled:true},
+      {id:'bj-002',src:'인사랑(표준인사)',target:'복무·인사규정',schedule:'매주 월 03:00',lastRun:'2026-02-24 03:00',lastResult:'성공',addedDocs:0,updatedDocs:2,deletedDocs:0,enabled:true},
+      {id:'bj-003',src:'e호조(재정)',target:'계약·회계',schedule:'실시간 동기화',lastRun:'2026-02-25 09:15',lastResult:'성공',addedDocs:1,updatedDocs:0,deletedDocs:0,enabled:true},
+      {id:'bj-004',src:'온나라',target:'교육자료',schedule:'매일 04:00',lastRun:'2026-02-24 04:00',lastResult:'실패',addedDocs:0,updatedDocs:0,deletedDocs:0,enabled:false},
+    ],
+    MOCK_SYNC_LOGS: [
+      {id:1,time:'2026-02-25 09:15:22',src:'e호조(재정)',folder:'계약·회계',file:'수의계약서_수정본.docx',action:'추가',pii:false,status:'완료'},
+      {id:2,time:'2026-02-25 02:00:45',src:'온나라',folder:'민원사무편람',file:'민원응대교육자료_2월.pdf',action:'추가',pii:false,status:'완료'},
+      {id:3,time:'2026-02-25 02:00:43',src:'온나라',folder:'민원사무편람',file:'창구점검일지_2월.xlsx',action:'업데이트',pii:true,status:'완료(마스킹)'},
+      {id:4,time:'2026-02-24 03:01:12',src:'인사랑(표준인사)',folder:'복무·인사규정',file:'수당기준표_개정.xlsx',action:'업데이트',pii:true,status:'완료(마스킹)'},
+      {id:5,time:'2026-02-23 04:00:33',src:'온나라',folder:'교육자료',file:'신규임용교육자료_2월.pptx',action:'추가',pii:false,status:'실패'},
+    ],
+
+    MOCK_USAGE_STATS: {
+      daily:[
+        {date:'02-08',queries:1240,users:85},{date:'02-09',queries:980,users:72},{date:'02-10',queries:1560,users:102},
+        {date:'02-11',queries:1890,users:115},{date:'02-12',queries:2100,users:128},{date:'02-13',queries:1780,users:110},{date:'02-14',queries:920,users:68}
+      ],
+      byDept:[{dept:'민원여권과',queries:3200,pct:28},{dept:'자치행정과',queries:2400,pct:21},{dept:'기획예산과',queries:1800,pct:16},{dept:'안전총괄과',queries:1500,pct:13},{dept:'복지정책과',queries:1200,pct:10},{dept:'기타',queries:1370,pct:12}],
+      byModel:[{model:'GPT-OSS-120B',queries:5200,pct:45},{model:'Llama-3-Kor',queries:3100,pct:27},{model:'EXAONE-3.0',queries:2800,pct:24},{model:'기타',queries:370,pct:4}],
+      topKeywords:['민원사무편람','처리기한 연장','여권 발급','복무규정','수의계약','교육자료','재난 대응','옥외광고 허가','맞춤형 복지','출장 여비'],
+    },
+
+    MOCK_USAGE_HISTORY: [
+      {id:'uh-001',user:'강수진',dept:'정보통신과',mode:'GENERAL',query:'민원 처리기한 연장 절차가 어떻게 되나요?',answer:'민원 처리에 관한 조례 제12조에 따르면, 처리기한 연장은 부득이한 사유가 있는 경우 1회에 한하여 7 근무일의 범위에서 가능하며, 연장 사유와 완료 예정일을 새올행정시스템에 등록하고 민원인에게 통지하여야...',time:'2026-02-25 14:30',tokens:284,rating:5,errReport:false},
+      {id:'uh-002',user:'이서연',dept:'민원여권과',mode:'REVIEW',query:'업로드한 출장 기안문을 복무규정과 대조해서 절차 하자 검토해줘',answer:'복무규정 대조 결과: 지출 수반 사항은 과장 전결 불가 — 국장 결재 필요(위임전결 규정 제9조 별표 1), 개인정보 수집·이용 동의서 누락...',time:'2026-02-25 13:20',tokens:412,rating:4,errReport:false},
+      {id:'uh-003',user:'윤지우',dept:'자치행정과',mode:'TRANSLATE',query:'업로드한 영문 외국인 민원 안내문을 한국어로 번역해줘',answer:'외국인 주민 전입신고 안내 — 체류지를 변경한 외국인 주민은 14일 이내에 시청 1층 민원여권과에서 전입신고를 하여야 하며, 외국인등록증과 주거 계약서 사본이 필요...',time:'2026-02-25 11:05',tokens:556,rating:5,errReport:false},
+      {id:'uh-004',user:'조현우',dept:'안전총괄과',mode:'GENERAL',query:'비상시 대피 경로',answer:'청사 건물의 비상 대피 경로는...',time:'2026-02-24 16:42',tokens:185,rating:2,errReport:true,errDetail:'층별 대피도 누락, 환각 의심'},
+      {id:'uh-005',user:'홍은지',dept:'기획예산과',mode:'REVIEW',query:'수의계약 한도액 기준 확인',answer:'수의계약은 추정가격이 2천만원 이하인 경우...',time:'2026-02-24 15:30',tokens:320,rating:3,errReport:false},
+      {id:'uh-006',user:'김도윤',dept:'민원여권과',mode:'REPORT',query:'이번 주 여권 발급 412건 완료, 처리기한 연장 통지 3건 처리 완료를 주간 실적 보고서로 작성해줘',answer:'민원여권과 주간 업무 실적 보고 | 보고 기간: 2026.02.17~02.21...',time:'2026-02-24 14:15',tokens:680,rating:5,errReport:false},
+    ],
+    MOCK_SATISFACTION_DATA: {
+      avg:4.2, total:342,
+      dist:[{stars:5,count:178,pct:52},{stars:4,count:95,pct:28},{stars:3,count:41,pct:12},{stars:2,count:18,pct:5},{stars:1,count:10,pct:3}],
+      recent:[
+        {id:1,user:'이서연',dept:'민원여권과',stars:4,comment:'공문 검토 결과가 매우 정확했습니다. 더 빠른 응답 속도가 필요합니다.',date:'2026-02-25'},
+        {id:2,user:'윤지우',dept:'자치행정과',stars:5,comment:'번역 품질이 훌륭합니다. 행정 문체도 잘 반영됩니다.',date:'2026-02-25'},
+        {id:3,user:'조현우',dept:'안전총괄과',stars:2,comment:'비상 대피 경로 답변이 부정확했습니다. 개선 필요.',date:'2026-02-24'},
+        {id:4,user:'김도윤',dept:'민원여권과',stars:5,comment:'보고서 자동 작성 기능이 업무 효율을 크게 높여주었습니다.',date:'2026-02-24'},
+        {id:5,user:'홍은지',dept:'기획예산과',stars:3,comment:'계약 관련 법령 DB가 더 최신화되면 좋겠습니다.',date:'2026-02-23'},
+      ]
+    },
+
+    MOCK_DATA_SOURCES_INT: [
+      {id:'ds-i01',name:'온나라 문서관리',protocol:'REST API',target:'민원사무편람/교육자료',schedule:'매일 02:00',lastSync:'2026-02-25 02:01',status:'정상',docCount:555,newToday:5},
+      {id:'ds-i02',name:'인사랑 (지방인사정보시스템)',protocol:'DB Direct',target:'복무·인사규정',schedule:'매주 월 03:00',lastSync:'2026-02-24 03:02',status:'정상',docCount:120,newToday:0},
+      {id:'ds-i03',name:'e호조 (지방재정관리시스템)',protocol:'WebDAV',target:'계약·회계',schedule:'실시간 동기화',lastSync:'2026-02-25 09:15',status:'정상',docCount:95,newToday:1},
+      {id:'ds-i04',name:'새올행정시스템',protocol:'REST API',target:'민원사무편람',schedule:'매일 01:00',lastSync:'2026-02-25 01:03',status:'경고',docCount:280,newToday:0},
+    ],
+    MOCK_DATA_SOURCES_EXT: [
+      {id:'ds-e01',name:'법령정보센터 (법제처)',method:'Open API',url:'https://www.law.go.kr/DRF/lawService',target:'자치법규',schedule:'매주 화 05:00',lastSync:'2026-02-25 05:00',status:'정상',docCount:1240,newToday:3},
+      {id:'ds-e02',name:'나라장터 (조달청)',method:'Open API',url:'https://openapi.g2b.go.kr/',target:'계약·회계',schedule:'매일 06:00',lastSync:'2026-02-25 06:01',status:'정상',docCount:320,newToday:12},
+      {id:'ds-e03',name:'자치법규정보시스템 (ELIS)',method:'크롤링',url:'https://www.elis.go.kr/',target:'자치법규',schedule:'매주 수 04:00',lastSync:'2026-02-19 04:00',status:'정상',docCount:88,newToday:0},
+      {id:'ds-e04',name:'행정안전부 민원제도 고시',method:'크롤링',url:'https://www.mois.go.kr/',target:'민원사무편람',schedule:'매주 목 04:00',lastSync:'2026-02-20 04:00',status:'오류',docCount:42,newToday:0},
+    ],
+    MOCK_DOC_PIPELINE: [
+      {id:'dp-001',name:'민원사무편람_2026.pdf',folder:'민원사무편람',src:'온나라',type:'PDF',size:'4.2MB',ingest:'2026-02-25 02:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:312,tokens:48200,pii:false,version:3,changeType:'업데이트'},
+      {id:'dp-002',name:'민원응대교육자료_2월.pdf',folder:'민원사무편람',src:'온나라',type:'PDF',size:'8.1MB',ingest:'2026-02-25 02:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:580,tokens:91000,pii:false,version:1,changeType:'신규'},
+      {id:'dp-003',name:'수당기준표_개정.xlsx',folder:'복무·인사규정',src:'인사랑',type:'XLSX',size:'1.8MB',ingest:'2026-02-24 03:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:145,tokens:18500,pii:true,version:5,changeType:'업데이트'},
+      {id:'dp-004',name:'수의계약서_수정본.docx',folder:'계약·회계',src:'e호조',type:'DOCX',size:'580KB',ingest:'2026-02-25 09:15',parseStatus:'완료',chunkStatus:'완료',embedStatus:'처리중',chunks:62,tokens:9800,pii:false,version:2,changeType:'업데이트'},
+      {id:'dp-005',name:'신규임용교육자료_2월.pptx',folder:'교육자료',src:'온나라',type:'PPTX',size:'22.5MB',ingest:'2026-02-23 04:00',parseStatus:'완료',chunkStatus:'실패',embedStatus:'대기',chunks:0,tokens:0,pii:false,version:1,changeType:'신규'},
+      {id:'dp-006',name:'민원처리법_시행령_개정.pdf',folder:'자치법규',src:'법령정보센터',type:'PDF',size:'3.2MB',ingest:'2026-02-25 05:00',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:210,tokens:33500,pii:false,version:1,changeType:'신규'},
+      {id:'dp-007',name:'나라장터_입찰공고_0225.json',folder:'계약·회계',src:'조달청',type:'JSON',size:'1.1MB',ingest:'2026-02-25 06:01',parseStatus:'완료',chunkStatus:'완료',embedStatus:'완료',chunks:28,tokens:4200,pii:false,version:1,changeType:'신규'},
+    ],
+    MOCK_CHUNK_QUALITY: [
+      {docId:'d-001',name:'민원사무편람_2026.pdf',folder:'민원사무편람',avgLen:154,specialCharPct:1.2,dupPct:0.8,semanticScore:94,status:'양호'},
+      {docId:'d-002',name:'여권발급업무지침.pdf',folder:'민원사무편람',avgLen:168,specialCharPct:2.1,dupPct:1.5,semanticScore:91,status:'양호'},
+      {docId:'d-011',name:'한성시_자치법규집_2026.pdf',folder:'자치법규',avgLen:142,specialCharPct:4.5,dupPct:3.2,semanticScore:78,status:'주의'},
+      {docId:'d-021',name:'한성시_복무규정_2026_개정안.pdf',folder:'복무·인사규정',avgLen:201,specialCharPct:0.8,dupPct:0.4,semanticScore:96,status:'양호'},
+      {docId:'d-041',name:'신규임용자교육과정.pptx',folder:'교육자료',avgLen:88,specialCharPct:8.2,dupPct:6.5,semanticScore:58,status:'경고'},
+      {docId:'e-006',name:'민원처리법_시행령_개정.pdf',folder:'자치법규',avgLen:178,specialCharPct:1.9,dupPct:0.9,semanticScore:92,status:'양호'},
+    ],
+    MOCK_CHUNK_PREVIEW: [
+      {idx:1,text:'제1조(목적) 이 조례는 민원 처리에 관한 법률 및 같은 법 시행령에서 위임된 사항과 그 시행에 필요한 사항을 규정하여 민원 처리의 공정성과 신속성을 확보함을 목적으로 한다.',len:142,score:96},
+      {idx:2,text:'제2조(적용범위) 이 조례는 한성시 및 소속 행정기관에 접수되는 모든 민원 사무와 그 처리를 담당하는 소속 공무원에게 적용한다.',len:88,score:93},
+      {idx:3,text:'제3조(정의) ① "일반민원"이란 법정민원·고충민원 외의 민원을 말한다. ② "처리기한"이란 민원을 접수한 날부터 처리 결과를 민원인에게 통지하기까지의 기간을 말한다.',len:165,score:97},
+    ],
+    MOCK_REPROCESS_QUEUE: [
+      {id:'rq-001',doc:'신규임용교육자료_2월.pptx',folder:'교육자료',src:'온나라',stage:'청킹',error:'PPTX 이미지 슬라이드 파싱 오류 (PIL 디코딩 실패)',failedAt:'2026-02-23 04:00',retryCount:2,status:'대기중',priority:'높음'},
+      {id:'rq-002',doc:'행정안전부_민원제도고시.pdf',folder:'민원사무편람',src:'크롤링',stage:'임베딩',error:'임베딩 서버 응답 타임아웃 (>30s)',failedAt:'2026-02-20 04:15',retryCount:1,status:'대기중',priority:'보통'},
+      {id:'rq-003',doc:'창구점검일지_1월.xlsx',folder:'민원사무편람',src:'온나라',stage:'파싱',error:'암호화된 XLSX 파일 — 비밀번호 해제 필요',failedAt:'2026-02-18 02:05',retryCount:3,status:'수동처리필요',priority:'높음'},
+      {id:'rq-004',doc:'재난대응매뉴얼_v3.pdf',folder:'재난·안전 대응',src:'온나라',stage:'임베딩',error:'토큰 수 초과 (한도 32,768 — 실제 41,200토큰)',failedAt:'2026-02-22 09:30',retryCount:0,status:'대기중',priority:'보통'},
+    ],
+
+    MOCK_SERVICE_STATS: {
+      summary:{users:842,newToday:12,conversations:15240,apiCalls:48920,linkCalls:3280,feedbacks:342},
+      daily:[
+        {date:'02-19',users:98,conv:1840,api:5820},{date:'02-20',users:115,conv:2100,api:6230},
+        {date:'02-21',users:102,conv:1980,api:5940},{date:'02-22',users:45,conv:890,api:2810},
+        {date:'02-23',users:32,conv:620,api:1980},{date:'02-24',users:128,conv:2380,api:7100},{date:'02-25',users:134,conv:2460,api:7280},
+      ],
+      keywords:[
+        {word:'민원사무편람',cnt:1240},{word:'처리기한 연장',cnt:980},{word:'여권 발급',cnt:820},{word:'복무규정',cnt:750},
+        {word:'수의계약',cnt:680},{word:'교육자료',cnt:540},{word:'재난 대응',cnt:490},{word:'옥외광고 허가',cnt:420},
+        {word:'정보공개 청구',cnt:380},{word:'맞춤형 복지',cnt:320},{word:'출장 여비',cnt:280},{word:'보고서 작성',cnt:240},
+      ],
+      topics:[
+        {topic:'민원·인허가',pct:38,c:'bg-red-400'},{topic:'시정·예산',pct:25,c:'bg-blue-400'},
+        {topic:'복무·인사',pct:16,c:'bg-green-400'},{topic:'계약·회계',pct:11,c:'bg-purple-400'},{topic:'교육·훈련',pct:10,c:'bg-yellow-400'},
+      ],
+      apiByEndpoint:[
+        {ep:'/api/v1/chat',calls:28420,pct:58},{ep:'/api/v1/rag/search',calls:12880,pct:26},
+        {ep:'/api/v1/embed',calls:4820,pct:10},{ep:'/api/v1/agent/run',calls:1940,pct:4},{ep:'기타',calls:860,pct:2},
+      ],
+      peakHours:[0,0,0,0,0,2,8,42,112,168,145,98,120,145,160,182,195,188,142,95,68,42,18,5],
+    },
+    MOCK_NOTICES_MGMT: [
+      {id:'N-001',title:'[필독] 2026년 1분기 행정망 보안 업데이트 공지',type:'공지',author:'노태건',date:'2026-02-25',views:248,pinned:true,active:true},
+      {id:'N-002',title:'GPT-OSS-120B 모델 업그레이드 안내',type:'업데이트',author:'강수진',date:'2026-02-22',views:182,pinned:false,active:true},
+      {id:'N-003',title:'3월 정기 점검 (2026.03.08 02:00~06:00)',type:'점검',author:'노태건',date:'2026-02-20',views:124,pinned:false,active:true},
+      {id:'N-004',title:'AI 플랫폼 사용 매뉴얼 v2.1 배포',type:'매뉴얼',author:'강수진',date:'2026-02-15',views:340,pinned:false,active:true},
+    ],
+    MOCK_QNA_MGMT: [
+      {id:'Q-001',title:'번역 기능에서 한→중 번역이 안됩니다',user:'서지혜',dept:'복지정책과',date:'2026-02-25',status:'답변완료',answer:'현재 한→중 번역은 베타 기능으로 일부 문장 유형에서 오류가 발생할 수 있습니다. v2.1 패치에서 개선될 예정입니다.'},
+      {id:'Q-002',title:'에이전트가 새올 민원 데이터에 접근하지 못하는 경우',user:'이서연',dept:'민원여권과',date:'2026-02-24',status:'처리중',answer:''},
+      {id:'Q-003',title:'RAG 검색 시 유사도 점수 기준이 어떻게 되나요?',user:'윤지우',dept:'자치행정과',date:'2026-02-23',status:'답변완료',answer:'현재 코사인 유사도 0.75 이상인 문서가 검색 결과에 포함됩니다. 관리자 설정에서 임계값 조정이 가능합니다.'},
+      {id:'Q-004',title:'보고서 자동 생성 길이 제한 변경 가능한가요?',user:'홍은지',dept:'기획예산과',date:'2026-02-21',status:'대기',answer:''},
+    ],
+    MOCK_IP_BLOCKS: [
+      {id:'ib-001',target:'192.168.100.45',type:'IP',reason:'비정상 반복 접속 (10분간 500회)',action:'차단',appliedBy:'노태건',date:'2026-02-24',status:'활성'},
+      {id:'ib-002',target:'10.20.30.99',type:'IP',reason:'권한 외 지식영역 접근 시도',action:'차단',appliedBy:'노태건',date:'2026-02-22',status:'활성'},
+      {id:'ib-003',target:'USR-EXT-012',type:'ID',reason:'퇴직 처리 미완료 계정',action:'차단',appliedBy:'강수진',date:'2026-02-20',status:'활성'},
+      {id:'ib-004',target:'192.168.200.0/24',type:'대역',reason:'위탁업체 외부망 허용 대역',action:'허용',appliedBy:'노태건',date:'2026-02-10',status:'활성'},
+    ],
+    MOCK_WORK_LOG: [
+      {id:1,time:'2026-02-25 14:35',user:'강수진',dept:'정보통신과',ip:'10.20.30.41',action:'문서 업로드',target:'민원사무편람_2026.pdf',detail:'민원사무편람 폴더 업로드 (4.2MB)'},
+      {id:2,time:'2026-02-25 14:20',user:'노태건',dept:'정보통신과',ip:'10.20.30.10',action:'설정 변경',target:'GPT-OSS-120B',detail:'Temperature 0.3→0.2 변경'},
+      {id:3,time:'2026-02-25 13:55',user:'이서연',dept:'민원여권과',ip:'10.20.30.55',action:'에이전트 호출',target:'민원분류봇',detail:'민원 자동 분류 질의 (응답 2.1s)'},
+      {id:4,time:'2026-02-25 11:30',user:'홍은지',dept:'기획예산과',ip:'10.20.30.78',action:'데이터 추출',target:'이용통계_0225.xlsx',detail:'통계 엑셀 다운로드 (48KB)'},
+      {id:5,time:'2026-02-25 10:12',user:'윤지우',dept:'자치행정과',ip:'10.20.30.62',action:'지식영역 접근',target:'자치법규 DB',detail:'처리기한 관련 5건 검색'},
+    ],
+    MOCK_EXTRACT_LOG: [
+      {id:1,time:'2026-02-25 11:30',user:'홍은지',dept:'기획예산과',type:'통계 엑셀',file:'이용통계_0225.xlsx',size:'48KB',rows:340},
+      {id:2,time:'2026-02-24 16:45',user:'강수진',dept:'정보통신과',type:'로그 CSV',file:'접속로그_0224.csv',size:'1.2MB',rows:5820},
+      {id:3,time:'2026-02-23 14:20',user:'노태건',dept:'정보통신과',type:'보고서 PDF',file:'월간리포트_202601.pdf',size:'3.4MB',rows:null},
+      {id:4,time:'2026-02-22 10:05',user:'이서연',dept:'민원여권과',type:'질의이력 CSV',file:'질의이력_이서연_0222.csv',size:'89KB',rows:248},
+    ],
+    MOCK_USAGE_BY_DEPT: [
+      {dept:'민원여권과',users:8,queries:3240,avgLen:245,tokens:812000,peakHour:'14:00',abuseSuspect:false},
+      {dept:'자치행정과',users:15,queries:2880,avgLen:198,tokens:621000,peakHour:'10:00',abuseSuspect:false},
+      {dept:'기획예산과',users:12,queries:2240,avgLen:185,tokens:452000,peakHour:'09:00',abuseSuspect:false},
+      {dept:'안전총괄과',users:10,queries:1820,avgLen:142,tokens:284000,peakHour:'14:00',abuseSuspect:false},
+      {dept:'복지정책과',users:6,queries:1480,avgLen:312,tokens:502000,peakHour:'11:00',abuseSuspect:false},
+      {dept:'정보통신과',users:11,queries:1240,avgLen:168,tokens:228000,peakHour:'15:00',abuseSuspect:false},
+    ],
+    // 승격: REB 기본값의 user·지식영역명이 REB 팩 인물·폴더 — 한성시 어휘로 교체
+    MOCK_ABUSE_ALERTS: [
+      {id:'ab-001',user:'미확인',ip:'192.168.100.45',type:'반복 접속',detail:'10분간 500회 API 호출 (정상범위 100회/10분)',detected:'2026-02-25 11:18',status:'차단됨',severity:'위험'},
+      {id:'ab-002',user:'USR-EXT-012',ip:'10.20.100.8',type:'권한 외 접근',detail:'계약·회계 지식영역 무단 접근 시도 12회',detected:'2026-02-24 15:30',status:'경고발송',severity:'주의'},
+      {id:'ab-003',user:'서지혜',ip:'10.20.30.75',type:'대량 추출',detail:'1시간 내 엑셀 추출 8회 (일 평균 0.3회)',detected:'2026-02-23 14:40',status:'모니터링',severity:'정보'},
+    ],
+    MOCK_API_APPROVALS: [
+      {id:'apr-001',requester:'이서연',dept:'민원여권과',api:'에이전트 실행 API',purpose:'민원 자동 분류 파이프라인 연동',requestDate:'2026-02-24',status:'대기'},
+      {id:'apr-002',requester:'조현우',dept:'안전총괄과',api:'RAG 검색 API',purpose:'행사 안전계획 검토 자동화 연동',requestDate:'2026-02-22',status:'대기'},
+      {id:'apr-003',requester:'윤지우',dept:'자치행정과',api:'임베딩 API',purpose:'교육자료 유사도 검색 시스템',requestDate:'2026-02-20',status:'승인'},
+    ],
+    MOCK_PROMPTS_MGMT: [
+      {id:'pt-001',name:'민원사무편람 Q&A 시스템 프롬프트',mode:'GENERAL',version:'v2.1',tokens:342,lastUpdated:'2026-02-20',active:true,desc:'민원 처리 절차 전문 답변 프롬프트. 출처 인용 필수, 환각 방지 지시 포함.'},
+      {id:'pt-002',name:'공문 사전 검토 평가 프롬프트',mode:'REVIEW',version:'v1.4',tokens:518,lastUpdated:'2026-02-18',active:true,desc:'자치법규 대조 공문 검토용. 절차 하자 항목을 조항 단위로 발췌하도록 지시.'},
+      {id:'pt-003',name:'번역·요약 지시 프롬프트',mode:'TRANSLATE',version:'v1.0',tokens:285,lastUpdated:'2026-02-10',active:true,desc:'한/영/중/일 다국어 민원 번역 및 요약 길이 제어 지시.'},
+      {id:'pt-004',name:'보고서 생성 프롬프트',mode:'REPORT',version:'v2.0',tokens:624,lastUpdated:'2026-02-15',active:true,desc:'공문서 형식 기반 주간/월간/시정 현안 보고서 자동 생성.'},
+    ],
+    MOCK_HR_SYNC: {
+      lastSync:'2026-02-25 01:00:12',nextSync:'2026-02-26 01:00:00',status:'정상',
+      summary:{total:842,new:3,retired:1,moved:5,concurrent:2,leave:4},
+      recent:[
+        {id:'hr-001',name:'문가영',type:'신규입사',dept:'민원여권과',syncDate:'2026-02-25',action:'계정 생성'},
+        {id:'hr-002',name:'박세훈',type:'신규입사',dept:'자치행정과',syncDate:'2026-02-25',action:'계정 생성'},
+        {id:'hr-003',name:'장현식',type:'퇴직',dept:'정보통신과',syncDate:'2026-02-25',action:'계정 비활성화'},
+        {id:'hr-004',name:'이도현',type:'부서이동',dept:'민원여권과 → 자치행정과',syncDate:'2026-02-24',action:'부서 정보 업데이트'},
+        {id:'hr-005',name:'김나윤',type:'겸직',dept:'기획예산과 + 자치행정과',syncDate:'2026-02-24',action:'그룹 추가'},
+        {id:'hr-006',name:'최현우',type:'부재설정',dept:'민원여권과',syncDate:'2026-02-23',action:'임시 계정 잠금 (육아휴직)'},
+      ],
+    },
+    MOCK_ACCESS_LOGS: [
+      {id:1,time:'2026-02-14 09:10:23',user:'강수진',dept:'정보통신과',action:'로그인',ip:'10.20.30.41',detail:'SSO 인증 성공'},
+      {id:2,time:'2026-02-14 09:08:15',user:'이서연',dept:'민원여권과',action:'에이전트 호출',ip:'10.20.30.55',detail:'민원 분류 어시스턴트 질의'},
+      {id:3,time:'2026-02-14 08:55:02',user:'노태건',dept:'정보통신과',action:'모델 설정 변경',ip:'10.20.30.10',detail:'GPT-OSS-120B Temperature 0.3→0.2'},
+      {id:4,time:'2026-02-14 08:45:33',user:'윤지우',dept:'자치행정과',action:'문서 업로드',ip:'10.20.30.78',detail:'한성시_복무규정_2026_개정안.pdf (2.4MB)'},
+      {id:5,time:'2026-02-14 08:30:11',user:'김도윤',dept:'민원여권과',action:'에이전트 호출',ip:'10.20.30.62',detail:'민원 대응 가이드 질의'},
+      {id:6,time:'2026-02-14 08:20:45',user:'홍은지',dept:'기획예산과',action:'에이전트 호출',ip:'10.20.30.90',detail:'계약서 검토 에이전트 질의'},
+      {id:7,time:'2026-02-13 17:55:10',user:'서지혜',dept:'복지정책과',action:'보고서 생성',ip:'10.20.30.44',detail:'복지 급여 상담 현황 리포트'},
+      {id:8,time:'2026-02-13 17:30:22',user:'조현우',dept:'안전총괄과',action:'로그아웃',ip:'10.20.30.33',detail:'세션 종료'},
+    ],
+    MOCK_QUALITY_REVIEWS: [
+      {id:'QR-001',query:'민원 처리기한 연장 횟수는?',answer:'민원 처리에 관한 조례 제12조에 따라 1회에 한하여 7 근무일의 범위에서...',agent:'자치법규 검색 에이전트',reviewer:'윤지우',rating:'good',confidence:0.92,date:'2026-02-13',feedback:'정확한 조례 인용'},
+      {id:'QR-002',query:'연가 일수 계산 방법 알려줘',answer:'지방공무원 복무규정에 따라 재직기간별 연가 일수는...',agent:'복무규정 질의응답 봇',reviewer:'서지혜',rating:'edit',confidence:0.78,date:'2026-02-12',feedback:'시 내부 지침 추가 필요'},
+      {id:'QR-003',query:'옥외광고물 허가 수수료 산정 기준',answer:'표시면적 5제곱미터 이하 30,000원이며, 초과 시 1제곱미터당 5,000원을 가산하여...',agent:'민원 분류 어시스턴트',reviewer:'이서연',rating:'good',confidence:0.95,date:'2026-02-11',feedback:''},
+      {id:'QR-004',query:'비상시 대피 경로',answer:'청사 건물의 비상 대피 경로는...',agent:'민원 대응 가이드',reviewer:'조현우',rating:'bad',confidence:0.55,date:'2026-02-10',feedback:'층별 대피도 누락, 할루시네이션 의심'},
+      {id:'QR-005',query:'수의계약 한도액 기준',answer:'수의계약은 추정가격이 2천만원 이하인 경우...',agent:'계약서 검토 에이전트',reviewer:'홍은지',rating:'edit',confidence:0.82,date:'2026-02-09',feedback:'시 회계 예규 한도액 기준 상이'},
+    ],
+    MOCK_ANNOUNCEMENTS: [
+      {id:1,title:'한성시 스마트행정 AI 플랫폼 정식 오픈 안내',category:'공지',status:'Running',startDate:'2026-02-01',endDate:'2026-03-01',author:'노태건',views:452},
+      {id:2,title:'시스템 정기 점검 안내 (2/15 02:00~06:00)',category:'점검',status:'Running',startDate:'2026-02-13',endDate:'2026-02-15',author:'노태건',views:128},
+      {id:3,title:'신규 모델 Solar-10.7B 서비스 추가',category:'업데이트',status:'Running',startDate:'2026-02-10',endDate:'2026-02-28',author:'강수진',views:89},
+      {id:4,title:'개인 지식영역 기능 출시',category:'업데이트',status:'Stopped',startDate:'2026-01-15',endDate:'2026-02-01',author:'강수진',views:310},
+    ],
+    // 승격: REB 기본값 endpoint에 REB 사내망 도메인 잔존 — 행정망 도메인으로 교체
+    MOCK_LINKED_SW: [
+      {name:'Milvus Vector DB',version:'2.4.1',status:'Running',endpoint:'milvus.hsc.internal:19530',cpu:12.5,memory:28.4,uptime:'30d 4h'},
+      {name:'OCR Engine (Tesseract)',version:'5.3.3',status:'Running',endpoint:'ocr.hsc.internal:8090',cpu:5.2,memory:8.1,uptime:'30d 4h'},
+      {name:'vLLM Serving',version:'0.4.2',status:'Running',endpoint:'vllm.hsc.internal:8000',cpu:45.0,memory:62.3,uptime:'14d 2h'},
+      {name:'Redis Cache',version:'7.2.4',status:'Running',endpoint:'redis.hsc.internal:6379',cpu:2.1,memory:15.6,uptime:'30d 4h'},
+      {name:'MinIO Object Storage',version:'2024.02',status:'Warning',endpoint:'minio.hsc.internal:9000',cpu:8.3,memory:12.0,uptime:'30d 4h'},
+      {name:'Agent Runtime',version:'1.2.0',status:'Running',endpoint:'agent.hsc.internal:5000',cpu:18.7,memory:24.5,uptime:'7d 11h'},
+    ],
+
+    MOCK_AGENTS: [
+      {id:'AGT-001',name:'자치법규 검색 에이전트',desc:'한성시 조례·규칙·훈령·예규를 기반으로 질의응답을 수행합니다.',model:'GPT-OSS-120B',tools:['자치법규 벡터 DB','웹 검색'],mcpTools:['MCP-Search','MCP-WebCrawler'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v2.1',creator:'윤지우',dept:'자치행정과',created:'2026-01-15',updated:'2026-02-08',requests24h:342,avgLatency:'1.2s',successRate:98.5,confidence:0.92,systemPrompt:'당신은 한성시청의 자치법규 전문가입니다. 조례·규칙을 정확히 참조하여 답변하세요.',temperature:0.3,maxTokens:2048},
+      {id:'AGT-002',name:'민원 분류 어시스턴트',desc:'접수 민원을 유형·소관 부서별로 자동 분류하고 처리 절차를 안내합니다. 새올 연동으로 실시간 분석.',model:'Llama-3-Kor-Instruct',tools:['민원 이력 DB','새올 민원 조회 API'],mcpTools:['MCP-Saeol','MCP-SearchFilter'],ragEnabled:true,hitl:true,a2a:true,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.8',creator:'이서연',dept:'민원여권과',created:'2026-01-20',updated:'2026-02-10',requests24h:189,avgLatency:'0.8s',successRate:97.2,confidence:0.88,systemPrompt:'민원 분류 전문 도우미입니다. 민원 이력과 새올 데이터를 참조하여 소관 부서와 처리 절차를 안내하세요.',temperature:0.2,maxTokens:4096},
+      {id:'AGT-003',name:'복무규정 질의응답 봇',desc:'복무/맞춤형 복지/수당 관련 직원 문의에 자동 응답합니다.',model:'EXAONE-3.0-7.8B',tools:['복무규정 벡터 DB'],mcpTools:['MCP-Search'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.3',creator:'윤지우',dept:'자치행정과',created:'2025-12-05',updated:'2026-02-03',requests24h:567,avgLatency:'0.5s',successRate:95.8,confidence:0.85,systemPrompt:'한성시청 복무규정 전문 도우미입니다. 정확한 조항을 인용하여 답변하세요.',temperature:0.4,maxTokens:1024},
+      {id:'AGT-004',name:'계약서 검토 에이전트',desc:'계약서 초안을 검토하고 위험 조항을 식별합니다.',model:'GPT-OSS-120B',tools:['회계 예규 DB','계약 서식 DB'],mcpTools:['MCP-Search','MCP-DynamicFilter'],ragEnabled:true,hitl:true,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.0',creator:'홍은지',dept:'기획예산과',created:'2026-02-01',updated:'2026-02-09',requests24h:45,avgLatency:'2.1s',successRate:99.1,confidence:0.94,systemPrompt:'계약서 전문 검토 에이전트입니다. 불리한 조항이나 누락된 사항을 식별하세요.',temperature:0.1,maxTokens:4096},
+      {id:'AGT-005',name:'현장 점검 보고서 생성기',desc:'인허가 현장 확인·점검 데이터를 기반으로 정형화된 보고서를 자동 생성합니다.',model:'Llama-3-Kor-Instruct',tools:['보고서 서식 DB','점검 이력 DB'],mcpTools:['MCP-CodeDev'],ragEnabled:false,hitl:false,a2a:true,responseMode:'direct',actionable:true,status:'Stopped',version:'v0.9',creator:'조현우',dept:'안전총괄과',created:'2026-01-25',updated:'2026-02-05',requests24h:0,avgLatency:'-',successRate:92.0,confidence:0.76,systemPrompt:'현장 점검 보고서를 작성하는 전문 에이전트입니다.',temperature:0.5,maxTokens:8192},
+      {id:'AGT-006',name:'신규 임용자 교육 튜터',desc:'신규 임용자 및 민원 창구 담당자 대상 직무 교육 질의응답을 제공합니다.',model:'EXAONE-3.0-7.8B',tools:['교육 자료 벡터 DB','웹 검색'],mcpTools:['MCP-Search','MCP-WebSearch'],ragEnabled:true,hitl:false,a2a:false,responseMode:'knowledge',actionable:false,status:'Running',version:'v1.5',creator:'윤지우',dept:'자치행정과',created:'2025-11-10',updated:'2026-01-28',requests24h:231,avgLatency:'0.6s',successRate:96.4,confidence:0.87,systemPrompt:'한성시청 직무 교육 튜터입니다. 쉽고 정확하게 설명하세요.',temperature:0.6,maxTokens:2048},
+      {id:'AGT-007',name:'민원 대응 가이드',desc:'집단 민원 등 긴급 상황 시 대응 절차를 실시간으로 안내합니다.',model:'GPT-OSS-120B',tools:['민원 매뉴얼 DB','알림 서비스 API'],mcpTools:['MCP-Search','MCP-Saeol'],ragEnabled:true,hitl:true,a2a:true,responseMode:'knowledge',actionable:true,status:'Running',version:'v3.0',creator:'김도윤',dept:'민원여권과',created:'2025-10-01',updated:'2026-02-11',requests24h:12,avgLatency:'0.9s',successRate:99.8,confidence:0.96,systemPrompt:'민원 대응 전문 에이전트입니다. 신속하고 정확한 대응 절차를 안내하세요.',temperature:0.1,maxTokens:2048},
+      {id:'AGT-008',name:'지출결의 자동 작성',desc:'업무 지시를 받아 e호조에서 지출결의서를 자동으로 작성합니다.',model:'GPT-OSS-120B',tools:['e호조 연동 API','회계 예규 DB'],mcpTools:['MCP-EhojoConnector','MCP-OnnaraSync'],ragEnabled:false,hitl:true,a2a:true,responseMode:'direct',actionable:true,status:'Running',version:'v1.0',creator:'노태건',dept:'정보통신과',created:'2026-02-05',updated:'2026-02-13',requests24h:78,avgLatency:'3.2s',successRate:96.0,confidence:0.90,systemPrompt:'지출결의서 작성 전문 에이전트입니다. e호조와 연동하여 결의서를 자동 생성합니다.',temperature:0.1,maxTokens:2048},
+    ],
+
+    MOCK_AGENT_DEPLOYS: [
+      {id:'DEP-001',agentId:'AGT-001',agentName:'자치법규 검색 에이전트',model:'GPT-OSS-120B',version:'v2.1',env:'Production',endpoint:'/api/agent/ordinance-reg',deployDate:'2026-02-08 14:30',deployer:'윤지우',status:'Running',replicas:3,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'5d 12h',requests24h:342,errorRate:1.5},
+      {id:'DEP-002',agentId:'AGT-002',agentName:'민원 분류 어시스턴트',model:'Llama-3-Kor-Instruct',version:'v1.8',env:'Production',endpoint:'/api/agent/minwon-classify',deployDate:'2026-02-10 09:15',deployer:'이서연',status:'Running',replicas:2,cpu:'4 Core',memory:'16 GB',gpu:'H200 x1',uptime:'3d 2h',requests24h:189,errorRate:2.8},
+      {id:'DEP-003',agentId:'AGT-003',agentName:'복무규정 질의응답 봇',model:'EXAONE-3.0-7.8B',version:'v1.3',env:'Production',endpoint:'/api/agent/duty-qa',deployDate:'2026-02-03 11:00',deployer:'윤지우',status:'Running',replicas:2,cpu:'1 Core',memory:'4 GB',gpu:'-',uptime:'10d 1h',requests24h:567,errorRate:4.2},
+      {id:'DEP-004',agentId:'AGT-004',agentName:'계약서 검토 에이전트',model:'GPT-OSS-120B',version:'v1.0',env:'Staging',endpoint:'/api/agent/contract-review',deployDate:'2026-02-09 16:45',deployer:'홍은지',status:'Running',replicas:1,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'4d 5h',requests24h:45,errorRate:0.9},
+      {id:'DEP-005',agentId:'AGT-005',agentName:'현장 점검 보고서 생성기',model:'Llama-3-Kor-Instruct',version:'v0.9',env:'Staging',endpoint:'/api/agent/inspection-report',deployDate:'2026-02-05 10:00',deployer:'조현우',status:'Stopped',replicas:0,cpu:'-',memory:'-',gpu:'-',uptime:'-',requests24h:0,errorRate:0},
+      {id:'DEP-006',agentId:'AGT-006',agentName:'신규 임용자 교육 튜터',model:'EXAONE-3.0-7.8B',version:'v1.5',env:'Production',endpoint:'/api/agent/edu-tutor',deployDate:'2026-01-28 08:30',deployer:'윤지우',status:'Running',replicas:2,cpu:'1 Core',memory:'4 GB',gpu:'-',uptime:'16d 3h',requests24h:231,errorRate:3.6},
+      {id:'DEP-007',agentId:'AGT-007',agentName:'민원 대응 가이드',model:'GPT-OSS-120B',version:'v3.0',env:'Production',endpoint:'/api/agent/civil-response',deployDate:'2026-02-11 00:00',deployer:'김도윤',status:'Running',replicas:4,cpu:'4 Core',memory:'16 GB',gpu:'H200 x2',uptime:'2d 11h',requests24h:12,errorRate:0.2},
+      {id:'DEP-008',agentId:'AGT-008',agentName:'지출결의 자동 작성',model:'GPT-OSS-120B',version:'v1.0',env:'Staging',endpoint:'/api/agent/expenditure',deployDate:'2026-02-13 10:30',deployer:'노태건',status:'Running',replicas:2,cpu:'2 Core',memory:'8 GB',gpu:'H200 x1',uptime:'1d 0h',requests24h:78,errorRate:4.0},
+    ],
+
+    MOCK_WORKFLOWS: [
+      {id:'WF-001',name:'집단 민원 종합 대응',desc:'민원 급증 감지 → 분류 → 보고서 생성 → 알림 발송 (A2A 멀티에이전트)',status:'Running',creator:'이서연',created:'2026-02-01',lastRun:'2026-02-13 09:30',runs24h:8,successRate:95.0,protocol:'A2A',hitl:true,
+        steps:[{id:'s1',name:'민원 급증 이상 감지',type:'trigger',agentId:null},{id:'s2',name:'민원 분류 어시스턴트',type:'agent',agentId:'AGT-002'},{id:'s3',name:'HITL 전문가 검토',type:'hitl',agentId:null},{id:'s4',name:'심각도 ≥ 높음',type:'condition',agentId:null},{id:'s5',name:'점검 보고서 생성',type:'agent',agentId:'AGT-005'},{id:'s6',name:'민원 대응 가이드',type:'agent',agentId:'AGT-007'},{id:'s7',name:'MCP 알림 발송',type:'mcp',agentId:null}]},
+      {id:'WF-002',name:'신규 임용자 온보딩 자동화',desc:'복무 질의 → 교육 콘텐츠 추천 → 자치법규 안내 (MCP 온나라 연동)',status:'Running',creator:'윤지우',created:'2026-01-20',lastRun:'2026-02-12 15:00',runs24h:15,successRate:98.0,protocol:'MCP',hitl:false,
+        steps:[{id:'s1',name:'신규 임용자 트리거',type:'trigger',agentId:null},{id:'s2',name:'MCP-OnnaraSync',type:'mcp',agentId:null},{id:'s3',name:'복무규정 질의응답 봇',type:'agent',agentId:'AGT-003'},{id:'s4',name:'신규 임용자 교육 튜터',type:'agent',agentId:'AGT-006'},{id:'s5',name:'자치법규 검색 에이전트',type:'agent',agentId:'AGT-001'}]},
+      {id:'WF-003',name:'계약 검토 승인 프로세스',desc:'계약서 업로드 → AI 검토 → 위험 분류 → HITL 승인',status:'Stopped',creator:'홍은지',created:'2026-02-05',lastRun:'2026-02-10 11:20',runs24h:0,successRate:100.0,protocol:'A2A',hitl:true,
+        steps:[{id:'s1',name:'계약서 업로드',type:'trigger',agentId:null},{id:'s2',name:'계약서 검토 에이전트',type:'agent',agentId:'AGT-004'},{id:'s3',name:'위험 수준 분기',type:'condition',agentId:null},{id:'s4',name:'HITL 기획예산과 검토',type:'hitl',agentId:null},{id:'s5',name:'승인 요청 발송',type:'action',agentId:null}]},
+      {id:'WF-004',name:'지출결의 자동화 파이프라인',desc:'업무 지시 → e호조 데이터 조회 → 결의서 작성 → 승인 (Actionable AI)',status:'Running',creator:'노태건',created:'2026-02-10',lastRun:'2026-02-14 08:30',runs24h:23,successRate:96.5,protocol:'MCP+A2A',hitl:true,
+        steps:[{id:'s1',name:'업무 지시 수신',type:'trigger',agentId:null},{id:'s2',name:'MCP-EhojoConnector',type:'mcp',agentId:null},{id:'s3',name:'지출결의 자동 작성',type:'agent',agentId:'AGT-008'},{id:'s4',name:'금액 ≥ 100만원',type:'condition',agentId:null},{id:'s5',name:'HITL 결재 요청',type:'hitl',agentId:null},{id:'s6',name:'e호조 결의서 등록',type:'action',agentId:null}]},
+    ],
+
+    UPSTAGE_OCR_MOCK: {
+      totalPages:3, totalBlocks:16, elapsed:2.4,
+      pages:[
+        {page:1,
+         text:"제1조 (목적)\n이 조례는 한성시 민원 처리에 관한 사항을 규정하여 민원 처리의 공정성과 신속성을 확보함을 목적으로 한다.\n\n제2조 (적용 범위)\n이 조례는 시 및 소속 행정기관에 접수되는 모든 민원 사무에 적용한다.\n\n제3조 (정의)\n이 조례에서 사용하는 용어의 정의는 다음과 같다.",
+         blocks:[
+           {text:"제1조 (목적)",bbox:{x:14,y:14,w:35,h:6}},
+           {text:"이 조례는 한성시 민원 처리에 관한 사항을 규정하여 민원 처리의 공정성과 신속성을 확보함을 목적으로 한다.",bbox:{x:14,y:22,w:70,h:8}},
+           {text:"제2조 (적용 범위)",bbox:{x:14,y:36,w:38,h:6}},
+           {text:"이 조례는 시 및 소속 행정기관에 접수되는 모든 민원 사무에 적용한다.",bbox:{x:14,y:44,w:65,h:6}},
+           {text:"제3조 (정의)",bbox:{x:14,y:56,w:28,h:6}},
+           {text:"이 조례에서 사용하는 용어의 정의는 다음과 같다.",bbox:{x:14,y:64,w:60,h:6}},
+         ]},
+        {page:2,
+         text:"제4조 (처리 기한)\n① 일반민원: 접수일부터 7 근무일 이내 처리\n② 법정민원: 개별 법령이 정한 처리기간 이내 처리\n③ 고충민원: 접수일부터 14일 이내 처리, 현장 확인 시 연장 가능",
+         blocks:[
+           {text:"제4조 (처리 기한)",bbox:{x:14,y:10,w:36,h:6}},
+           {text:"① 일반민원: 접수일부터 7 근무일 이내 처리",bbox:{x:18,y:20,w:66,h:6}},
+           {text:"② 법정민원: 개별 법령이 정한 처리기간 이내 처리",bbox:{x:18,y:29,w:62,h:6}},
+           {text:"③ 고충민원: 접수일부터 14일 이내 처리, 현장 확인 시 연장 가능",bbox:{x:18,y:38,w:60,h:6}},
+         ]},
+        {page:3,
+         text:"제5조 (처리 결과 통지)\n처리 완료 후 지체 없이 새올행정시스템에 결과를 등록하고 민원인이 선택한 방법으로 통지하여야 한다.\n\n[별표 1] 민원 종류별 처리기한표",
+         blocks:[
+           {text:"제5조 (처리 결과 통지)",bbox:{x:14,y:10,w:44,h:6}},
+           {text:"처리 완료 후 지체 없이 결과를 등록하고 민원인에게 통지하여야 한다.",bbox:{x:14,y:20,w:70,h:8}},
+           {text:"[별표 1] 민원 종류별 처리기한표",bbox:{x:14,y:36,w:52,h:6}},
+           {text:"(개인 식별 정보 처리됨 — PII 마스킹 적용)",bbox:{x:14,y:46,w:65,h:6}},
+           {text:"담당자 서명란",bbox:{x:14,y:58,w:28,h:6}},
+           {text:"민원여권과장 확인",bbox:{x:14,y:66,w:34,h:6}},
+         ]},
+      ]
+    },
+
+    UPSTAGE_PARSE_MOCK: {
+      statistics:{paragraphs:24,headings:8,tables:3,figures:2,total:37},
+      elements:[
+        {category:'heading1',content:'한성시 민원 처리에 관한 조례',page:1},
+        {category:'heading2',content:'제1장 총칙',page:1},
+        {category:'paragraph',content:'제1조 (목적) 이 조례는 한성시 민원 처리에 관한 사항을 규정하여 민원 처리의 공정성과 신속성을 확보함을 목적으로 한다.',page:1},
+        {category:'paragraph',content:'제2조 (적용 범위) 이 조례는 시 및 소속 행정기관에 접수되는 모든 민원 사무에 적용한다.',page:1},
+        {category:'heading2',content:'제2장 처리 기준',page:2},
+        {category:'table',content:'| 민원 종류 | 처리 기한 | 담당부서 |\n|---------|---------|--------|\n| 일반민원 | 7 근무일 | 민원여권과 |\n| 고충민원 | 14일 | 소관 부서 |',page:2},
+        {category:'paragraph',content:'제4조 (처리 방법) 민원 처리는 관련 법령 및 내부 기준에 따라 실시한다.',page:2},
+        {category:'figure',content:'[그림 1] 민원 처리 업무 흐름도',page:2},
+        {category:'heading2',content:'제3장 통지 의무',page:3},
+        {category:'paragraph',content:'제5조 (통지 의무) 처리 완료 후 지체 없이 결과를 민원인에게 통지하여야 한다.',page:3},
+        {category:'list',content:'• 처리 결과 통지서\n• 처리기한 연장 통지서\n• 반복 민원 종결 통보서',page:3},
+        {category:'figure',content:'[그림 2] 통지 체계도',page:3},
+      ],
+      outputs:{
+        markdown:`# 한성시 민원 처리에 관한 조례\n\n## 제1장 총칙\n\n**제1조 (목적)** 이 조례는 한성시 민원 처리에 관한 사항을 규정하여 민원 처리의 공정성과 신속성을 확보함을 목적으로 한다.\n\n**제2조 (적용 범위)** 이 조례는 시 및 소속 행정기관에 접수되는 모든 민원 사무에 적용한다.\n\n## 제2장 처리 기준\n\n| 민원 종류 | 처리 기한 | 담당부서 |\n|---------|---------|--------|\n| 일반민원 | 7 근무일 | 민원여권과 |\n| 고충민원 | 14일 | 소관 부서 |\n\n> [그림 1] 민원 처리 업무 흐름도\n\n## 제3장 통지 의무\n\n**제5조 (통지 의무)** 처리 완료 후 지체 없이 결과를 민원인에게 통지하여야 한다.\n\n- 처리 결과 통지서\n- 처리기한 연장 통지서\n- 반복 민원 종결 통보서`,
+        html:`<h1>한성시 민원 처리에 관한 조례</h1>\n<h2>제1장 총칙</h2>\n<p><strong>제1조 (목적)</strong> 이 조례는 한성시 민원 처리에 관한 사항을 규정하여 민원 처리의 공정성과 신속성을 확보함을 목적으로 한다.</p>\n<p><strong>제2조 (적용 범위)</strong> 이 조례는 시 및 소속 행정기관에 접수되는 모든 민원 사무에 적용한다.</p>\n<h2>제2장 처리 기준</h2>\n<table><tr><th>민원 종류</th><th>처리 기한</th><th>담당부서</th></tr><tr><td>일반민원</td><td>7 근무일</td><td>민원여권과</td></tr></table>`,
+        text:`한성시 민원 처리에 관한 조례\n\n제1장 총칙\n\n제1조 (목적) 이 조례는 한성시 민원 처리에 관한 사항을 규정하여 민원 처리의 공정성과 신속성을 확보함을 목적으로 한다.\n\n제2조 (적용 범위) 이 조례는 시 및 소속 행정기관에 접수되는 모든 민원 사무에 적용한다.\n\n제2장 처리 기준\n일반민원 | 7 근무일 | 민원여권과\n고충민원 | 14일 | 소관 부서`,
+      }
+    },
+
+    // AI 기본법 — 기초지자체 고영향 판단 기준으로 재작성
+    MOCK_AIACT_SYSTEMS: [
+      {id:'hi-001',name:'복지 수급자격 사전판별 AI',dept:'복지정책과',status:'고영향 확인',confirmedAt:'2026-02-10',manager:'서지혜 팀장',
+       purpose:'기초생활·긴급복지 등 복지 급여 수급자격 사전판별 및 지원 누락 대상 발굴 지원',
+       basis:'공공서비스 영역 — 급여 수급자격 판단은 주민의 권리·의무에 중대한 영향',
+       measures:[
+         {k:'위험관리 방안 수립·운영',done:true},
+         {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+         {k:'이용자 보호 방안 수립·운영',done:true},
+         {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+         {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+       ]},
+      {id:'hi-002',name:'인허가 검토 지원 AI',dept:'민원여권과',status:'고영향 확인',confirmedAt:'2026-02-18',manager:'김도윤 팀장',
+       purpose:'옥외광고물 등 인허가 신청의 요건 충족 여부 검토 및 유사 허가 사례 추천 지원',
+       basis:'주민의 권리·의무 관계에 중대한 영향 — 허가 여부 판단 과정에 직접 관여',
+       measures:[
+         {k:'위험관리 방안 수립·운영',done:true},
+         {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+         {k:'이용자 보호 방안 수립·운영',done:false},
+         {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+         {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+       ]},
+      {id:'hi-003',name:'CCTV 이상행동 감지 AI',dept:'안전총괄과',status:'검토 중',confirmedAt:'-',manager:'조현우 주무관',
+       purpose:'방범 CCTV 영상의 이상행동 자동 감지 및 통합관제센터 알림 지원',
+       basis:'생체인식 기반 분석 해당 여부 검토 중 (과기정통부 확인 요청 검토)',
+       measures:[
+         {k:'위험관리 방안 수립·운영',done:false},
+         {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+         {k:'이용자 보호 방안 수립·운영',done:true},
+         {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:false},
+         {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+       ]},
+      {id:'hi-004',name:'시정 동향 리포트 모델',dept:'기획예산과',status:'검토 중',confirmedAt:'-',manager:'홍은지 팀장',
+       purpose:'주간·월간 시정 동향 리포트 초안 생성 및 민원 통계 요약',
+       basis:'통계 기반 시정 전망 제공 — 주민 권리·의무에 대한 직접 영향 여부 판단 진행 중',
+       measures:[
+         {k:'위험관리 방안 수립·운영',done:false},
+         {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+         {k:'이용자 보호 방안 수립·운영',done:false},
+         {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+         {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:false},
+       ]},
+      {id:'hi-005',name:'스마트행정 업무지원 챗봇',dept:'정보통신과',status:'비해당',confirmedAt:'2026-01-28',manager:'강수진 팀장',
+       purpose:'직원 내부 업무 질의응답·문서 초안 작성 보조',
+       basis:'내부 업무 보조 목적 — 주민의 생명·신체·기본권에 미치는 영향 없음',
+       measures:[
+         {k:'위험관리 방안 수립·운영',done:true},
+         {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+         {k:'이용자 보호 방안 수립·운영',done:true},
+         {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+         {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:true},
+       ]},
+      {id:'hi-006',name:'민원 자동분류 에이전트',dept:'민원여권과',status:'비해당',confirmedAt:'2026-01-28',manager:'이서연 주무관',
+       purpose:'접수 민원의 유형·소관 부서 자동 분류 및 이송 지원',
+       basis:'접수 전처리 도구 — 처분 의사결정에 관여하지 않아 고영향 요건 미충족',
+       measures:[
+         {k:'위험관리 방안 수립·운영',done:true},
+         {k:'AI 판단 기준·근거 설명 방안 마련',done:true},
+         {k:'이용자 보호 방안 수립·운영',done:true},
+         {k:'사람의 관리·감독 체계(최종 검증 인력 지정)',done:true},
+         {k:'안전성·신뢰성 확보 조치 문서 작성·보관',done:true},
+       ]},
+    ],
+
+    MOCK_AIACT_ASSESSMENTS: [
+      {id:'ia-001',system:'복지 수급자격 사전판별 AI',round:'2026 상반기 정기 영향평가',status:'완료',date:'2026-02-14',assessor:'외부 전문기관 합동평가',grade:'적합',
+       scores:[['기본권 영향 관리',88],['안전성',92],['편향성 관리',85],['투명성·설명가능성',90],['책무성',86]],
+       findings:[
+         {text:'판별 근거 설명문에 소득·재산 기준 적용 사유 보강 필요',status:'조치 완료'},
+         {text:'연 1회 편향성 재검증 주기의 내부 규정 문서화',status:'조치 완료'},
+       ]},
+      {id:'ia-002',system:'인허가 검토 지원 AI',round:'2026 상반기 정기 영향평가',status:'진행 중',progress:65,date:'2026-03-20 완료 예정',assessor:'민원혁신 TF 자체평가',grade:'-',
+       scores:[['기본권 영향 관리',82],['안전성',88],['편향성 관리',null],['투명성·설명가능성',null],['책무성',null]],
+       findings:[
+         {text:'반려 다수 발생 인허가 유형 표본의 편향성 검증 진행 중',status:'진행 중'},
+       ]},
+      {id:'ia-003',system:'CCTV 이상행동 감지 AI',round:'고영향 해당 여부 사전검토',status:'예정',date:'2026-04-06 착수 예정',assessor:'민원혁신 TF',grade:'-',
+       scores:[],
+       findings:[]},
+    ],
+
+    // ── 페이지 인라인 이관 상수 (ADMIN_ 접두 전부) ──
+    ADMIN_MGMT_GROUPS: ['AI Engineer','QA','민원여권과','자치행정과'],
+    ADMIN_REPORT_ROWS: [
+      {id:'RPT-001',title:'2월 민원행정 현황 보고서',type:'요약',template:'민원행정',status:'완료',date:'2026-02-10',pages:12},
+      {id:'RPT-002',title:'행정동별 민원 추이 분석 리포트',type:'분석',template:'현장점검',status:'완료',date:'2026-02-09',pages:24},
+      {id:'RPT-003',title:'1분기 AI 활용 성과보고',type:'보고서',template:'성과분석',status:'생성 중',date:'2026-02-11',pages:0},
+      {id:'RPT-004',title:'외국인 민원 안내문 번역',type:'번역',template:'기술문서',status:'완료',date:'2026-02-08',pages:45},
+      {id:'RPT-005',title:'신규 임용자 교육자료 요약',type:'요약',template:'교육',status:'대기 중',date:'2026-02-11',pages:0},
+    ],
+    ADMIN_REPORT_TEMPLATES: ['민원행정','현장점검','성과분석','기술문서','교육'],
+    ADMIN_PROMPT_PREVIEW_INTRO: '당신은 한성시청의 AI 어시스턴트입니다.',
+    ADMIN_INTERNAL_TOOLS: [
+      {name:'자치법규 벡터 DB',desc:'조례·규칙 및 민원사무편람 검색'},
+      {name:'새올 민원 이력 DB',desc:'민원 접수·처리 이력 조회'},
+      {name:'알림 서비스 API',desc:'문자/알림톡 통지 발송'},
+    ],
+    ADMIN_AGENT_NAME_EXAMPLE: '자치법규 검색 에이전트',
+    ADMIN_WORKFLOW_NAME_EXAMPLE: '민원 자동 분류',
+    ADMIN_DATASET_ROWS: [
+      {id:1,n:'Minwon_Manual_QA_v1',d:'민원사무편람 QA 데이터셋',t:'JSONL',s:'124MB',c:'15,000',date:'2026-02-10'},
+      {id:2,n:'Ordinance_Corpus',d:'자치법규(조례·규칙) 전문 코퍼스',t:'TXT',s:'512MB',c:'N/A',date:'2026-02-09'},
+      {id:3,n:'Employee_Inquiry_Logs',d:'직원 질의 로그',t:'CSV',s:'45MB',c:'8,200',date:'2026-02-08'},
+      {id:4,n:'Gemma_Instruction_Tuning',d:'Gemma 한국어 인스트럭션',t:'JSONL',s:'230MB',c:'25,000',date:'2026-02-07'},
+      {id:5,n:'EXAONE_Budget_Report',d:'예산 보고서 요약 학습',t:'Parquet',s:'1.2GB',c:'5,000',date:'2026-02-06'},
+    ],
+    ADMIN_VECTOR_SEARCH_RESULTS: [
+      {id:'vec_8a1',score:0.92,content:'...이 조례는 한성시의 민원 처리 업무 수행에 필요한 사항을 규정함을 목적으로 한다...'},
+      {id:'vec_3b2',score:0.88,content:'...제 2 조 (적용범위) 이 조례는 한성시 및 소속 행정기관에 접수되는 모든 민원 사무에 적용하며...'},
+      {id:'vec_9c3',score:0.75,content:'...일반민원의 처리 기한은 접수일부터 7 근무일로 하며, 연장은 1회에 한한다...'},
+    ],
+    ADMIN_AGENT_FOLDER_LINKS: [
+      {agent:'공문 사전 검토',folders:['자치법규','계약·회계']},
+      {agent:'민원 분류 어시스턴트',folders:['민원사무편람','자치법규']},
+      {agent:'복무규정 질의응답 봇',folders:['복무·인사규정','교육자료']},
+    ],
+    ADMIN_MY_DOCS: [
+      {name:'민원사무편람_요약.pdf',size:'2.4MB',date:'2026-02-08'},
+      {name:'현장점검_매뉴얼.docx',size:'5.1MB',date:'2026-02-05'},
+      {name:'AI_활용_사례집.pptx',size:'12MB',date:'2026-01-28'},
+    ],
+    ADMIN_APPROVAL_ROWS: [
+      {id:'APR-101',type:'모델 배포',user:'노태건',dept:'정보통신과',date:'2026-02-09',status:'대기 중',desc:'GPT-OSS-120B 모델 운영 환경 배포 요청'},
+      {id:'APR-102',type:'GPU 할당',user:'박세훈',dept:'자치행정과',date:'2026-02-10',status:'대기 중',desc:'VLM 학습을 위한 A100 x4 GPU 할당 요청'},
+      {id:'APR-100',type:'GPU 할당',user:'박세훈',dept:'자치행정과',date:'2026-02-08',status:'승인',desc:'임베딩 학습용 GPU 할당'},
+      {id:'APR-099',type:'데이터 접근',user:'이서연',dept:'민원여권과',date:'2026-02-07',status:'승인',desc:'민원사무편람 데이터셋 접근 권한 요청'},
+      {id:'APR-098',type:'API 키 발급',user:'김나윤',dept:'기획예산과',date:'2026-02-06',status:'거부',desc:'외부 API 키 발급 요청'},
+    ],
+    ADMIN_QUOTA_DEPTS: [
+      {id:1,name:'정보통신과',gpu:{used:4,total:8},mem:{used:256,total:512},storage:{used:8,total:10}},
+      {id:2,name:'민원여권과',gpu:{used:1,total:2},mem:{used:64,total:256},storage:{used:3,total:5}},
+      {id:3,name:'기획예산과',gpu:{used:2,total:4},mem:{used:180,total:256},storage:{used:4.5,total:5}},
+      {id:4,name:'자치행정과',gpu:{used:0,total:1},mem:{used:32,total:128},storage:{used:1,total:5}},
+      {id:5,name:'안전총괄과',gpu:{used:0,total:1},mem:{used:16,total:64},storage:{used:0.5,total:2}},
+      {id:6,name:'복지정책과',gpu:{used:1,total:2},mem:{used:96,total:128},storage:{used:2,total:3}},
+    ],
+    ADMIN_PERM_MATRIX: {
+      headers:['민원사무편람','자치법규','복무·인사규정','계약·회계','교육자료','재난·안전 대응'],
+      rows:[
+        {dept:'민원여권과',perm:[true,true,false,false,true,true]},
+        {dept:'자치행정과',perm:[true,true,true,false,true,false]},
+        {dept:'기획예산과',perm:[false,true,false,true,true,false]},
+        {dept:'안전총괄과',perm:[true,false,false,false,true,true]},
+        {dept:'복지정책과',perm:[true,false,false,false,true,false]},
+        {dept:'정보통신과',perm:[false,false,false,false,true,false]},
+      ],
+    },
+    ADMIN_QUOTA_ADVICE: '민원여권과(3,240건/월)와 자치행정과(2,880건/월)가 전체 사용량의 45%를 차지합니다. 부서별 할당량 설정을 통해 리소스를 균형 있게 배분하세요.',
+    ADMIN_USER_GROUPS: [
+      {name:'민원행정그룹',type:'부서 그룹',members:27,areas:['민원사무편람','재난·안전 대응','자치법규'],perms:'읽기+쓰기'},
+      {name:'계약회계그룹',type:'기능 그룹',members:6,areas:['계약·회계'],perms:'읽기 전용'},
+      {name:'관리자 그룹',type:'시스템 그룹',members:3,areas:['전체 영역'],perms:'전체 권한'},
+      {name:'외부 위탁업체',type:'외부 그룹',members:12,areas:['교육자료 (일부)'],perms:'제한적 읽기'},
+    ],
+    AIACT_STD_PHRASE: '본 내용은 한성시 스마트행정 생성형 AI 플랫폼을 활용하여 작성되었습니다. 중요한 의사결정에는 담당 주무관의 검토·확인이 필요합니다.',
+  },
 };
 
 export default civic;

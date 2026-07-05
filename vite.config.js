@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/reb-ai-platform/',
+  base: '/reb-ai-platform-v2/',
   plugins: [react({ include: /\.(jsx?|tsx?)$/ }), tailwindcss()],
   server: {
     host: '0.0.0.0',

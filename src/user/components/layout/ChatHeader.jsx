@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X } from "lucide-react";
+import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X, Menu } from "lucide-react";
 import { cn } from "../../utils.jsx";
 import { MOCK_NOTICES_USER } from "../../data/constants.js";
 
@@ -8,6 +8,7 @@ import { MOCK_NOTICES_USER } from "../../data/constants.js";
 /* ================================================================== */
 const ChatHeader = ({
   th, isSecure, isAgent, mc, domain,
+  sidebarOpen, setSidebarOpen,
   activeAgentId, AGENT_TEAMS,
   setShowQnaModal, setShowTutorial,
   showNoticeBanner, setShowNoticeBanner,
@@ -16,8 +17,15 @@ const ChatHeader = ({
   return (
     <>
       {/* Header */}
-      <header className={cn("h-16 shrink-0 flex items-center justify-between px-6 z-20 shadow-sm transition-colors", th.header)}>
-        <div className="flex items-center gap-4">
+      <header className={cn("h-16 shrink-0 flex items-center justify-between px-4 sm:px-6 z-20 shadow-sm transition-colors", th.header)}>
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          {/* 모바일 햄버거 — 사이드바가 오버레이로 숨겨진 상태에서 여는 유일한 진입점 */}
+          {setSidebarOpen && (
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="메뉴 열기"
+              className={cn("md:hidden h-10 w-10 shrink-0 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400" : "border-slate-200 bg-white text-slate-500 shadow-sm")}>
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
           <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center border-2 shadow-sm transition-colors",
             isSecure ? "bg-blue-950/60 text-blue-400 border-blue-900/60" : isAgent ? "bg-indigo-50 text-indigo-600 border-indigo-100" : cn(mc.colors.light, "border-2"))}>
             {isSecure ? <ShieldCheck className="w-5 h-5" /> : isAgent ? <Bot className="w-5 h-5" /> : <ModeIcon className="w-5 h-5" />}
@@ -40,10 +48,10 @@ const ChatHeader = ({
             <div className={cn("w-2 h-2 rounded-full animate-pulse", isSecure ? "bg-blue-500" : "bg-green-500")}></div>
             <span>{isSecure ? "보안 모드" : "내부망 전용"}</span>
           </div>
-          <button onClick={() => setShowQnaModal(true)} title="자주 묻는 질문" className={cn("h-9 w-9 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
+          <button onClick={() => setShowQnaModal(true)} title="자주 묻는 질문" aria-label="자주 묻는 질문" className={cn("h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
             <MessageCircle className="w-5 h-5" />
           </button>
-          <button onClick={() => setShowTutorial(true)} title="사용 가이드" className={cn("h-9 w-9 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
+          <button onClick={() => setShowTutorial(true)} title="사용 가이드" aria-label="사용 가이드" className={cn("h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
             <HelpCircle className="w-5 h-5" />
           </button>
         </div>

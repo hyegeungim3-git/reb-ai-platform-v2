@@ -47,6 +47,24 @@ const DocReviewAgent = lazy(() => import("./user/components/agents/DocReviewAgen
 const SafetyPlanAgent = lazy(() => import("./user/components/agents/SafetyPlanAgent.jsx"));
 const OrchestrationScenario = lazy(() => import("./user/components/agents/OrchestrationScenario.jsx"));
 
+/* 4단계: 새로고침 대화 유지 — localStorage에서 대화 목록·활성 대화 복원 */
+const VALID_MODES = ["GENERAL", "REVIEW", "TRANSLATE", "REPORT"];
+const loadInitialConvoState = (domainId) => {
+  try {
+    const list = JSON.parse(localStorage.getItem(`genos.convos.${domainId}`)) || [];
+    const id = localStorage.getItem(`genos.activeConvo.${domainId}`);
+    const c = list.find((x) => x.id === id) || null;
+    return {
+      list,
+      id: c ? id : null,
+      messages: c?.messages || [],
+      mode: c && VALID_MODES.includes(c.mode) ? c.mode : "GENERAL",
+    };
+  } catch {
+    return { list: [], id: null, messages: [], mode: "GENERAL" };
+  }
+};
+
 // 에이전트 로딩 폴백
 const AgentLoadingFallback = () => (
   <div className="flex-1 flex items-center justify-center bg-slate-50">
@@ -81,11 +99,19 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
   );
   const SECURE_SUGG = domain.secureSuggestions || BASE_SECURE_SUGGESTIONS;
 
+  // 새로고침 복원: 컴포넌트 최초 렌더 시 1회만 localStorage에서 읽음
+  const initConvoRef = useRef(null);
+  if (initConvoRef.current === null) initConvoRef.current = loadInitialConvoState(domain.id);
+
   const [chatTab, setChatTab] = useState("GENERAL");   // GENERAL | AGENT | SECURE
-  const [mode, setMode] = useState("GENERAL");          // GENERAL 탭 서브모드
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [rightOpen, setRightOpen] = useState(true);
-  const [messages, setMessages] = useState([]);
+  const [mode, setMode] = useState(initConvoRef.current.mode);   // GENERAL 탭 서브모드
+  // 반응형 초기값: 모바일(<768)은 사이드바 접힘, <1280은 우측 패널 접힘
+  const [sidebarOpen, setSidebarOpen] = useState(() => typeof window === "undefined" || window.matchMedia("(min-width: 768px)").matches);
+  const [rightOpen, setRightOpen] = useState(() => typeof window === "undefined" || window.matchMedia("(min-width: 1280px)").matches);
+  const [messages, setMessages] = useState(initConvoRef.current.messages);
+  // 대화 이력(4단계): 사용자 대화는 localStorage에 지속, 팩 HISTORY는 시드로 병합 표시
+  const [convos, setConvos] = useState(initConvoRef.current.list);
+  const [activeConvoId, setActiveConvoId] = useState(initConvoRef.current.id);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [ragMode, setRagMode] = useState(true);
@@ -138,7 +164,47 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
   /* EFFECTS                                                           */
   /* ---------------------------------------------------------------- */
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
-  useEffect(() => { setMessages([]); setPanelView("DOCS"); setActiveCitation(null); }, [mode, chatTab]);
+
+  /* ── 대화 지속(4단계): GENERAL 탭 대화만 저장 — SECURE는 무저장 서사 유지 ── */
+  useEffect(() => {
+    try { localStorage.setItem(`genos.convos.${domain.id}`, JSON.stringify(convos.slice(0, 20))); } catch { /* 저장 실패 무시 */ }
+  }, [convos, domain.id]);
+  useEffect(() => {
+    try {
+      if (activeConvoId) localStorage.setItem(`genos.activeConvo.${domain.id}`, activeConvoId);
+      else localStorage.removeItem(`genos.activeConvo.${domain.id}`);
+    } catch { /* 무시 */ }
+  }, [activeConvoId, domain.id]);
+  useEffect(() => {
+    if (chatTab !== "GENERAL" || messages.length === 0) return;
+    const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    if (!activeConvoId) {
+      const firstUser = messages.find((m) => m.role === "user");
+      if (!firstUser) return;
+      const id = `c${Date.now()}`;
+      setActiveConvoId(id);
+      setConvos((prev) => [{ id, title: firstUser.content.slice(0, 26), mode, time: now, isToday: true, starred: false, messages }, ...prev]);
+    } else {
+      setConvos((prev) => prev.map((c) => (c.id === activeConvoId ? { ...c, messages, mode, time: now } : c)));
+    }
+  }, [messages, chatTab, activeConvoId, mode]);
+
+  /* ── 접근성(4단계): Esc로 최상위 모달·드롭다운 닫기 ── */
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== "Escape") return;
+      if (showDocModal) setShowDocModal(false);
+      else if (showQnaModal) setShowQnaModal(false);
+      else if (showErrReport) setShowErrReport(false);
+      else if (showTutorial) setShowTutorial(false);
+      else if (showSatisfaction) setShowSatisfaction(false);
+      else if (showBuilderModal) { setShowBuilderModal(false); setSelectedNode(null); }
+      else if (showLLMDropdown) setShowLLMDropdown(false);
+      else if (showUserMenu) setShowUserMenu(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showDocModal, showQnaModal, showErrReport, showTutorial, showSatisfaction, showBuilderModal, showLLMDropdown, showUserMenu]);
   useEffect(() => {
     // 보안 탭 진입 시 클라우드·게이트웨이 모델 → 구축형(로컬) 모델 자동 전환
     if (isSecure && activeLLM.type !== "구축형") {
@@ -160,19 +226,24 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
   /* ---------------------------------------------------------------- */
   /* RESPONSE LOGIC                                                    */
   /* ---------------------------------------------------------------- */
-  const getAIResponse = (query) => {
+  // modeOverride/tabOverride: 이력 복원처럼 상태 반영 전에 호출할 때 사용
+  const getAIResponse = (query, modeOverride, tabOverride) => {
     const q = query.toLowerCase();
+    const curMode = modeOverride || mode;
+    const curTab = tabOverride || chatTab;
+    const secure = curTab === "SECURE";
+    const agent = curTab === "AGENT";
     const MA = domain.modeAnswers || {};   // 팩 오버라이드: SECURE_AIRGAP/SECURE_DEFAULT/REVIEW/TRANSLATE/REPORT
-    if (isSecure) {
+    if (secure) {
       if (q.includes("망분리") || q.includes("보안") || q.includes("차단")) return MA.SECURE_AIRGAP || AI_RESPONSES.SECURE_AIRGAP;
       return MA.SECURE_DEFAULT || AI_RESPONSES.SECURE_DEFAULT;
     }
-    if (isAgent) {
+    if (agent) {
       if (selectedAgent.id === "agent-1") return AI_RESPONSES.AGENT1;
       if (selectedAgent.id === "agent-2") return AI_RESPONSES.AGENT2;
       return AI_RESPONSES.AGENT3;
     }
-    if (mode === "GENERAL") {
+    if (curMode === "GENERAL") {
       // 지도 인텔리전스: 지역 질의 감지 시 히트맵+시계열 응답 (팩 mapIntel 공급, 샘플 응답보다 우선)
       const mapHit = matchMapIntel(q, domain.mapIntel);
       if (mapHit) return buildMapIntelResponse(domain.mapIntel, mapHit.region);
@@ -186,11 +257,46 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
         if (q.includes("예산") || q.includes("과업") || q.includes("사업비") || q.includes("금액") || q.includes("기간")) return AI_RESPONSES.GENERAL_BUDGET;
       }
     }
-    if (mode === "REVIEW") return MA.REVIEW || AI_RESPONSES.REVIEW_DEFAULT;
-    if (mode === "TRANSLATE") return MA.TRANSLATE || AI_RESPONSES.TRANSLATE_DEFAULT;
-    if (mode === "REPORT") return MA.REPORT || AI_RESPONSES.REPORT_DEFAULT;
-    return { content: `**[${mc.label} 모드]**\n\n${ragMode ? "사내 지식망(RAG)에서 검색했으나 정확히 일치하는 항목을 찾지 못했습니다." : "직접 응답 모드(LLM Only)로 답변드립니다."}\n\n좀 더 구체적인 질문을 입력해 주세요.`, citations: [], steps: null };
+    if (curMode === "REVIEW") return MA.REVIEW || AI_RESPONSES.REVIEW_DEFAULT;
+    if (curMode === "TRANSLATE") return MA.TRANSLATE || AI_RESPONSES.TRANSLATE_DEFAULT;
+    if (curMode === "REPORT") return MA.REPORT || AI_RESPONSES.REPORT_DEFAULT;
+    return { content: `**[${MODES[curMode]?.label || curMode} 모드]**\n\n${ragMode ? "사내 지식망(RAG)에서 검색했으나 정확히 일치하는 항목을 찾지 못했습니다." : "직접 응답 모드(LLM Only)로 답변드립니다."}\n\n좀 더 구체적인 질문을 입력해 주세요.`, citations: [], steps: null };
   };
+
+  /* ── 대화 전환·이력(4단계) ── */
+  const newConversation = () => {
+    setMessages([]); setInput(""); setPanelView("DOCS"); setActiveCitation(null); setActiveConvoId(null);
+  };
+  const handleModeChange = (m) => {
+    if (m === mode) return;
+    setMode(m);
+    newConversation();
+  };
+  const loadHistoryItem = (h) => {
+    const m = VALID_MODES.includes(h.mode) ? h.mode : "GENERAL";
+    setChatTab("GENERAL"); setPanelView("DOCS"); setActiveCitation(null); setMode(m);
+    if (h.messages) {
+      // 저장된 실제 대화 복원
+      setMessages(h.messages);
+      setActiveConvoId(h.id);
+    } else {
+      // 팩 시드 이력 — 제목 질의로 당시 대화를 재구성
+      const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const resp = applyOutputGuardrails(getAIResponse(h.title, m, "GENERAL"));
+      setActiveConvoId(null);
+      setMessages([
+        { id: Date.now(), role: "user", content: h.title, time: now },
+        { id: Date.now() + 1, role: "assistant", time: now, ...resp },
+      ]);
+    }
+    // 모바일: 이력 선택 후 오버레이 사이드바 닫기
+    if (window.matchMedia("(max-width: 767px)").matches) setSidebarOpen(false);
+  };
+  // 사이드바·빈 화면에 표시할 이력: 사용자 대화(최신순) + 팩 시드(제목 중복 시 시드 숨김)
+  const displayHistory = useMemo(
+    () => [...convos, ...HISTORY.filter((h) => !convos.some((c) => c.title === h.title || h.title.startsWith(c.title)))],
+    [convos, HISTORY]
+  );
 
   const handleSend = (text = null) => {
     const msgText = (text || input).trim();
@@ -233,15 +339,14 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
 
   const handleWorkspaceSwitch = (wsId) => {
     setActiveWorkspace(wsId);
-    setMessages([]);
+    newConversation();
     const ws = WORKSPACES.find(w => w.id === wsId);
     setToast({ message: `[${ws?.name}] 작업공간으로 전환되었습니다.` });
   };
 
   const handleTabSwitch = (tab) => {
     setChatTab(tab);
-    setMessages([]);
-    setPanelView("DOCS");
+    newConversation();
     if (tab === "AGENT") setActiveAgentId(null);
     if (tab === "SECURE") setToast({ message: "보안 채팅 활성화 — 대화 내용 무저장 · 로컬 LLM 전용 처리" });
     else if (tab === "AGENT") setToast({ message: "에이전트 모드 — AI 에이전트를 선택하세요." });
@@ -292,7 +397,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
   /* ================================================================ */
   return (
     <div
-      className={cn("flex flex-col h-screen w-full overflow-hidden transition-all duration-500", th.app)}
+      className={cn("flex flex-col h-dvh w-full overflow-hidden transition-all duration-500", th.app)}
       style={{ fontFamily: "'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" }}
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
@@ -306,15 +411,19 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
       )}
 
       <div className="flex flex-1 overflow-hidden">
+        {/* 모바일: 사이드바 오버레이 배경 */}
+        {sidebarOpen && (
+          <div className="md:hidden fixed inset-0 bg-black/40 z-20" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+        )}
         {/* ====================== LEFT SIDEBAR ====================== */}
         <Sidebar
           domain={domain} th={th} isSecure={isSecure} isAgent={isAgent} chatTab={chatTab}
           sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}
-          onTabSwitch={handleTabSwitch} onNewChat={() => { setMessages([]); setInput(""); }}
+          onTabSwitch={handleTabSwitch} onNewChat={newConversation}
           WORKSPACES={WORKSPACES} activeWorkspace={activeWorkspace} onWorkspaceSwitch={handleWorkspaceSwitch}
-          MODES={MODES} mode={mode} setMode={setMode}
+          MODES={MODES} mode={mode} setMode={handleModeChange}
           AGENT_TEAMS={AGENT_TEAMS} activeAgentId={activeAgentId} setActiveAgentId={setActiveAgentId}
-          HISTORY={HISTORY} USER_INFO={USER_INFO}
+          HISTORY={displayHistory} onLoadHistory={loadHistoryItem} USER_INFO={USER_INFO}
           showUserMenu={showUserMenu} setShowUserMenu={setShowUserMenu} userMenuRef={userMenuRef}
           setShowNoticeBanner={setShowNoticeBanner} setShowQnaModal={setShowQnaModal}
           onSwitchToAdmin={onSwitchToAdmin}
@@ -333,6 +442,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
           {/* Header + Notice Banner */}
           <ChatHeader
             th={th} isSecure={isSecure} isAgent={isAgent} mc={mc} domain={domain}
+            sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}
             activeAgentId={activeAgentId} AGENT_TEAMS={AGENT_TEAMS}
             setShowQnaModal={setShowQnaModal} setShowTutorial={setShowTutorial}
             showNoticeBanner={showNoticeBanner} setShowNoticeBanner={setShowNoticeBanner}
@@ -367,7 +477,8 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
               th={th} isSecure={isSecure} isAgent={isAgent} mc={mc} mode={mode}
               messages={messages} isTyping={isTyping} messagesEndRef={messagesEndRef}
               USER_INFO={USER_INFO} selectedAgent={selectedAgent} activeWs={activeWs}
-              DOCS={DOCS} HISTORY={HISTORY} SUGGESTIONS={SUGGESTIONS} SECURE_SUGGESTIONS={SECURE_SUGG}
+              DOCS={DOCS} HISTORY={displayHistory} onLoadHistory={loadHistoryItem}
+              SUGGESTIONS={SUGGESTIONS} SECURE_SUGGESTIONS={SECURE_SUGG}
               translateLang={translateLang} setTranslateLang={setTranslateLang}
               summaryLen={summaryLen} setSummaryLen={setSummaryLen}
               activeLLM={activeLLM}

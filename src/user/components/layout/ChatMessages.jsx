@@ -17,7 +17,7 @@ const MapIntelCard = lazy(() => import("../MapIntelCard.jsx"));
 const ChatMessages = ({
   th, isSecure, isAgent, mc, mode,
   messages, isTyping, messagesEndRef,
-  USER_INFO, selectedAgent, activeWs, DOCS, HISTORY, SUGGESTIONS,
+  USER_INFO, selectedAgent, activeWs, DOCS, HISTORY, onLoadHistory, SUGGESTIONS,
   SECURE_SUGGESTIONS = BASE_SECURE_SUGGESTIONS,
   translateLang, setTranslateLang, summaryLen, setSummaryLen,
   activeLLM,
@@ -211,7 +211,7 @@ const ChatMessages = ({
                         REVIEW:    'bg-amber-400',
                       })[h.mode] || 'bg-slate-300';
                       return (
-                        <button key={h.id} onClick={() => handleSend(h.title)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left">
+                        <button key={h.id} onClick={() => (onLoadHistory ? onLoadHistory(h) : handleSend(h.title))} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left">
                           <div className={cn("w-2 h-2 rounded-full shrink-0", dotColor)} />
                           <div className="flex-1 min-w-0">
                             <div className="text-[12px] font-bold text-slate-800 truncate">{h.title}</div>

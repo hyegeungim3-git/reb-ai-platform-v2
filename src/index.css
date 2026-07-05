@@ -17,7 +17,15 @@ body {
 
 #root {
   width: 100%;
-  height: 100vh;
+  height: 100vh;      /* dvh 미지원 구형 브라우저 폴백 */
+  height: 100dvh;     /* 모바일 주소창 수축 대응 */
+}
+
+/* 접근성: 키보드 포커스 링 (마우스 클릭에는 미표시) */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /* Custom scrollbar */

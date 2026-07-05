@@ -30,10 +30,10 @@ const ChatInput = ({
         {/* Bottom Row: 첨부·마이크 | 구분 | RAG·LLM·파이프라인 | 전송 */}
         <div className="flex items-center gap-1.5 px-3 pb-3 pt-0.5">
           <input type="file" className="hidden" ref={fileInputRef} onChange={e => { const f = e.target.files?.[0]; if (f) setToast({ message: `'${f.name}' 업로드 중. DRM 해제 및 OCR 처리가 시작됩니다.` }); }} />
-          <button onClick={() => fileInputRef.current?.click()} title="파일 첨부" className={cn("h-8 w-8 rounded-lg flex items-center justify-center transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")}>
+          <button onClick={() => fileInputRef.current?.click()} title="파일 첨부" aria-label="파일 첨부" className={cn("h-8 w-8 rounded-lg flex items-center justify-center transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")}>
             <Paperclip className="w-4 h-4" />
           </button>
-          <button title="음성 입력" className={cn("h-8 w-8 rounded-lg flex items-center justify-center transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")}>
+          <button title="음성 입력" aria-label="음성 입력" className={cn("h-8 w-8 rounded-lg flex items-center justify-center transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")}>
             <Mic className="w-4 h-4" />
           </button>
 
@@ -78,7 +78,7 @@ const ChatInput = ({
           )}
 
           {/* 전송 버튼 */}
-          <button onClick={() => handleSend()} className={cn("h-9 w-9 rounded-xl flex items-center justify-center transition-all shadow-sm active:scale-95 ml-0.5", isSecure ? "bg-blue-600 hover:bg-blue-700 text-white" : cn(mc.colors.active, "hover:opacity-90 text-white"))}>
+          <button onClick={() => handleSend()} aria-label="메시지 전송" className={cn("h-9 w-9 rounded-xl flex items-center justify-center transition-all shadow-sm active:scale-95 ml-0.5", isSecure ? "bg-blue-600 hover:bg-blue-700 text-white" : cn(mc.colors.active, "hover:opacity-90 text-white"))}>
             <Send className="w-4 h-4" />
           </button>
         </div>

@@ -39,7 +39,8 @@ const MapIntelCard = ({ data }) => {
 
   return (
     // w-[600px]: 부모 flex가 content 폭으로 수축하므로 명시 폭 없이는 1fr 차트 컬럼이 0으로 붕괴한다
-    <div className="mt-2 w-[600px] max-w-full rounded-2xl border-2 border-slate-200 bg-white shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-1 duration-300">
+    // @container: 카드 실폭 기준 반응형 — 좁은 중앙 영역(뷰포트 <~1000)에서 차트가 접히는 대신 세로 스택 (4단계)
+    <div className="mt-2 w-[600px] max-w-full @container rounded-2xl border-2 border-slate-200 bg-white shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-1 duration-300">
       {/* 헤더 */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/70">
         <div className="w-7 h-7 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
@@ -52,7 +53,7 @@ const MapIntelCard = ({ data }) => {
         <span className="text-[9px] px-1.5 py-0.5 rounded font-black bg-slate-100 border border-slate-200 text-slate-500 shrink-0">시뮬레이션</span>
       </div>
 
-      <div className="grid sm:grid-cols-[minmax(0,300px)_1fr] gap-4 p-4">
+      <div className="grid @xl:grid-cols-[minmax(0,300px)_1fr] gap-4 p-4">
         {/* ── 타일 히트맵 ── */}
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 mb-2 text-[10px] font-black text-slate-400 uppercase tracking-wider">

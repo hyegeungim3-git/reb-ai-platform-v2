@@ -16,14 +16,25 @@ const Sidebar = ({
   WORKSPACES, activeWorkspace, onWorkspaceSwitch,
   MODES, mode, setMode,
   AGENT_TEAMS, activeAgentId, setActiveAgentId,
-  HISTORY, USER_INFO,
+  HISTORY, onLoadHistory, USER_INFO,
   showUserMenu, setShowUserMenu, userMenuRef,
   setShowNoticeBanner, setShowQnaModal,
   onSwitchToAdmin,
 }) => (
-  <aside className={cn("shrink-0 flex flex-col transition-all duration-300 relative z-30", th.sidebar, sidebarOpen ? "w-[272px]" : "w-[68px]")}>
-    {/* toggle */}
-    <button onClick={() => setSidebarOpen(!sidebarOpen)} className={cn("absolute -right-3.5 top-[72px] w-7 h-7 rounded-full flex items-center justify-center shadow-md z-40 text-slate-400 hover:text-slate-700 transition-colors border", isSecure ? "bg-[#0a0f1c] border-slate-700 hover:text-blue-400" : "bg-white border-slate-200")}>
+  <aside
+    aria-label="사이드바 내비게이션"
+    className={cn(
+      "shrink-0 flex flex-col transition-all duration-300 z-30",
+      th.sidebar,
+      sidebarOpen ? "w-[272px]" : "w-[68px]",
+      // 모바일(<768): 오버레이 — 열림 시 화면 위에 겹치고, 닫힘 시 완전히 숨김(헤더 햄버거로 열기)
+      "max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:shadow-2xl md:relative",
+      !sidebarOpen && "max-md:hidden"
+    )}>
+    {/* toggle (데스크톱 전용 — 모바일은 헤더 햄버거 사용) */}
+    <button onClick={() => setSidebarOpen(!sidebarOpen)}
+      aria-label={sidebarOpen ? "사이드바 접기" : "사이드바 펼치기"}
+      className={cn("max-md:hidden absolute -right-3.5 top-[72px] w-7 h-7 rounded-full flex items-center justify-center shadow-md z-40 text-slate-400 hover:text-slate-700 transition-colors border", isSecure ? "bg-[#0a0f1c] border-slate-700 hover:text-blue-400" : "bg-white border-slate-200")}>
       {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
     </button>
 
@@ -245,7 +256,9 @@ const Sidebar = ({
             {HISTORY.filter(h => h.isToday).map(h => {
               const HIcon = MODES[h.mode]?.icon || MessageSquare;
               return (
-                <button key={h.id} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-slate-600 hover:bg-white/70 transition-colors text-left group">
+                <button key={h.id} onClick={() => onLoadHistory && onLoadHistory(h)}
+                  aria-label={`대화 불러오기: ${h.title}`}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-slate-600 hover:bg-white/70 transition-colors text-left group">
                   <HIcon className={cn("w-4 h-4 shrink-0", MODES[h.mode]?.colors?.text)} />
                   <span className="flex-1 truncate font-medium">{h.title}</span>
                   <span className="text-[10px] text-slate-400 shrink-0">{h.time}</span>
@@ -257,7 +270,9 @@ const Sidebar = ({
             {HISTORY.filter(h => !h.isToday).map(h => {
               const HIcon = MODES[h.mode]?.icon || MessageSquare;
               return (
-                <button key={h.id} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-slate-500 hover:bg-white/70 transition-colors text-left group">
+                <button key={h.id} onClick={() => onLoadHistory && onLoadHistory(h)}
+                  aria-label={`대화 불러오기: ${h.title}`}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] text-slate-500 hover:bg-white/70 transition-colors text-left group">
                   <HIcon className={cn("w-4 h-4 shrink-0 opacity-60", MODES[h.mode]?.colors?.text)} />
                   <span className="flex-1 truncate font-medium">{h.title}</span>
                   <span className="text-[10px] text-slate-400 shrink-0">{h.time}</span>

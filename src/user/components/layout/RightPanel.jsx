@@ -66,10 +66,20 @@ const RightPanel = ({
   };
 
   return (
-    <aside className={cn("shrink-0 flex flex-col border-l transition-all duration-300 z-20 shadow-sm relative", th.panel, rightOpen ? "w-[380px]" : "w-7")}>
+    <aside
+      aria-label="문서·활동 패널"
+      className={cn(
+        "shrink-0 flex flex-col border-l transition-all duration-300 shadow-sm",
+        th.panel,
+        rightOpen ? "w-[380px]" : "w-7",
+        // 모바일(<768): 오버레이 — 열림 시 화면 위, 폭은 화면의 92% 이하
+        "max-md:fixed max-md:inset-y-0 max-md:right-0 md:relative",
+        rightOpen ? "max-md:w-[min(380px,92vw)] max-md:z-40 max-md:shadow-2xl" : "z-20"
+      )}>
       {/* Toggle handle — mirrors left sidebar pattern */}
       <button onClick={() => setRightOpen(!rightOpen)}
         title={rightOpen ? "패널 닫기" : "RAG 패널 열기"}
+        aria-label={rightOpen ? "우측 패널 닫기" : "우측 패널 열기"}
         className={cn("absolute -left-3.5 top-[72px] w-7 h-7 rounded-full flex items-center justify-center shadow-md z-40 transition-colors border",
           isSecure ? "bg-[#0a0f1c] border-slate-700 text-slate-400 hover:text-blue-400" : "bg-white border-slate-200 text-slate-400 hover:text-slate-700")}>
         {rightOpen ? <SidebarClose className="w-4 h-4" /> : <SidebarOpen className="w-4 h-4" />}

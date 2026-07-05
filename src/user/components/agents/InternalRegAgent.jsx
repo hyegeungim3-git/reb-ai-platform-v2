@@ -87,12 +87,31 @@ const REG_HISTORY = [
   },
 ];
 
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-internalreg"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS = {
+  regCategories: REG_CATEGORIES,       // string[8] — 규정 범주 칩
+  defaultCategories:['취업규칙','복무규정'], // string[2] — 초기 선택 범주(regCategories 항목과 일치)
+  suggestions: SUGGESTIONS,            // string[5] — 자주 묻는 질문 버튼
+  ragDocs: RAG_DOCS,                   // {name,hits}[5] — RAG 검색 대상 문서(처리 중 티커)
+  apvLine: APV_LINE,                   // {role,name,dept,title}[3] — 결재선(ApprovalModal 공용)
+  answerText: ANSWER_TEXT,             // string(멀티라인) — AI 답변 본문
+  citations: CITATIONS,                // {doc,title,excerpt}[3] — 참조 규정 인용
+  relatedRegs: RELATED_REGS,           // {title,desc}[3] — 관련 규정 더보기
+  regHistory: REG_HISTORY,             // {reg,changes:{ver,date,type,badge(tailwind 클래스),content,reason}[]}[3] — 규정 변경 이력 타임라인
+  emptyDesc:['취업규칙, 복무규정, 업무처리지침 등','한국부동산원 사내 규정을 검색합니다'], // string[2] — 빈 화면 안내 2줄(<br/> 연결)
+  inputPlaceholder:'취업규칙, 복무규정, 업무처리지침 등 내규에 대해 질문하세요 (Enter로 전송)', // string — 입력창 플레이스홀더
+  regSystemFooter:'한국부동산원 규정 관리 시스템 연동 · 최신 개정 기준 자동 반영', // string — 변경 이력 카드 하단 문구
+  apvDocTitle:'내규 조회 결과 — 현장조사 출장 중 교통사고 처리 절차', // string — 결재 문서 제목
+  apvDocNum:'KREA-부동산공시처-2026-019', // string — 결재 문서번호
+};
+
 /* ────────────────────────────────────────────────────────────── */
-const InternalRegAgent = ({ onBack }) => {
+const InternalRegAgent = ({ onBack, domain }) => {
+  const C = {...CONTENT_DEFAULTS, ...(domain?.agentContent?.["agent-internalreg"]||{})};
   const [step, setStep]               = useState(1);   // 1=입력 2=처리중 3=결과
   const [query, setQuery]             = useState('');
   const [submittedQuery, setSubmitted]= useState('');
-  const [selectedCats, setSelectedCats] = useState(['취업규칙','복무규정']);
+  const [selectedCats, setSelectedCats] = useState(C.defaultCategories);
   const [searchMode, setSearchMode]   = useState('all');
   const [agentIdx, setAgentIdx]       = useState(-1);
   const [doneIdx, setDoneIdx]         = useState([]);
@@ -124,8 +143,8 @@ const InternalRegAgent = ({ onBack }) => {
     AGENTS.forEach((ag, i) => {
       delay += ag.ms;
       if (i === 1) {
-        RAG_DOCS.forEach((_, di) => {
-          setTimeout(() => setRagDocIdx(di), delay - ag.ms + (ag.ms / RAG_DOCS.length) * (di + 1));
+        C.ragDocs.forEach((_, di) => {
+          setTimeout(() => setRagDocIdx(di), delay - ag.ms + (ag.ms / C.ragDocs.length) * (di + 1));
         });
       }
       setTimeout(() => {
@@ -144,7 +163,7 @@ const InternalRegAgent = ({ onBack }) => {
   };
 
   const handleCopy = () => {
-    navigator.clipboard?.writeText(ANSWER_TEXT).catch(()=>{});
+    navigator.clipboard?.writeText(C.answerText).catch(()=>{});
     setCopied(true); setTimeout(()=>setCopied(false), 2000);
   };
   const submitApv = () => { setApvState('submitting'); setTimeout(()=>setApvState('done'),1600); };
@@ -199,7 +218,7 @@ const InternalRegAgent = ({ onBack }) => {
       <div className="flex items-center gap-2 flex-wrap">
         <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">범주</span>
         <div className="flex flex-wrap gap-1">
-          {REG_CATEGORIES.map(cat => (
+          {C.regCategories.map(cat => (
             <button key={cat} onClick={()=>!disabled&&toggleCat(cat)} className={cn(
               'px-2 py-0.5 rounded-full border text-[10px] font-bold transition-all',
               selectedCats.includes(cat)
@@ -226,7 +245,7 @@ const InternalRegAgent = ({ onBack }) => {
           onChange={e=>setQuery(e.target.value)}
           onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleSend();}}}
           disabled={disabled}
-          placeholder={disabled ? '처리 중입니다...' : '취업규칙, 복무규정, 업무처리지침 등 내규에 대해 질문하세요 (Enter로 전송)'}
+          placeholder={disabled ? '처리 중입니다...' : C.inputPlaceholder}
           rows={2}
           className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-[13px] text-slate-700 resize-none outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-300 leading-relaxed disabled:bg-slate-50 disabled:text-slate-300"
         />
@@ -251,12 +270,12 @@ const InternalRegAgent = ({ onBack }) => {
         </div>
         <div className="text-[17px] font-black text-slate-600 mb-1.5">사내 규정에 대해 질문하세요</div>
         <div className="text-[12px] text-slate-400 mb-6 text-center leading-relaxed">
-          취업규칙, 복무규정, 업무처리지침 등<br/>한국부동산원 사내 규정을 검색합니다
+          {C.emptyDesc[0]}<br/>{C.emptyDesc[1]}
         </div>
         {/* 추천 질의 */}
         <div className="w-full max-w-md space-y-2">
           <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider text-center mb-3">자주 묻는 질문</div>
-          {SUGGESTIONS.map(s => (
+          {C.suggestions.map(s => (
             <button key={s} onClick={()=>setQuery(s)} className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-slate-200 rounded-xl text-[13px] font-medium text-slate-600 hover:border-blue-300 hover:text-blue-700 hover:bg-blue-50 transition-all shadow-sm text-left">
               <Sparkles className="w-3.5 h-3.5 text-blue-400 shrink-0"/>
               {s}
@@ -328,7 +347,7 @@ const InternalRegAgent = ({ onBack }) => {
                 {/* RAG 문서 검색 현황 */}
                 {agentIdx===1&&ragDocIdx>=0&&(
                   <div className="mt-3 pt-3 border-t border-slate-100 space-y-1">
-                    {RAG_DOCS.map((doc,di)=>(
+                    {C.ragDocs.map((doc,di)=>(
                       <div key={di} className={cn('flex items-center justify-between text-[10px] px-2 py-0.5 rounded transition-all',
                         di<=ragDocIdx?'text-blue-700 bg-blue-50':'text-slate-300')}>
                         <span className="truncate flex-1">{doc.name}</span>
@@ -365,7 +384,7 @@ const InternalRegAgent = ({ onBack }) => {
               <span className="text-[9px] font-bold text-white bg-blue-600 px-1.5 py-0.5 rounded">WorksOn</span>
             </div>
             <div className="flex items-center gap-1 flex-1 min-w-0">
-              {APV_LINE.map((p,i)=>(
+              {C.apvLine.map((p,i)=>(
                 <React.Fragment key={i}>
                   <div className={cn('flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] border whitespace-nowrap',
                     i===0?'bg-emerald-50 border-emerald-200':i===1?'bg-blue-50 border-blue-200 shadow-sm':'bg-white border-slate-200')}>
@@ -375,7 +394,7 @@ const InternalRegAgent = ({ onBack }) => {
                       {i===0?'서명 완료':i===1?'검토 중':'대기'}
                     </span>
                   </div>
-                  {i<APV_LINE.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
+                  {i<C.apvLine.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
                 </React.Fragment>
               ))}
             </div>
@@ -392,9 +411,9 @@ const InternalRegAgent = ({ onBack }) => {
       {/* 결재 모달 */}
       {(apvState==='modal'||apvState==='submitting')&&(
         <ApprovalModal
-          docTitle="내규 조회 결과 — 현장조사 출장 중 교통사고 처리 절차"
-          docNum="KREA-부동산공시처-2026-019"
-          apvLine={APV_LINE}
+          docTitle={C.apvDocTitle}
+          docNum={C.apvDocNum}
+          apvLine={C.apvLine}
           apvMsg={apvMsg} setApvMsg={setApvMsg}
           onClose={()=>setApvState(null)}
           onSubmit={submitApv}
@@ -433,7 +452,7 @@ const InternalRegAgent = ({ onBack }) => {
               {/* 참조 규정 칩 */}
               <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/60 flex-wrap">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider shrink-0">참조 규정</span>
-                {CITATIONS.map((c,i)=>(
+                {C.citations.map((c,i)=>(
                   <button key={i} onClick={()=>toggleCit(i)} className={cn(
                     'flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all',
                     openCitations.includes(i)
@@ -450,9 +469,9 @@ const InternalRegAgent = ({ onBack }) => {
                 <div className="px-4 py-3 border-b border-slate-100 space-y-2.5 bg-blue-50/40">
                   {openCitations.map(i=>(
                     <div key={i} className="bg-white border border-blue-100 rounded-xl px-4 py-3">
-                      <div className="text-[11px] font-black text-blue-700 mb-1.5">{CITATIONS[i].doc} · {CITATIONS[i].title}</div>
+                      <div className="text-[11px] font-black text-blue-700 mb-1.5">{C.citations[i].doc} · {C.citations[i].title}</div>
                       <blockquote className="text-[12px] text-slate-600 border-l-2 border-blue-300 pl-3 italic leading-relaxed">
-                        {CITATIONS[i].excerpt}
+                        {C.citations[i].excerpt}
                       </blockquote>
                     </div>
                   ))}
@@ -461,7 +480,7 @@ const InternalRegAgent = ({ onBack }) => {
 
               {/* 답변 텍스트 */}
               <div className="px-5 py-4">
-                <p className="text-[13px] text-slate-700 leading-[1.9] whitespace-pre-line">{ANSWER_TEXT}</p>
+                <p className="text-[13px] text-slate-700 leading-[1.9] whitespace-pre-line">{C.answerText}</p>
               </div>
             </div>
 
@@ -470,7 +489,7 @@ const InternalRegAgent = ({ onBack }) => {
               <div className="px-4 py-2.5 border-b border-slate-100">
                 <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">관련 규정 더보기</span>
               </div>
-              {RELATED_REGS.map((r,i)=>(
+              {C.relatedRegs.map((r,i)=>(
                 <div key={i} className="border-b border-slate-100 last:border-0">
                   <button onClick={()=>toggleRel(i)} className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-2">
@@ -492,10 +511,10 @@ const InternalRegAgent = ({ onBack }) => {
                 <History className="w-3.5 h-3.5 text-blue-500"/>
                 <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">규정 변경 이력</span>
                 <span className="ml-auto text-[10px] font-black text-white bg-blue-500 px-1.5 py-0.5 rounded-full">
-                  {REG_HISTORY.reduce((s,r)=>s+r.changes.length,0)}건
+                  {C.regHistory.reduce((s,r)=>s+r.changes.length,0)}건
                 </span>
               </div>
-              {REG_HISTORY.map((r,i)=>(
+              {C.regHistory.map((r,i)=>(
                 <div key={i} className="border-b border-slate-100 last:border-0">
                   <button onClick={()=>toggleHist(i)} className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-2">
@@ -533,7 +552,7 @@ const InternalRegAgent = ({ onBack }) => {
                 </div>
               ))}
               <div className="px-4 py-2 bg-slate-50 border-t text-[10px] text-slate-400">
-                한국부동산원 규정 관리 시스템 연동 · 최신 개정 기준 자동 반영
+                {C.regSystemFooter}
               </div>
             </div>
 

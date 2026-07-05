@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { cn, SECURITY_LEVELS, SecurityBadge } from "../../utils.jsx";
 import {
-  MCP_TOOLS, SECURE_SUGGESTIONS, FILE_DATA, MY_RAG_INIT, MY_RAG_DOCS_INIT,
+  MCP_TOOLS, SECURE_SUGGESTIONS as BASE_SECURE_SUGGESTIONS, FILE_DATA, MY_RAG_INIT, MY_RAG_DOCS_INIT,
 } from "../../data/constants.js";
 
 /* ================================================================== */
@@ -19,7 +19,7 @@ const RightPanel = ({
   rightOpen, setRightOpen,
   panelView, setPanelView, activeCitation,
   domain, setActiveAgentId, activeLLM,
-  DOCS, SUGGESTIONS, mode, handleSend,
+  DOCS, SUGGESTIONS, SECURE_SUGGESTIONS = BASE_SECURE_SUGGESTIONS, mode, handleSend,
   fileInputRef, onSwitchToAdmin,
 }) => {
   const [panelTab, setPanelTab] = useState("DOCS");
@@ -40,7 +40,7 @@ const RightPanel = ({
   /* ── 문서 원문 텍스트 렌더러 (인용 구절 하이라이트) ── */
   const renderDocText = () => {
     if (!activeCitation) return null;
-    const fd = FILE_DATA[activeCitation.id];
+    const fd = (domain?.fileData || FILE_DATA)[activeCitation.id];
     if (!fd) return <p className="text-slate-400 text-center py-10">미리보기를 지원하지 않는 파일입니다.</p>;
     const parts = [];
     let idx = 0;

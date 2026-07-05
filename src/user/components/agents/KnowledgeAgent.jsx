@@ -79,10 +79,23 @@ const SIMILAR_DOCS=[
 const SEC_COLORS={C:'bg-rose-100 text-rose-700',S:'bg-amber-100 text-amber-700',O:'bg-slate-100 text-slate-600'};
 const SEC_LABELS={C:'대외비',S:'내부',O:'일반'};
 
-const KnowledgeAgent=({onBack})=>{
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-knowledge"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  defaultQuery:'표준지공시지가 조사 기준일 및 조사 방법', // string — 검색어 초기값(aiSummaries 키와 일치 권장)
+  quickQueries:['표준지 선정 기준','이의신청 처리 절차','현장조사 안전 수칙','출장비 정산 기준'], // string[4] — 추천 검색어 칩
+  knowledgeBases: KNOWLEDGE_BASES,          // {id,name,docs,updated,icon(lucide 컴포넌트),color(tailwind 색상명)}[7] — 지식베이스 목록
+  defaultSelectedKbIds:['kb1','kb2','kb3'], // string[3] — 초기 선택 지식베이스 id(knowledgeBases.id와 일치)
+  recentSearches: RECENT_SEARCHES,          // {id,query,date,results}[3] — 최근 검색 이력
+  results: MOCK_RESULTS,                    // {id,title,source,page,score,secLevel:'C'|'S'|'O',line,excerpt,keywords:string[]}[5] — 검색 결과(score 내림차순)
+  aiSummaries: AI_SUMMARIES,                // {[질의문]:요약문, DEFAULT:폴백요약} — 질의별 AI 요약
+  similarDocs: SIMILAR_DOCS,                // {title,source,relevance}[3] — 유사 문서 추천
+};
+
+const KnowledgeAgent=({onBack,domain})=>{
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-knowledge"]||{})};
   const [step,setStep]=useState(1);
-  const [query,setQuery]=useState('표준지공시지가 조사 기준일 및 조사 방법');
-  const [selectedKBs,setSelectedKBs]=useState(new Set(['kb1','kb2','kb3']));
+  const [query,setQuery]=useState(C.defaultQuery);
+  const [selectedKBs,setSelectedKBs]=useState(new Set(C.defaultSelectedKbIds));
   const [topK,setTopK]=useState('5');
   const [agentIdx,setAgentIdx]=useState(-1);
   const [doneIdx,setDoneIdx]=useState([]);
@@ -148,7 +161,7 @@ const KnowledgeAgent=({onBack})=>{
 
           {histOpen&&(
             <div className="border border-violet-200 rounded-xl bg-violet-50/40 overflow-hidden">
-              {RECENT_SEARCHES.map(h=>(
+              {C.recentSearches.map(h=>(
                 <button key={h.id} onClick={()=>{setQuery(h.query);setHistOpen(false);}}
                   className="w-full text-left px-3 py-2.5 hover:bg-violet-100/60 transition-colors border-b border-violet-100 last:border-0 flex items-center justify-between">
                   <div>
@@ -171,7 +184,7 @@ const KnowledgeAgent=({onBack})=>{
             />
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {['표준지 선정 기준','이의신청 처리 절차','현장조사 안전 수칙','출장비 정산 기준'].map((q,i)=>(
+            {C.quickQueries.map((q,i)=>(
               <button key={i} onClick={()=>setQuery(q)}
                 className="text-[11px] px-3 py-1 rounded-full bg-violet-50 border border-violet-200 text-violet-700 font-medium hover:bg-violet-100 transition-colors">
                 {q}
@@ -230,7 +243,7 @@ const KnowledgeAgent=({onBack})=>{
         <div className="space-y-1.5">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">4 · 검색 범위 선택</label>
           <div className="grid grid-cols-1 gap-2">
-            {KNOWLEDGE_BASES.map(kb=>{
+            {C.knowledgeBases.map(kb=>{
               const isSelected=selectedKBs.has(kb.id);
               const KBIcon=kb.icon;
               return(
@@ -339,9 +352,9 @@ const KnowledgeAgent=({onBack})=>{
   );
 
   /* ── STEP 3: 결과 ── */
-  const allResults=MOCK_RESULTS.slice(0,parseInt(topK));
+  const allResults=C.results.slice(0,parseInt(topK));
   const topResults=secFilter==='all'?allResults:allResults.filter(r=>r.secLevel===secFilter);
-  const aiSummary=AI_SUMMARIES[query]||AI_SUMMARIES.DEFAULT;
+  const aiSummary=C.aiSummaries[query]||C.aiSummaries.DEFAULT;
 
   return(
     <div className="flex-1 flex flex-col overflow-hidden bg-slate-50">
@@ -483,7 +496,7 @@ const KnowledgeAgent=({onBack})=>{
             <span className="ml-auto text-[10px] text-slate-400">관련성 기반 자동 추천</span>
           </div>
           <div className="divide-y divide-slate-100">
-            {SIMILAR_DOCS.map((doc,i)=>(
+            {C.similarDocs.map((doc,i)=>(
               <div key={i} className="px-5 py-3.5 flex items-center gap-3 hover:bg-slate-50 transition-colors cursor-pointer">
                 <div className="w-8 h-8 rounded-lg bg-violet-50 border border-violet-200 flex items-center justify-center shrink-0">
                   <FileText className="w-4 h-4 text-violet-500"/>

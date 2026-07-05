@@ -6,7 +6,7 @@ import {
   BookOpen, ExternalLink, Paperclip, Eye, FileDown, Loader2, Briefcase,
 } from "lucide-react";
 import { cn, SecurityBadge } from "../../utils.jsx";
-import { SECURE_SUGGESTIONS } from "../../data/constants.js";
+import { SECURE_SUGGESTIONS as BASE_SECURE_SUGGESTIONS } from "../../data/constants.js";
 
 // 지도 인텔리전스 카드: recharts 포함 — 지역 질의 응답 시점에만 로드 (초기 번들 분리)
 const MapIntelCard = lazy(() => import("../MapIntelCard.jsx"));
@@ -18,6 +18,7 @@ const ChatMessages = ({
   th, isSecure, isAgent, mc, mode,
   messages, isTyping, messagesEndRef,
   USER_INFO, selectedAgent, activeWs, DOCS, HISTORY, SUGGESTIONS,
+  SECURE_SUGGESTIONS = BASE_SECURE_SUGGESTIONS,
   translateLang, setTranslateLang, summaryLen, setSummaryLen,
   activeLLM,
   handleSend, handleCitationClick, handleDocDownload,

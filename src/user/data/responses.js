@@ -62,7 +62,13 @@ export const REPORT_DOC = {
   ],
 };
 
-export const generateDocHTML = (doc) => {
+// org: 도메인 팩 주입용 — { name, short, color, en } (미전달 시 REB 기본)
+export const generateDocHTML = (doc, org = {}) => {
+  const orgName = org.name || "한국부동산원";
+  const orgEn = doc.orgEn || org.en || (orgName === "한국부동산원" ? "KOREA REAL ESTATE BOARD" : (org.short || ""));
+  const logoLetter = (org.short || "K").charAt(0);
+  const sealText = doc.sealText || `${orgName}장`;
+  const bc = org.color || "${bc}";
   const bodyHTML = doc.body.map(s => {
     const rowsHTML = s.rows
       ? `<table class="mt">${s.rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>`
@@ -82,16 +88,16 @@ export const generateDocHTML = (doc) => {
   return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${doc.title}</title><style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;font-size:14px;color:#111;background:#ebebeb;padding:32px;line-height:1.85}
-.page{background:#fff;max-width:794px;margin:0 auto;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);border-top:6px solid #003087}
-.lh{display:flex;align-items:center;gap:16px;padding-bottom:18px;border-bottom:2px solid #003087;margin-bottom:22px}
-.lb{width:48px;height:48px;background:#003087;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:900}
-.cn{font-size:20px;font-weight:900;color:#003087;line-height:1.2}
+.page{background:#fff;max-width:794px;margin:0 auto;padding:56px 64px;box-shadow:0 4px 24px rgba(0,0,0,.13);border-top:6px solid ${bc}}
+.lh{display:flex;align-items:center;gap:16px;padding-bottom:18px;border-bottom:2px solid ${bc};margin-bottom:22px}
+.lb{width:48px;height:48px;background:${bc};border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:900}
+.cn{font-size:20px;font-weight:900;color:${bc};line-height:1.2}
 .ce{font-size:10.5px;color:#666;font-weight:500;letter-spacing:.07em;margin-top:3px}
 .meta{display:grid;grid-template-columns:90px 1fr;gap:6px 12px;font-size:13px;padding:14px 18px;background:#f8fafc;border:1px solid #dde3ea;border-radius:8px;margin-bottom:22px}
 .ml{font-weight:700;color:#444}
-.doctitle{text-align:center;font-size:19px;font-weight:900;margin:22px 0 26px;padding:14px 0;border-top:2.5px solid #003087;border-bottom:2.5px solid #003087;color:#111;letter-spacing:-.02em}
+.doctitle{text-align:center;font-size:19px;font-weight:900;margin:22px 0 26px;padding:14px 0;border-top:2.5px solid ${bc};border-bottom:2.5px solid ${bc};color:#111;letter-spacing:-.02em}
 .sec{margin-bottom:24px}
-.sh{font-size:15px;font-weight:900;color:#003087;margin-bottom:10px;padding-left:9px;border-left:4px solid #003087}
+.sh{font-size:15px;font-weight:900;color:${bc};margin-bottom:10px;padding-left:9px;border-left:4px solid ${bc}}
 .mt{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px}
 .mt td{padding:7px 12px;border:1px solid #dde3ea}
 .mt td:first-child{background:#f0f4f8;font-weight:700;width:110px;color:#444;white-space:nowrap}
@@ -101,22 +107,22 @@ ul.bl li{position:relative;padding-left:14px;color:#333}
 ul.bl li::before{content:"–";position:absolute;left:0;color:#888}
 ol.att{padding-left:24px;font-size:13.5px;line-height:2}
 ol.att li{color:#333}
-.seal{text-align:right;margin:32px 0 10px;font-size:18px;font-weight:900;color:#003087;padding-top:22px;border-top:1px solid #e5e7eb}
+.seal{text-align:right;margin:32px 0 10px;font-size:18px;font-weight:900;color:${bc};padding-top:22px;border-top:1px solid #e5e7eb}
 .at{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px}
 .at th,.at td{border:1px solid #ccc;text-align:center;padding:10px}
 .at th{background:#f0f4f8;font-weight:700;width:33.33%}
-.sig{height:56px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#003087}
+.sig{height:56px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:${bc}}
 .dt2{font-size:11.5px;color:#888}
-b{font-weight:900;color:#003087}
+b{font-weight:900;color:${bc}}
 .ai-note{margin-top:28px;padding:11px 16px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:12px;color:#92400e;line-height:1.7}
 @media print{body{background:#fff;padding:0}.page{box-shadow:none}}
 </style></head><body>
 <div class="page">
   <div class="lh">
-    <div class="lb">K</div>
+    <div class="lb">${logoLetter}</div>
     <div>
-      <div class="cn">한국부동산원</div>
-      <div class="ce">KOREA REAL ESTATE BOARD</div>
+      <div class="cn">${orgName}</div>
+      <div class="ce">${orgEn}</div>
     </div>
   </div>
   <div class="meta">
@@ -134,7 +140,7 @@ b{font-weight:900;color:#003087}
     <div class="sh">붙 임</div>
     <ol class="att">${attHTML}</ol>
   </div>
-  <div class="seal">한국부동산원장 (직인생략)</div>
+  <div class="seal">${sealText} (직인생략)</div>
   <table class="at">
     <tr>${apvHead}</tr>
     <tr>${apvSig}</tr>

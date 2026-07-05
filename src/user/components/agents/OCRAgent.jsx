@@ -129,7 +129,23 @@ const CONFIDENCE_MAP = [
   {line:'붙임 1. 표준지 현황 및 위치도', score:98.6, level:'high'},
 ];
 
-const OCRAgent = ({ onBack }) => {
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-ocr"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS = {
+  sampleFiles: MOCK_FILES,           // {name,size,pages,type:'pdf'|'img'}[2] — 초기 업로드 샘플
+  docModeOptions: DOC_MODE_OPTIONS,  // {value,label,desc}[2] — value는 'standard'|'compensation' 고정('compensation'=도메인 특화 모드 슬롯)
+  specialModeKeyword:'토지보상법',   // string — 특화 모드 안내의 강조 키워드
+  specialModeDesc:'기준 양식 자동 적용 · 보상 평가 항목 구조화 · 공시지가 연동', // string — 특화 모드 안내 본문
+  specialModeBadge:'보상평가서 모드', // string — 결과 화면 특화 모드 뱃지 문구
+  extractedText: EXTRACTED_TEXT,     // string(멀티라인) — OCR 추출 원문
+  maskedText: MASKED_TEXT,           // string(멀티라인) — 마스킹 적용본(extractedText와 대응)
+  maskLog: MASK_LOG,                 // {type,original,masked,pos}[4] — PII 마스킹 로그
+  tableData: TABLE_DATA,             // {headers:string[6],rows:string[6][5]} — 감지된 표
+  tableCaption:'감지된 표 — 표준지 현황', // string — 표 탭 캡션
+  confidenceMap: CONFIDENCE_MAP,     // {line,score,level:'high'|'med'|'low'}[10] — 라인별 인식 신뢰도
+};
+
+const OCRAgent = ({ onBack, domain }) => {
+  const C = {...CONTENT_DEFAULTS, ...(domain?.agentContent?.["agent-ocr"]||{})};
   const {step, setStep, agentIdx, doneIdx, start: startSim, resetSim} = useAgentSimulation(AGENTS, {
     // Vision OCR 단계(i=1) 동안 페이지 진행 티커
     onStepStart: (i, prev, ag) => {
@@ -140,7 +156,7 @@ const OCRAgent = ({ onBack }) => {
       }
     },
   });
-  const [files, setFiles] = useState(MOCK_FILES);
+  const [files, setFiles] = useState(C.sampleFiles);
   const [fileDrag, setFileDrag] = useState(false);
   const [ocrLang, setOcrLang] = useState('한국어(기본)');
   const [extractTable, setExtractTable] = useState(true);
@@ -166,8 +182,8 @@ const OCRAgent = ({ onBack }) => {
 
   const startProcess = () => { setOcrPage(0); startSim(); };
 
-  const reset = () => { resetSim(); setOcrPage(0); setFiles(MOCK_FILES); setActiveTab('text'); setCopied(false); };
-  const handleCopy = () => { navigator.clipboard?.writeText(EXTRACTED_TEXT).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const reset = () => { resetSim(); setOcrPage(0); setFiles(C.sampleFiles); setActiveTab('text'); setCopied(false); };
+  const handleCopy = () => { navigator.clipboard?.writeText(C.extractedText).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 2000); };
 
   const getScoreColor = (level) => level === 'high' ? 'bg-emerald-500' : level === 'med' ? 'bg-yellow-400' : 'bg-red-400';
   const getScoreTextColor = (level) => level === 'high' ? 'text-emerald-600' : level === 'med' ? 'text-yellow-600' : 'text-red-500';
@@ -266,11 +282,11 @@ const OCRAgent = ({ onBack }) => {
               </label>
             </div>
 
-            {/* RFP SFR-13: 보상평가서 특화 처리 모드 */}
+            {/* RFP SFR-13: 특화 문서 처리 모드 — 도메인 팩 docModeOptions로 공급 */}
             <div>
               <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2">문서 처리 모드</div>
               <div className="flex items-center gap-3 flex-wrap">
-                {DOC_MODE_OPTIONS.map(opt => (
+                {C.docModeOptions.map(opt => (
                   <label key={opt.value} className={cn('flex items-center gap-2.5 px-3.5 py-2 rounded-xl border cursor-pointer transition-all', docMode===opt.value?'border-teal-400 bg-teal-50':'border-slate-200 bg-white hover:border-teal-200')}>
                     <input type="radio" name="docMode" value={opt.value} checked={docMode===opt.value} onChange={()=>setDocMode(opt.value)} className="accent-teal-600"/>
                     <div>
@@ -282,7 +298,7 @@ const OCRAgent = ({ onBack }) => {
               </div>
               {docMode==='compensation'&&(
                 <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-700 font-medium">
-                  <span className="font-black text-amber-600">토지보상법</span> 기준 양식 자동 적용 · 보상 평가 항목 구조화 · 공시지가 연동
+                  <span className="font-black text-amber-600">{C.specialModeKeyword}</span> {C.specialModeDesc}
                 </div>
               )}
             </div>
@@ -436,13 +452,13 @@ const OCRAgent = ({ onBack }) => {
           <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0"><CheckCircle className="w-3.5 h-3.5 text-white"/></div>
           <div className="min-w-0">
             <div className="text-[13px] font-black text-slate-800 truncate">OCR 인식 완료</div>
-            <div className="text-[10px] text-slate-400">{totalPages}페이지 · 인식률 98.7%{maskPII?` · 개인정보 ${MASK_LOG.length}건 마스킹`:''}{docMode==='compensation'?' · 보상평가서 모드':''}</div>
+            <div className="text-[10px] text-slate-400">{totalPages}페이지 · 인식률 98.7%{maskPII?` · 개인정보 ${C.maskLog.length}건 마스킹`:''}{docMode==='compensation'?` · ${C.specialModeBadge}`:''}</div>
           </div>
         </div>
         {maskPII&&(
           <div className="flex items-center gap-1.5 px-2.5 py-1 bg-rose-50 border border-rose-200 rounded-lg shrink-0">
             <ShieldCheck className="w-3.5 h-3.5 text-rose-600"/>
-            <span className="text-[11px] font-bold text-rose-700">PII 마스킹 {MASK_LOG.length}건</span>
+            <span className="text-[11px] font-bold text-rose-700">PII 마스킹 {C.maskLog.length}건</span>
           </div>
         )}
         <button onClick={reset} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-[11px] font-bold text-slate-500 hover:bg-slate-50 transition-colors">
@@ -460,7 +476,7 @@ const OCRAgent = ({ onBack }) => {
       <div className="shrink-0 bg-white border-b border-slate-100 px-5 py-2">
         <div className="flex items-center gap-6 flex-wrap">
           {[
-            {label:'총 글자 수', val:`${EXTRACTED_TEXT.replace(/\s/g,'').length.toLocaleString()}자`},
+            {label:'총 글자 수', val:`${C.extractedText.replace(/\s/g,'').length.toLocaleString()}자`},
             {label:'표 감지',    val:extractTable?'2개':'0개'},
             {label:'페이지 수',  val:`${totalPages}페이지`},
             {label:'처리 상태',   val:'완료'},
@@ -503,12 +519,12 @@ const OCRAgent = ({ onBack }) => {
                 <div className="flex items-center gap-2">
                   <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider">추출된 텍스트 — {resultFormat}</div>
                   {maskPII&&<span className="flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full"><ShieldCheck className="w-2.5 h-2.5"/>개인정보 마스킹 적용</span>}
-                  {docMode==='compensation'&&<span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">보상평가서 모드</span>}
+                  {docMode==='compensation'&&<span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">{C.specialModeBadge}</span>}
                 </div>
                 <span className="text-[10px] font-bold text-teal-600 bg-teal-50 border border-teal-100 px-2 py-0.5 rounded-full">{files[0]?.name}</span>
               </div>
               <pre className="px-5 py-5 text-[12.5px] text-slate-700 leading-[1.9] font-sans whitespace-pre-wrap overflow-x-auto">
-                {maskPII ? MASKED_TEXT : EXTRACTED_TEXT}
+                {maskPII ? C.maskedText : C.extractedText}
               </pre>
             </div>
           )}
@@ -518,10 +534,10 @@ const OCRAgent = ({ onBack }) => {
               <div className="px-5 py-3 border-b border-slate-100 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-rose-500"/>
                 <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider">개인정보 마스킹 처리 현황</div>
-                <span className="ml-auto text-[10px] font-black text-white bg-rose-500 px-2 py-0.5 rounded-full">{MASK_LOG.length}건 처리</span>
+                <span className="ml-auto text-[10px] font-black text-white bg-rose-500 px-2 py-0.5 rounded-full">{C.maskLog.length}건 처리</span>
               </div>
               <div className="px-5 py-4 space-y-2.5">
-                {MASK_LOG.map((item,i)=>(
+                {C.maskLog.map((item,i)=>(
                   <div key={i} className="flex items-center gap-3 p-2.5 bg-rose-50 border border-rose-100 rounded-xl">
                     <div className="w-16 shrink-0">
                       <span className="text-[10px] font-black text-rose-600 bg-rose-100 px-2 py-0.5 rounded">{item.type}</span>
@@ -544,20 +560,20 @@ const OCRAgent = ({ onBack }) => {
           {activeTab === 'table' && extractTable && (
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="px-5 py-3 border-b border-slate-100">
-                <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-0.5">감지된 표 — 표준지 현황</div>
+                <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-0.5">{C.tableCaption}</div>
                 <div className="text-[10px] text-slate-300">페이지 2 · 표 자동 감지</div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-[12px]">
                   <thead>
                     <tr className="bg-teal-600">
-                      {TABLE_DATA.headers.map(h => (
+                      {C.tableData.headers.map(h => (
                         <th key={h} className="text-white font-bold py-2.5 px-3 text-left whitespace-nowrap border-r border-teal-500 last:border-0">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {TABLE_DATA.rows.map((row, i) => (
+                    {C.tableData.rows.map((row, i) => (
                       <tr key={i} className={cn('border-b border-slate-100', i%2===0?'bg-white':'bg-slate-50/50')}>
                         {row.map((cell, j) => (
                           <td key={j} className={cn('py-2.5 px-3 text-slate-700 border-r border-slate-100 last:border-0 whitespace-nowrap', j===0?'font-black text-center text-teal-700':'')}>{cell}</td>
@@ -568,7 +584,7 @@ const OCRAgent = ({ onBack }) => {
                 </table>
               </div>
               <div className="px-5 py-2.5 bg-slate-50 border-t text-[10px] text-slate-400">
-                총 {TABLE_DATA.rows.length}행 · OCR 자동 감지 · 수동 검토 권장
+                총 {C.tableData.rows.length}행 · OCR 자동 감지 · 수동 검토 권장
               </div>
             </div>
           )}
@@ -586,7 +602,7 @@ const OCRAgent = ({ onBack }) => {
                 <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider">라인별 OCR 처리 결과</div>
               </div>
               <div className="px-5 py-4 space-y-2.5">
-                {CONFIDENCE_MAP.map((item, i) => (
+                {C.confidenceMap.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <div className="flex-1 text-[12px] text-slate-600 truncate">{item.line}</div>
                     <span className={cn('text-[10px] font-black px-2 py-0.5 rounded-full shrink-0',

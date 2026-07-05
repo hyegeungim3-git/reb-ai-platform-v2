@@ -73,13 +73,6 @@ const SEVERITY={
   low:{label:'낮음',cls:'bg-blue-100 text-blue-700 border-blue-200'},
 };
 
-const compScore=(()=>{
-  const h=VIOLATIONS.filter(v=>v.severity==='high').length;
-  const m=VIOLATIONS.filter(v=>v.severity==='medium').length;
-  const l=VIOLATIONS.filter(v=>v.severity==='low').length;
-  return Math.max(0,100-h*20-m*10-l*5);
-})();
-
 const HIGHLIGHT_SEGS=[
   {text:'표준지공시지가 현장조사 출장비 정산 보고서\n\n조사 기간: 2026. 03. 01. ~ 2026. 03. 15. (15일)\n조사 지역: 서울 노원구 · 도봉구 일대\n조사 책임자: 김민준 과장 (부동산공시처)\n\n━━ 출장비 내역 ━━\n교통비: 일 15,000원 × 15일 = 225,000원\n식  비: 일 20,000원 × 15일 = 300,000원\n',type:null},
   {text:'숙박비: 일 40,000원 × 5박 = 200,000원\n합  계: 일 74,000원 — 기준 60,000원 대비 23% 초과 계상',type:'high'},
@@ -90,7 +83,31 @@ const HIGHLIGHT_SEGS=[
   {text:'\n\n━━ 보 고 ━━\n위와 같이 현장조사 출장비를 정산하여 보고합니다.\n\n2026년 3월 16일\n부동산공시처 김민준 과장 (인)',type:null},
 ];
 
-const DocReviewAgent=({onBack})=>{
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-review"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  apvLine: APV_LINE,             // {name,dept,title,role}[3] — 결재선(작성자→검토자→승인자 순서 고정). 배열 통째 교체
+  ragDocs: RAG_DOCS,             // string[7] — RAG 검색 티커에 노출되는 규정 조항명. 배열 통째 교체
+  violations: VIOLATIONS,        // {clause,type,severity:'high'|'medium'|'low',content,action}[3] — 위반 소지 3건(심각도별 1건씩, highlightSegs와 순서 대응). 배열 통째 교체
+  regs: REGS,                    // {id:'r1'~'r5',label}[5] — 검토 대상 규정 선택지. id는 r1~r5 유지(초기 체크 상태가 id 기준). 배열 통째 교체
+  highlightSegs: HIGHLIGHT_SEGS, // {text,type:null|'high'|'medium'|'low'}[7] — 하이라이트 뷰 문서 본문 분절. type은 violations[0..2]의 severity와 대응. 배열 통째 교체
+  highlightLegendLabels:{high:'높음 — 여비 초과',medium:'중간 — 서류 누락',low:'낮음 — 절차 미비'}, // {high,medium,low} — 하이라이트 범례 문구
+  highlightDocTitle:'표준지공시지가 현장조사 출장비 정산 보고서', // string — 하이라이트 뷰 검토 대상 문서명
+  reviewNum:'검토-2026-031',              // string — 검토 관리번호(툴바·하이라이트·원본 편집에 노출)
+  dept:'부동산공시처',                     // string — 보고서 헤더 담당부서
+  docNum:'KREA-부동산공시처-2026-031',    // string — 보고서 헤더 문서번호
+  apvDocNum:'KREA-부동산공시처-2026-034', // string — 결재 상신 모달 문서번호
+  logoSrc: REB_LOGO,                      // string(data URI) — 보고서 헤더 로고 이미지
+  logoAlt:'REB 한국부동산원',              // string — 로고 대체 텍스트
+};
+
+const DocReviewAgent=({onBack,domain})=>{
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-review"]||{})};
+  const compScore=(()=>{
+    const h=C.violations.filter(v=>v.severity==='high').length;
+    const m=C.violations.filter(v=>v.severity==='medium').length;
+    const l=C.violations.filter(v=>v.severity==='low').length;
+    return Math.max(0,100-h*20-m*10-l*5);
+  })();
   const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS,{
     // RAG 검색 단계(i=2)의 문서 스캔 티커 + 각 단계 종료 시 RAG 패널 비활성화
     onStepStart:(i,prev,ag)=>{
@@ -98,7 +115,7 @@ const DocReviewAgent=({onBack})=>{
       if(i===2){
         setTimeout(()=>setRagActive(true),prev+400);
         let rd=prev+400;
-        RAG_DOCS.forEach((_,ri)=>{
+        C.ragDocs.forEach((_,ri)=>{
           rd+=360;
           setTimeout(()=>setRagIdx(ri),rd);
         });
@@ -177,7 +194,7 @@ const DocReviewAgent=({onBack})=>{
         <div className="space-y-1.5">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">2 · 검토 대상 규정 선택</label>
           <div className="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-100">
-            {REGS.map(r=>(
+            {C.regs.map(r=>(
               <label key={r.id} className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors">
                 <div onClick={()=>toggleReg(r.id)} className="shrink-0">
                   {checkedRegs[r.id]
@@ -242,7 +259,7 @@ const DocReviewAgent=({onBack})=>{
                     )}
                     {showRag&&(
                       <div className="mt-3 space-y-1">
-                        {RAG_DOCS.slice(0,ragIdx+1).map((d,ri)=>(
+                        {C.ragDocs.slice(0,ragIdx+1).map((d,ri)=>(
                           <div key={ri} className={cn('flex items-center gap-2 text-[11px] rounded-lg px-2 py-1 transition-all',ri===ragIdx?'bg-indigo-100 text-indigo-700 font-bold':'text-slate-400 bg-transparent')}>
                             {ri===ragIdx?<Loader2 className="w-3 h-3 animate-spin shrink-0"/>:<CheckCircle className="w-3 h-3 text-emerald-400 shrink-0"/>}
                             {d}
@@ -276,8 +293,8 @@ const DocReviewAgent=({onBack})=>{
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0"><CheckCircle className="w-3.5 h-3.5 text-white"/></div>
           <div className="min-w-0">
-            <div className="text-[13px] font-black text-slate-800 truncate">검토 완료 — 위반 소지 {VIOLATIONS.length}건 발견</div>
-            <div className="text-[10px] text-slate-400">문서 {files.length}개 · 검토-2026-031</div>
+            <div className="text-[13px] font-black text-slate-800 truncate">검토 완료 — 위반 소지 {C.violations.length}건 발견</div>
+            <div className="text-[10px] text-slate-400">문서 {files.length}개 · {C.reviewNum}</div>
           </div>
         </div>
         <div className="flex items-center bg-slate-100 rounded-lg p-0.5 gap-0.5">
@@ -303,7 +320,7 @@ const DocReviewAgent=({onBack})=>{
               <span className="text-[9px] font-bold text-white bg-indigo-600 px-1.5 py-0.5 rounded">WorksOn</span>
             </div>
             <div className="flex items-center gap-1 flex-1 min-w-0">
-              {APV_LINE.map((p,i)=>(
+              {C.apvLine.map((p,i)=>(
                 <React.Fragment key={i}>
                   <div className={cn('flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] border whitespace-nowrap',
                     i===0?'bg-emerald-50 border-emerald-200':i===1?'bg-blue-50 border-blue-200 shadow-sm':'bg-white border-slate-200')}>
@@ -311,7 +328,7 @@ const DocReviewAgent=({onBack})=>{
                     <span className="font-bold text-slate-700">{p.name}</span>
                     <span className={cn('font-black text-[9px]',i===0?'text-emerald-500':i===1?'text-blue-500':'text-slate-300')}>{i===0?'서명 완료':i===1?'검토 중':'대기'}</span>
                   </div>
-                  {i<APV_LINE.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
+                  {i<C.apvLine.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
                 </React.Fragment>
               ))}
             </div>
@@ -324,8 +341,8 @@ const DocReviewAgent=({onBack})=>{
       {(apvState==='modal'||apvState==='submitting')&&(
         <ApprovalModal
           docTitle="사규 기반 문서 검토 보고서"
-          docNum="KREA-부동산공시처-2026-034"
-          apvLine={APV_LINE}
+          docNum={C.apvDocNum}
+          apvLine={C.apvLine}
           apvMsg={apvMsg} setApvMsg={setApvMsg}
           onClose={()=>setApvState(null)}
           onSubmit={submitApv}
@@ -339,7 +356,7 @@ const DocReviewAgent=({onBack})=>{
         {viewMode==='edit'?(
           <div className="max-w-3xl mx-auto bg-white rounded-2xl border shadow-sm overflow-hidden">
             <textarea
-              defaultValue={`사규 기반 문서 사전 검토 보고서\n문서번호: 검토-2026-031\n\n[검토 결과 요약]\n총 검토 문서: ${files.length}개\n위반 소지 건수: 3건 (높음 1, 중간 1, 낮음 1)\n보완 필요: 2건\n적합 판정: ${files.length-1}개\n\n[위반 사항 상세]\n${VIOLATIONS.map((v,i)=>`${i+1}. ${v.clause}\n   유형: ${v.type}\n   내용: ${v.content}\n   조치: ${v.action}`).join('\n\n')}`}
+              defaultValue={`사규 기반 문서 사전 검토 보고서\n문서번호: ${C.reviewNum}\n\n[검토 결과 요약]\n총 검토 문서: ${files.length}개\n위반 소지 건수: ${C.violations.length}건 (높음 ${C.violations.filter(v=>v.severity==='high').length}, 중간 ${C.violations.filter(v=>v.severity==='medium').length}, 낮음 ${C.violations.filter(v=>v.severity==='low').length})\n보완 필요: 2건\n적합 판정: ${files.length-1}개\n\n[위반 사항 상세]\n${C.violations.map((v,i)=>`${i+1}. ${v.clause}\n   유형: ${v.type}\n   내용: ${v.content}\n   조치: ${v.action}`).join('\n\n')}`}
               className="w-full p-6 font-mono text-[13px] text-slate-700 leading-relaxed resize-none outline-none"
               style={{minHeight:600}}/>
           </div>
@@ -347,7 +364,7 @@ const DocReviewAgent=({onBack})=>{
           <div className="max-w-3xl mx-auto space-y-4">
             <div className="bg-white rounded-xl border shadow-sm px-5 py-3 flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-1.5 text-[11px] font-black text-slate-500"><Highlighter className="w-3.5 h-3.5"/>위반 하이라이트 범례:</div>
-              {[{type:'high',label:'높음 — 여비 초과',bg:'bg-red-200 border-b-2 border-red-400'},{type:'medium',label:'중간 — 서류 누락',bg:'bg-amber-200 border-b-2 border-amber-400'},{type:'low',label:'낮음 — 절차 미비',bg:'bg-blue-200 border-b-2 border-blue-400'}].map(({type,label,bg})=>(
+              {[{type:'high',label:C.highlightLegendLabels.high,bg:'bg-red-200 border-b-2 border-red-400'},{type:'medium',label:C.highlightLegendLabels.medium,bg:'bg-amber-200 border-b-2 border-amber-400'},{type:'low',label:C.highlightLegendLabels.low,bg:'bg-blue-200 border-b-2 border-blue-400'}].map(({type,label,bg})=>(
                 <div key={type} className="flex items-center gap-1.5">
                   <span className={cn('px-1.5 py-0.5 text-[10px] font-bold rounded-sm',bg)}>{label}</span>
                 </div>
@@ -355,22 +372,22 @@ const DocReviewAgent=({onBack})=>{
             </div>
             <div className="bg-white rounded-2xl border shadow-sm">
               <div className="px-6 pt-5 pb-3 border-b border-slate-100 flex items-center justify-between">
-                <div className="text-[13px] font-black text-slate-700">표준지공시지가 현장조사 출장비 정산 보고서</div>
-                <div className="text-[10px] font-mono text-slate-400">검토-2026-031</div>
+                <div className="text-[13px] font-black text-slate-700">{C.highlightDocTitle}</div>
+                <div className="text-[10px] font-mono text-slate-400">{C.reviewNum}</div>
               </div>
               <div className="px-8 py-6">
                 <div className="font-mono text-[12.5px] leading-[2] text-slate-700 whitespace-pre-wrap">
-                  {HIGHLIGHT_SEGS.map((seg,i)=>{
+                  {C.highlightSegs.map((seg,i)=>{
                     if(!seg.type)return<span key={i}>{seg.text}</span>;
                     const hcls=seg.type==='high'?'bg-red-200 text-red-900 border-b-2 border-red-400':seg.type==='medium'?'bg-amber-200 text-amber-900 border-b-2 border-amber-400':'bg-blue-200 text-blue-900 border-b-2 border-blue-400';
-                    const v=seg.type==='high'?VIOLATIONS[0]:seg.type==='medium'?VIOLATIONS[1]:VIOLATIONS[2];
+                    const v=seg.type==='high'?C.violations[0]:seg.type==='medium'?C.violations[1]:C.violations[2];
                     return<span key={i} title={`${v.clause}: ${v.type}`} className={cn('px-0.5 rounded-sm cursor-help',hcls)}>{seg.text}</span>;
                   })}
                 </div>
               </div>
               <div className="px-6 pb-5 space-y-2">
                 <div className="text-[10px] font-black text-slate-400 mb-3 uppercase tracking-wider">위반 소지 항목 요약</div>
-                {VIOLATIONS.map((v,i)=>{
+                {C.violations.map((v,i)=>{
                   const s=SEVERITY[v.severity];
                   const SIcon=v.severity==='high'?AlertTriangle:v.severity==='medium'?AlertCircle:Info;
                   const bg=v.severity==='high'?'bg-red-50 border-red-200':v.severity==='medium'?'bg-amber-50 border-amber-200':'bg-blue-50 border-blue-200';
@@ -395,7 +412,7 @@ const DocReviewAgent=({onBack})=>{
             {/* 표준 REB 문서 헤더 */}
             <div style={{border:'1px solid #091D58',display:'grid',gridTemplateColumns:'170px 1fr',gridTemplateRows:'auto auto'}}>
               <div style={{gridColumn:'1',gridRow:'1/3',display:'flex',alignItems:'center',justifyContent:'center',padding:'16px 14px',background:'#fff',borderRight:'1px solid #091D58'}}>
-                <img src={REB_LOGO} alt="REB 한국부동산원" style={{width:'130px',height:'auto'}}/>
+                <img src={C.logoSrc} alt={C.logoAlt} style={{width:'130px',height:'auto'}}/>
               </div>
               <div style={{gridColumn:'2',gridRow:'1',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px 14px',background:'#e6e6e6',borderBottom:'1px solid #091D58',overflow:'hidden'}}>
                 <div style={{fontSize:'34px',fontWeight:900,letterSpacing:'0.4em',paddingRight:'0.4em',fontFamily:"'HY견고딕','돋움','맑은 고딕',sans-serif",color:'#041E54',lineHeight:1.2,whiteSpace:'nowrap'}}>
@@ -407,13 +424,13 @@ const DocReviewAgent=({onBack})=>{
                   <span style={{fontSize:'12px',fontWeight:700,color:'#091D58'}}>담당부서</span>
                 </div>
                 <div style={{padding:'7px 12px',borderRight:'1px solid #091D58',display:'flex',alignItems:'center'}}>
-                  <span style={{fontSize:'13px',color:'#1a202c',fontWeight:600}}>부동산공시처</span>
+                  <span style={{fontSize:'13px',color:'#1a202c',fontWeight:600}}>{C.dept}</span>
                 </div>
                 <div style={{padding:'7px 10px',background:'#dfeaf5',borderRight:'1px solid #091D58',display:'flex',alignItems:'center',justifyContent:'center'}}>
                   <span style={{fontSize:'12px',fontWeight:700,color:'#091D58'}}>문서번호</span>
                 </div>
                 <div style={{padding:'7px 12px',display:'flex',flexDirection:'column',justifyContent:'center',gap:'2px'}}>
-                  <span style={{fontSize:'12px',fontFamily:'monospace',fontWeight:700,color:'#1a202c'}}>KREA-부동산공시처-2026-031</span>
+                  <span style={{fontSize:'12px',fontFamily:'monospace',fontWeight:700,color:'#1a202c'}}>{C.docNum}</span>
                   <span style={{fontSize:'10px',color:'#6b7280'}}>수신: 내부결재</span>
                 </div>
               </div>
@@ -447,9 +464,9 @@ const DocReviewAgent=({onBack})=>{
                         <div className="h-2 rounded-full transition-all" style={{width:`${compScore}%`,background:gc}}/>
                       </div>
                       <div className="mt-2 flex gap-3 text-[10px]">
-                        <span className="text-red-500 font-bold">높음 -{VIOLATIONS.filter(v=>v.severity==='high').length*20}pt</span>
-                        <span className="text-amber-500 font-bold">중간 -{VIOLATIONS.filter(v=>v.severity==='medium').length*10}pt</span>
-                        <span className="text-blue-500 font-bold">낮음 -{VIOLATIONS.filter(v=>v.severity==='low').length*5}pt</span>
+                        <span className="text-red-500 font-bold">높음 -{C.violations.filter(v=>v.severity==='high').length*20}pt</span>
+                        <span className="text-amber-500 font-bold">중간 -{C.violations.filter(v=>v.severity==='medium').length*10}pt</span>
+                        <span className="text-blue-500 font-bold">낮음 -{C.violations.filter(v=>v.severity==='low').length*5}pt</span>
                       </div>
                     </div>
                   </div>
@@ -464,7 +481,7 @@ const DocReviewAgent=({onBack})=>{
                 <div className="grid grid-cols-4 gap-3">
                   {[
                     {label:'총 검토 문서',val:`${files.length}개`,cls:'text-slate-700'},
-                    {label:'위반 소지 건수',val:'3건',cls:'text-red-600'},
+                    {label:'위반 소지 건수',val:`${C.violations.length}건`,cls:'text-red-600'},
                     {label:'보완 필요',val:'2건',cls:'text-amber-600'},
                     {label:'적합 판정',val:`${files.length-1}개`,cls:'text-emerald-600'},
                   ].map((s,i)=>(
@@ -483,7 +500,7 @@ const DocReviewAgent=({onBack})=>{
                   위반 소지 사항 상세
                 </h3>
                 <div className="space-y-3">
-                  {VIOLATIONS.map((v,i)=>{
+                  {C.violations.map((v,i)=>{
                     const s=SEVERITY[v.severity];
                     const SIcon=v.severity==='high'?AlertTriangle:v.severity==='medium'?AlertCircle:Info;
                     return(
@@ -511,7 +528,7 @@ const DocReviewAgent=({onBack})=>{
               {/* signature */}
               <div className="pt-4" style={{borderTop:'2px solid #091D58'}}>
                 <div className="grid grid-cols-3 gap-4">
-                  {APV_LINE.map((p,i)=>(
+                  {C.apvLine.map((p,i)=>(
                     <div key={i} className="border border-slate-300 rounded-lg overflow-hidden">
                       <div className="py-1.5 text-center text-[11px] font-bold text-white" style={{background:'#091D58'}}>{p.role}</div>
                       <div className="px-3 py-2 text-center text-[11px] text-slate-500 border-b border-slate-100">{p.name} · {p.title}</div>

@@ -64,12 +64,24 @@ const DEFAULT_GLOSSARY=[
   {ko:'주거 지역',     en:'Residential Zone',                         category:'용도'},
 ];
 
-const TranslateAgent=({onBack})=>{
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-translate"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  sourceText: SOURCE_TEXT,         // string — 샘플 원문. '\n\n' 구분 문단 3개 (좌측 원문 패널·역번역 대조에 사용)
+  translatedText: TRANSLATED_TEXT, // string — 번역 결과. '\n\n' 구분 문단 3개 (sourceText와 문단 수 일치 권장)
+  chunks: CHUNKS,                  // {id:number,text:string}[5] — 청킹 결과(원문을 의미 단위 분할). 배열 통째 교체
+  summaryKo: SUMMARY,              // string — 원문 언어 요약 (요약 패널 좌측)
+  summaryEn: SUMMARY_EN,           // string — 번역 언어 요약 (요약 패널 우측)
+  backTranslated: BACK_TRANSLATED, // string — 역번역 검증 텍스트. '\n\n' 구분, 첫 문단만 노출
+  glossary: DEFAULT_GLOSSARY,      // {ko:string,en:string,category:string}[8] — 도메인 용어집 초기값. 배열 통째 교체
+};
+
+const TranslateAgent=({onBack,domain})=>{
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-translate"]||{})};
   const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS,{
     // 번역 단계(i=1) 동안 청크 진행 티커
     onStepStart:(i,prev)=>{
       if(i===1){
-        CHUNKS.forEach((_,ci)=>{
+        C.chunks.forEach((_,ci)=>{
           setTimeout(()=>setChunkIdx(ci),prev+400+ci*580);
         });
       }
@@ -80,7 +92,7 @@ const TranslateAgent=({onBack})=>{
   const [summaryMode,setSummaryMode]=useState(false);
   const [summaryLen,setSummaryLen]=useState(300);
   const [inputTab,setInputTab]=useState('text');
-  const [srcText,setSrcText]=useState(SOURCE_TEXT);
+  const [srcText,setSrcText]=useState(C.sourceText);
   const [uploadFile,setUploadFile]=useState(null);
   const [drag,setDrag]=useState(false);
   const [chunkIdx,setChunkIdx]=useState(-1);
@@ -88,7 +100,7 @@ const TranslateAgent=({onBack})=>{
   const fileRef=useRef(null);
   // 용어집
   const [glossaryOpen,setGlossaryOpen]=useState(false);
-  const [glossary,setGlossary]=useState(DEFAULT_GLOSSARY);
+  const [glossary,setGlossary]=useState(C.glossary);
   const [newKo,setNewKo]=useState('');
   const [newEn,setNewEn]=useState('');
   // 역번역 검증
@@ -101,12 +113,12 @@ const TranslateAgent=({onBack})=>{
   const reset=()=>{resetSim();setChunkIdx(-1);setUploadFile(null);setCopied(false);};
 
   const copyAll=()=>{
-    navigator.clipboard.writeText(langPair==='ko-en'?TRANSLATED_TEXT:TRANSLATED_TEXT).catch(()=>{});
+    navigator.clipboard.writeText(langPair==='ko-en'?C.translatedText:C.translatedText).catch(()=>{});
     setCopied(true);setTimeout(()=>setCopied(false),2000);
   };
 
   const downloadTxt=()=>{
-    const blob=new Blob([TRANSLATED_TEXT],{type:'text/plain;charset=utf-8'});
+    const blob=new Blob([C.translatedText],{type:'text/plain;charset=utf-8'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='translation_result.txt';a.click();
   };
 
@@ -304,7 +316,7 @@ const TranslateAgent=({onBack})=>{
                     )}
                     {showChunks&&(
                       <div className="mt-3 space-y-1.5">
-                        {CHUNKS.slice(0,chunkIdx+1).map((c,ci)=>(
+                        {C.chunks.slice(0,chunkIdx+1).map((c,ci)=>(
                           <div key={c.id} className={cn('flex items-start gap-2 text-[11px] rounded-lg px-2.5 py-1.5 transition-all',
                             ci===chunkIdx?'bg-violet-100 text-violet-700 font-bold':'text-slate-400 bg-transparent')}>
                             <span className={cn('shrink-0 font-mono font-black text-[10px] mt-0.5',ci===chunkIdx?'text-violet-500':'text-slate-300')}>#{c.id}</span>
@@ -333,8 +345,8 @@ const TranslateAgent=({onBack})=>{
   );
 
   // STEP 3
-  const srcLen=srcText.length||SOURCE_TEXT.length;
-  const tgtLen=TRANSLATED_TEXT.length;
+  const srcLen=srcText.length||C.sourceText.length;
+  const tgtLen=C.translatedText.length;
 
   return(
     <div className="flex-1 flex flex-col overflow-hidden bg-slate-100">
@@ -344,7 +356,7 @@ const TranslateAgent=({onBack})=>{
           <div className="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center shrink-0"><CheckCircle className="w-3.5 h-3.5 text-white"/></div>
           <div className="min-w-0">
             <div className="text-[13px] font-black text-slate-800 truncate">번역 완료 — {lp.src} → {lp.tgt}</div>
-            <div className="text-[10px] text-slate-400">청크 {CHUNKS.length}개 · {tgtLen}자</div>
+            <div className="text-[10px] text-slate-400">청크 {C.chunks.length}개 · {tgtLen}자</div>
           </div>
         </div>
         <button onClick={copyAll}
@@ -371,7 +383,7 @@ const TranslateAgent=({onBack})=>{
           {[
             {label:'원문',val:`${srcLen.toLocaleString()}자`},
             {label:'번역문',val:`${tgtLen.toLocaleString()}자`},
-            {label:'청크',val:`${CHUNKS.length}개`},
+            {label:'청크',val:`${C.chunks.length}개`},
             {label:'처리 시간',val:'6.8초'},
             {label:'모델',val:'Llama-3-Korean 70B'},
           ].map((s,i)=>(
@@ -395,9 +407,9 @@ const TranslateAgent=({onBack})=>{
               <span className="ml-auto text-[10px] text-slate-400 font-mono">{srcLen}자</span>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-4">
-              {CHUNKS.map((c,ci)=>(
+              {C.chunks.map((c,ci)=>(
                 <p key={c.id} className={cn('text-[13px] leading-relaxed mb-3 pb-3 transition-colors',
-                  ci<CHUNKS.length-1&&'border-b border-dashed border-slate-100',
+                  ci<C.chunks.length-1&&'border-b border-dashed border-slate-100',
                   ci%2===0?'text-slate-700':'text-slate-600')}>
                   <span className="inline-block text-[9px] font-black text-violet-400 bg-violet-50 px-1 py-0.5 rounded mr-1.5 font-mono align-middle">#{c.id}</span>
                   {c.text}
@@ -414,7 +426,7 @@ const TranslateAgent=({onBack})=>{
               <span className="ml-auto text-[10px] text-violet-400 font-mono">{tgtLen}자</span>
             </div>
             <div className="flex-1 overflow-y-auto px-4 py-4">
-              {TRANSLATED_TEXT.split('\n\n').filter(Boolean).map((p,i)=>(
+              {C.translatedText.split('\n\n').filter(Boolean).map((p,i)=>(
                 <p key={i} className={cn('text-[13px] leading-relaxed mb-3 pb-3 text-slate-700',i<2&&'border-b border-dashed border-violet-100')}>
                   <span className="inline-block text-[9px] font-black text-violet-400 bg-violet-50 px-1 py-0.5 rounded mr-1.5 font-mono align-middle">#{i+1}</span>
                   {p}
@@ -435,7 +447,7 @@ const TranslateAgent=({onBack})=>{
             <div className="px-5 py-4 grid grid-cols-2 gap-6">
               <div>
                 <div className="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-wider">원문 (한국어)</div>
-                <p className="text-[12px] text-slate-600 leading-relaxed line-clamp-6">{SOURCE_TEXT.split('\n\n')[0]}</p>
+                <p className="text-[12px] text-slate-600 leading-relaxed line-clamp-6">{C.sourceText.split('\n\n')[0]}</p>
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -443,7 +455,7 @@ const TranslateAgent=({onBack})=>{
                   <div className="h-px flex-1 bg-indigo-100"/>
                   <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">95.1% 유사</span>
                 </div>
-                <p className="text-[12px] text-indigo-700 leading-relaxed line-clamp-6">{BACK_TRANSLATED.split('\n\n')[0]}</p>
+                <p className="text-[12px] text-indigo-700 leading-relaxed line-clamp-6">{C.backTranslated.split('\n\n')[0]}</p>
               </div>
             </div>
             <div className="px-5 pb-3">
@@ -469,11 +481,11 @@ const TranslateAgent=({onBack})=>{
             <div className="px-5 py-4 grid grid-cols-2 gap-4">
               <div>
                 <div className="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-wider">한국어 요약</div>
-                <p className="text-[12px] text-slate-600 leading-relaxed">{SUMMARY}</p>
+                <p className="text-[12px] text-slate-600 leading-relaxed">{C.summaryKo}</p>
               </div>
               <div>
                 <div className="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-wider">English Summary</div>
-                <p className="text-[12px] text-slate-600 leading-relaxed">{SUMMARY_EN}</p>
+                <p className="text-[12px] text-slate-600 leading-relaxed">{C.summaryEn}</p>
               </div>
             </div>
           </div>

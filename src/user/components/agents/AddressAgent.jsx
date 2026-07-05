@@ -79,7 +79,7 @@ const OCR_AGENTS=[
   {icon:Globe2,    label:'지오코딩 에이전트',  sub:'위경도 좌표 변환 중',               color:'bg-red-600',    ms:1200},
 ];
 
-const OCR_DOC_TEXT=`[현장조사 보고서]
+const OCR_DOC_TEXT_RAW=`[현장조사 보고서]
 문서번호: 부동산공시처-2026-조사-0048
 조사일자: 2026.03.12  담당: 김민준(부동산공시처)
 
@@ -98,7 +98,7 @@ const OCR_DOC_TEXT=`[현장조사 보고서]
    사례 B: 부산광역시 해운대구 우동 1402
 
 4. 비고
-   AI 보조 선정 결과 감정평가사 2차 검증 예정`.split(' ');
+   AI 보조 선정 결과 감정평가사 2차 검증 예정`;
 
 const OCR_ADDR_RESULTS=[
   {raw:'서울 강남구 도곡동 946-1',    ctx:'기준 표준지',  ocrConf:98.3, road:'서울특별시 강남구 언주로30길 18', jibun:'서울특별시 강남구 도곡동 946-1',    zip:'06256',lat:'37.4916',lng:'127.0378',legalCode:'1168010600',legalDong:'도곡동', adminCode:'1168064000',adminDong:'도곡2동', matchConf:98.7,status:'완전매칭'},
@@ -143,6 +143,34 @@ const RESULT={
   complexCode:'11680-0042',
 };
 
+/* ── 처리 유형 카드 (m·color 키 고정: single|batch|ocr|reverse / rose|orange|teal|purple) ── */
+const MODE_TYPES_DEFAULT=[
+  {m:'single',  icon:'📍', label:'단일 주소',   desc:'비정형 주소 1건을 도로명·지번·우편번호·좌표로 변환',  color:'rose'},
+  {m:'batch',   icon:'📋', label:'일괄 처리',   desc:'여러 주소를 한 번에 붙여넣거나 파일로 일괄 표준화',   color:'orange'},
+  {m:'ocr',     icon:'🔍', label:'OCR 파일',    desc:'현장조사 보고서·감정평가서에서 주소 자동 추출',       color:'teal'},
+  {m:'reverse', icon:'🔢', label:'코드 역조회', desc:'법정동·행정동코드로 정식 주소를 역방향 조회',          color:'purple'},
+];
+
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-address"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  defaultAddress:'서울 강남구 도곡동 946-1',                 // 단일 주소 입력 초기값
+  addressPlaceholder:'예: 서울 강남구 도곡동 946-1',          // 단일 주소 placeholder
+  quickExamples:QUICK_EXAMPLES,                              // string[3] — 단일 주소 예시 칩
+  defaultAptQuery:'서울 강남구 도곡동 도곡렉슬아파트',        // 공동주택 조회 입력 초기값
+  aptPlaceholder:'예: 서울 강남구 도곡동 도곡렉슬아파트',     // 공동주택 조회 placeholder
+  aptQuickExamples:APT_QUICK,                                // string[3] — 공동주택 예시 칩
+  aptLookupResult:APT_RESULT,                                // {query,complexName,complexCode,address,roadAddress,legalDong,legalCode,totalHouseholds(number),totalBuildings(number),buildings:{dongName,dongCode,floors,households}[4],units:{floor,hoName,hoCode,area,type}[6]}
+  singleResult:RESULT,                                       // {road,jibun,zip,lat,lng,buildType('공동주택'이면 코드 섹션 노출),adminDong,legalDong,legalCode,adminCode,status('완전매칭'|'부분매칭'),complexName,complexCode}
+  sampleBatch:SAMPLE_BATCH,                                  // 개행 구분 주소 문자열(5줄) — 일괄 처리 textarea 초기값
+  batchResults:BATCH_RESULTS,                                // {input,road,jibun,zip,legalCode,adminCode,legalDong,adminDong,conf(number),status('완전매칭'|'부분매칭')}[5]
+  modeTypes:MODE_TYPES_DEFAULT,                              // {m·color 키 고정, icon(이모지), label, desc}[4]
+  ocrDocText:OCR_DOC_TEXT_RAW,                               // OCR 스트리밍 원문 — 공백 단위로 순차 출력됨
+  ocrAddrResults:OCR_ADDR_RESULTS,                           // {raw,ctx,ocrConf,road,jibun,zip,lat,lng,legalCode,legalDong,adminCode,adminDong,matchConf,status('완전매칭'|'부분매칭')}[5]
+  ocrFeatureLabel:'현장조사 보고서 특화',                     // OCR 업로드 존 강조 문구(도메인 문서 유형)
+  codeLookup:CODE_LOOKUP,                                    // {코드10자리: {type('법정동'|'행정동'),dong,road,jibun,zip,legalCode,adminCode,adminDong?,legalDong?,region}}
+  codeQuickExamples:CODE_QUICK_EXAMPLES,                     // {code,label}[3] — 역조회 예시 칩
+};
+
 const MatchStatusBadge=({status})=>{
   const isExact=status==='완전매칭';
   return(
@@ -161,17 +189,19 @@ const MatchStatusBadge=({status})=>{
   );
 };
 
-const AddressAgent=({onBack})=>{
+const AddressAgent=({onBack,domain})=>{
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-address"]||{})};
+  const OCR_DOC_WORDS=C.ocrDocText.split(' ');
   const [mode,setMode]=useState('single');
   const [inputTab,setInputTab]=useState('address'); // 'address' | 'apt'
   const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS);
-  const [address,setAddress]=useState('서울 강남구 도곡동 946-1');
-  const [aptQuery,setAptQuery]=useState('서울 강남구 도곡동 도곡렉슬아파트');
+  const [address,setAddress]=useState(C.defaultAddress);
+  const [aptQuery,setAptQuery]=useState(C.defaultAptQuery);
   const [aptResult,setAptResult]=useState(null);
   const [selectedDong,setSelectedDong]=useState(0);
   const [selectedHo,setSelectedHo]=useState(0);
   const [copiedField,setCopiedField]=useState(null);
-  const [batchText,setBatchText]=useState(SAMPLE_BATCH);
+  const [batchText,setBatchText]=useState(C.sampleBatch);
   const [batchProcessed,setBatchProcessed]=useState(false);
   const [batchCopied,setBatchCopied]=useState(false);
   const [mapOpen,setMapOpen]=useState(false);
@@ -201,8 +231,8 @@ const AddressAgent=({onBack})=>{
     setOcrWords([]);setOcrAddrFound(false);
     let idx=0;
     const id=setInterval(()=>{
-      if(idx>=OCR_DOC_TEXT.length){clearInterval(id);return;}
-      setOcrWords(p=>[...p,OCR_DOC_TEXT[idx]]);
+      if(idx>=OCR_DOC_WORDS.length){clearInterval(id);return;}
+      setOcrWords(p=>[...p,OCR_DOC_WORDS[idx]]);
       idx++;
     },80);
     return ()=>clearInterval(id);
@@ -215,7 +245,7 @@ const AddressAgent=({onBack})=>{
 
   const startProcess=()=>{
     if(inputTab==='apt'){
-      setAptResult(APT_RESULT);
+      setAptResult(C.aptLookupResult);
       setSelectedDong(0);
       setStep(3);
       return;
@@ -235,7 +265,7 @@ const AddressAgent=({onBack})=>{
 
   const copyBatchCsv=()=>{
     const header='입력주소,도로명주소,지번주소,우편번호,법정동코드,법정동명,행정동코드,행정동명,매칭상태';
-    const rows=BATCH_RESULTS.map(r=>[r.input,r.road,r.jibun,r.zip,r.legalCode,r.legalDong,r.adminCode,r.adminDong,r.status].join(','));
+    const rows=C.batchResults.map(r=>[r.input,r.road,r.jibun,r.zip,r.legalCode,r.legalDong,r.adminCode,r.adminDong,r.status].join(','));
     navigator.clipboard?.writeText([header,...rows].join('\n'));
     setBatchCopied(true);
     setTimeout(()=>setBatchCopied(false),2000);
@@ -243,7 +273,7 @@ const AddressAgent=({onBack})=>{
 
   const downloadBatchExcel=()=>{
     const header='입력주소\t도로명주소\t지번주소\t우편번호\t법정동코드\t법정동명\t행정동코드\t행정동명\t매칭상태';
-    const rows=BATCH_RESULTS.map(r=>[r.input,r.road,r.jibun,r.zip,r.legalCode,r.legalDong,r.adminCode,r.adminDong,r.status].join('\t'));
+    const rows=C.batchResults.map(r=>[r.input,r.road,r.jibun,r.zip,r.legalCode,r.legalDong,r.adminCode,r.adminDong,r.status].join('\t'));
     const tsv=[header,...rows].join('\n');
     const blob=new Blob(['\uFEFF'+tsv],{type:'text/tab-separated-values;charset=utf-8'});
     const url=URL.createObjectURL(blob);
@@ -267,18 +297,9 @@ const AddressAgent=({onBack})=>{
 
   const resetOcr=()=>{setOcrStep(1);setOcrFile(null);setOcrAgentIdx(-1);setOcrDoneIdx([]);setOcrWords([]);setOcrAddrFound(false);setOcrSelectedRow(null);};
 
-  const handleModeSwitch=(m)=>{
-    setMode(m);setStep(1);setAgentIdx(-1);setDoneIdx([]);
-    setCopiedField(null);setBatchProcessed(false);setMapOpen(false);
-    setRevCode('');setRevResult(null);setRevSearched(false);setRevCopied(null);
-    setCopiedAll(false);
-    resetOcr();
-    setAptResult(null);
-  };
-
   const doReverseSearch=()=>{
     const clean=revCode.replace(/\s/g,'');
-    const found=CODE_LOOKUP[clean]||null;
+    const found=C.codeLookup[clean]||null;
     setRevResult(found);
     setRevSearched(true);
     setRevCopied(null);
@@ -291,17 +312,17 @@ const AddressAgent=({onBack})=>{
   };
 
   const copyAllFields=()=>{
-    const selBuilding=APT_RESULT.buildings[selectedDong];
-    const selUnit=APT_RESULT.units[selectedHo];
+    const selBuilding=C.aptLookupResult.buildings[selectedDong];
+    const selUnit=C.aptLookupResult.units[selectedHo];
     const text=[
-      `[도로명주소] ${RESULT.road}`,
-      `[지번주소]   ${RESULT.jibun}`,
-      `[우편번호]   ${RESULT.zip}`,
-      `[좌표]       위도 ${RESULT.lat}, 경도 ${RESULT.lng}`,
-      `[법정동]     ${RESULT.legalDong} (${RESULT.legalCode})`,
-      `[행정동]     ${RESULT.adminDong} (${RESULT.adminCode})`,
-      `[단지명]     ${RESULT.complexName}`,
-      `[단지코드]   ${RESULT.complexCode}`,
+      `[도로명주소] ${C.singleResult.road}`,
+      `[지번주소]   ${C.singleResult.jibun}`,
+      `[우편번호]   ${C.singleResult.zip}`,
+      `[좌표]       위도 ${C.singleResult.lat}, 경도 ${C.singleResult.lng}`,
+      `[법정동]     ${C.singleResult.legalDong} (${C.singleResult.legalCode})`,
+      `[행정동]     ${C.singleResult.adminDong} (${C.singleResult.adminCode})`,
+      `[단지명]     ${C.singleResult.complexName}`,
+      `[단지코드]   ${C.singleResult.complexCode}`,
       `[동코드]     ${selBuilding.dongName} ${selBuilding.dongCode}`,
       `[호코드]     ${selUnit.hoName} ${selUnit.hoCode}`,
     ].join('\n');
@@ -320,8 +341,8 @@ const AddressAgent=({onBack})=>{
   };
 
   const batchCount=batchText.split('\n').filter(l=>l.trim()).length;
-  const perfectMatch=BATCH_RESULTS.filter(r=>r.status==='완전매칭').length;
-  const perfectMatchRate=Math.round((perfectMatch/BATCH_RESULTS.length)*100);
+  const perfectMatch=C.batchResults.filter(r=>r.status==='완전매칭').length;
+  const perfectMatchRate=Math.round((perfectMatch/C.batchResults.length)*100);
 
   const CopyBtn=({fieldKey,val})=>(
     <button onClick={()=>copyField(fieldKey,val)}
@@ -337,12 +358,7 @@ const AddressAgent=({onBack})=>{
   const startBatch=()=>{setBatchProcessed(true);setStep(3);};
   const startReverse=()=>{doReverseSearch();setStep(3);};
 
-  const MODE_TYPES=[
-    {m:'single',  icon:'📍', label:'단일 주소',   desc:'비정형 주소 1건을 도로명·지번·우편번호·좌표로 변환',  color:'rose'},
-    {m:'batch',   icon:'📋', label:'일괄 처리',   desc:'여러 주소를 한 번에 붙여넣거나 파일로 일괄 표준화',   color:'orange'},
-    {m:'ocr',     icon:'🔍', label:'OCR 파일',    desc:'현장조사 보고서·감정평가서에서 주소 자동 추출',       color:'teal'},
-    {m:'reverse', icon:'🔢', label:'코드 역조회', desc:'법정동·행정동코드로 정식 주소를 역방향 조회',          color:'purple'},
-  ];
+  const MODE_TYPES=C.modeTypes;
 
   const COLOR={
     rose:   {sel:'border-rose-500 bg-rose-50 shadow-rose-100',   icon:'bg-rose-600',   btn:'bg-rose-600 hover:bg-rose-700 shadow-rose-100',   ring:'focus:border-rose-400 focus:ring-rose-100',   check:'text-rose-500'},
@@ -352,13 +368,13 @@ const AddressAgent=({onBack})=>{
   };
 
   const resetAll=()=>{
-    setStep(1);setAgentIdx(-1);setDoneIdx([]);setCopiedField(null);setMapOpen(false);
+    resetSim();setCopiedField(null);setMapOpen(false);
     setBatchProcessed(false);setRevCode('');setRevResult(null);setRevSearched(false);
     setRevCopied(null);setCopiedAll(false);resetOcr();setAptResult(null);
   };
 
   const cur=MODE_TYPES.find(t=>t.m===mode)||MODE_TYPES[0];
-  const C=COLOR[cur.color];
+  const CLR=COLOR[cur.color];
 
   /* ───────────── STEP 1: 입력 ───────────── */
   if(step===1) return(
@@ -368,7 +384,7 @@ const AddressAgent=({onBack})=>{
         {/* 에이전트 타이틀 */}
         <div className="flex items-center gap-3">
           {onBack&&<button onClick={onBack} className="text-slate-400 hover:text-slate-600 text-[11px] font-bold flex items-center gap-1 shrink-0"><ChevronRight className="w-3.5 h-3.5 rotate-180"/>뒤로</button>}
-          <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shadow-md shrink-0',C.icon)}>
+          <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shadow-md shrink-0',CLR.icon)}>
             <MapPin className="w-5 h-5 text-white"/>
           </div>
           <div>
@@ -433,8 +449,8 @@ const AddressAgent=({onBack})=>{
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3.5 w-4 h-4 text-rose-400"/>
                     <input value={address} onChange={e=>setAddress(e.target.value)}
-                      placeholder="예: 서울 강남구 도곡동 946-1"
-                      className={cn('w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-[14px] bg-white outline-none focus:ring-2',C.ring,'text-slate-700')}/>
+                      placeholder={C.addressPlaceholder}
+                      className={cn('w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-[14px] bg-white outline-none focus:ring-2',CLR.ring,'text-slate-700')}/>
                   </div>
                   {address&&(
                     <div className="flex items-center gap-2 text-[11px] text-slate-500">
@@ -445,7 +461,7 @@ const AddressAgent=({onBack})=>{
                     </div>
                   )}
                   <div className="flex flex-wrap gap-1.5">
-                    {QUICK_EXAMPLES.map((q,i)=>(
+                    {C.quickExamples.map((q,i)=>(
                       <button key={i} onClick={()=>setAddress(q)}
                         className="text-[11px] px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 font-medium hover:bg-rose-100 transition-colors">
                         {q}
@@ -465,11 +481,11 @@ const AddressAgent=({onBack})=>{
                   <div className="relative">
                     <Building2 className="absolute left-3 top-3.5 w-4 h-4 text-rose-400"/>
                     <input value={aptQuery} onChange={e=>setAptQuery(e.target.value)}
-                      placeholder="예: 서울 강남구 도곡동 도곡렉슬아파트"
-                      className={cn('w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-[14px] bg-white outline-none focus:ring-2',C.ring,'text-slate-700')}/>
+                      placeholder={C.aptPlaceholder}
+                      className={cn('w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-[14px] bg-white outline-none focus:ring-2',CLR.ring,'text-slate-700')}/>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
-                    {APT_QUICK.map((q,i)=>(
+                    {C.aptQuickExamples.map((q,i)=>(
                       <button key={i} onClick={()=>setAptQuery(q)}
                         className="text-[11px] px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 font-medium hover:bg-rose-100 transition-colors">
                         {q}
@@ -493,7 +509,7 @@ const AddressAgent=({onBack})=>{
               </div>
               <textarea value={batchText} onChange={e=>setBatchText(e.target.value)} rows={7}
                 placeholder="주소를 한 줄에 하나씩 입력하세요"
-                className={cn('w-full border border-slate-200 rounded-xl px-4 py-3 text-[13px] bg-white outline-none focus:ring-2',C.ring,'text-slate-700 resize-none')}/>
+                className={cn('w-full border border-slate-200 rounded-xl px-4 py-3 text-[13px] bg-white outline-none focus:ring-2',CLR.ring,'text-slate-700 resize-none')}/>
             </div>
           )}
 
@@ -524,7 +540,7 @@ const AddressAgent=({onBack})=>{
                   <div className="text-[14px] font-bold text-slate-600">PDF · HWP · 이미지 업로드</div>
                   <div className="text-[12px] text-slate-400 text-center leading-relaxed">
                     파일을 드래그하거나 클릭해서 선택하세요<br/>
-                    <span className="text-teal-500 font-bold">DRM 자동 복호화</span> 및 <span className="text-teal-500 font-bold">현장조사 보고서 특화</span> 처리 지원
+                    <span className="text-teal-500 font-bold">DRM 자동 복호화</span> 및 <span className="text-teal-500 font-bold">{C.ocrFeatureLabel}</span> 처리 지원
                   </div>
                 </>
               )}
@@ -540,10 +556,10 @@ const AddressAgent=({onBack})=>{
                 <input value={revCode} onChange={e=>{setRevCode(e.target.value);setRevSearched(false);}}
                   onKeyDown={e=>e.key==='Enter'&&startReverse()}
                   placeholder="법정동 또는 행정동 코드 10자리 (예: 1168010600)"
-                  className={cn('w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-[14px] font-mono bg-white outline-none focus:ring-2',C.ring,'text-slate-700')}/>
+                  className={cn('w-full border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-[14px] font-mono bg-white outline-none focus:ring-2',CLR.ring,'text-slate-700')}/>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {CODE_QUICK_EXAMPLES.map((ex,i)=>(
+                {C.codeQuickExamples.map((ex,i)=>(
                   <button key={i} onClick={()=>{setRevCode(ex.code);setRevSearched(false);}}
                     className="text-[11px] px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 font-medium hover:bg-purple-100 transition-colors">
                     {ex.label}
@@ -556,7 +572,7 @@ const AddressAgent=({onBack})=>{
 
         {/* 시작 버튼 */}
         <button onClick={mode==='single'?startProcess:mode==='batch'?startBatch:mode==='ocr'?startOcrProcess:startReverse}
-          className={cn('w-full py-3.5 text-white font-black rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-lg text-[15px]',C.btn)}>
+          className={cn('w-full py-3.5 text-white font-black rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-lg text-[15px]',CLR.btn)}>
           <Play className="w-4 h-4 fill-white"/>
           {mode==='single'&&inputTab==='apt'?'공동주택 코드 조회':
            mode==='single'?'주소 표준화 시작':
@@ -573,7 +589,7 @@ const AddressAgent=({onBack})=>{
       <div className="flex-1 min-w-0 flex flex-col items-center justify-center overflow-y-auto">
         <div className="w-full max-w-xl px-6">
           <div className="text-center mb-10">
-            <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg',C.icon)}>
+            <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg',CLR.icon)}>
               {mode==='ocr'?<ScanLine className="w-7 h-7 text-white animate-pulse"/>:<Radio className="w-7 h-7 text-white animate-pulse"/>}
             </div>
             <div className="text-[18px] font-black text-slate-800">
@@ -619,7 +635,7 @@ const AddressAgent=({onBack})=>{
                       {isActive&&<Loader2 className="w-4 h-4 text-slate-400 animate-spin shrink-0"/>}
                       {isDone&&<span className="text-[10px] font-black text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0">완료</span>}
                     </div>
-                    {isActive&&<div className="mt-3"><div className="h-1 bg-slate-100 rounded-full overflow-hidden"><div className={cn('h-1 rounded-full animate-pulse',C.icon.replace('bg-','bg-'))} style={{width:'70%'}}/></div></div>}
+                    {isActive&&<div className="mt-3"><div className="h-1 bg-slate-100 rounded-full overflow-hidden"><div className={cn('h-1 rounded-full animate-pulse',CLR.icon.replace('bg-','bg-'))} style={{width:'70%'}}/></div></div>}
                   </div>
                   {i<(mode==='ocr'?OCR_AGENTS:AGENTS).length-1&&<div className="flex justify-center my-1"><ChevronRight className="w-4 h-4 text-slate-300 rotate-90"/></div>}
                 </div>
@@ -650,8 +666,8 @@ const AddressAgent=({onBack})=>{
             <span className="text-[15px] font-black text-slate-800">
               {mode==='single'&&inputTab==='apt'?`공동주택 코드 조회 완료`:
                mode==='single'?'주소 표준화 완료':
-               mode==='batch'?`일괄 처리 완료 (${BATCH_RESULTS.length}건)`:
-               mode==='ocr'?`OCR 주소 추출 완료 (${OCR_ADDR_RESULTS.length}건)`:'코드 역조회 완료'}
+               mode==='batch'?`일괄 처리 완료 (${C.batchResults.length}건)`:
+               mode==='ocr'?`OCR 주소 추출 완료 (${C.ocrAddrResults.length}건)`:'코드 역조회 완료'}
             </span>
           </div>
           <button onClick={resetAll}
@@ -758,7 +774,7 @@ const AddressAgent=({onBack})=>{
         {/* ── 단일 주소 결과 (일반) ── */}
         {mode==='single'&&inputTab==='address'&&(
           <>
-            <MatchStatusBadge status={RESULT.status}/>
+            <MatchStatusBadge status={C.singleResult.status}/>
 
             {/* 입력 → 결과 */}
             <div className="grid grid-cols-2 gap-3">
@@ -768,7 +784,7 @@ const AddressAgent=({onBack})=>{
               </div>
               <div className="bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
                 <div className="text-[9px] font-black text-rose-500 uppercase mb-1">도로명주소</div>
-                <div className="text-[13px] text-rose-700 font-bold leading-snug">{RESULT.road}</div>
+                <div className="text-[13px] text-rose-700 font-bold leading-snug">{C.singleResult.road}</div>
               </div>
             </div>
 
@@ -778,12 +794,12 @@ const AddressAgent=({onBack})=>{
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">주소 코드</span>
               </div>
               {[
-                {key:'road',  label:'도로명주소',  val:RESULT.road,  bold:true},
-                {key:'jibun', label:'지번주소',    val:RESULT.jibun},
-                {key:'zip',   label:'우편번호',    val:RESULT.zip},
-                {key:'coord', label:'좌표 (WGS84)', val:'위도 '+RESULT.lat+', 경도 '+RESULT.lng},
-                {key:'legal', label:'법정동',      val:RESULT.legalDong+' ('+RESULT.legalCode+')'},
-                {key:'admin', label:'행정동',      val:RESULT.adminDong+' ('+RESULT.adminCode+')'},
+                {key:'road',  label:'도로명주소',  val:C.singleResult.road,  bold:true},
+                {key:'jibun', label:'지번주소',    val:C.singleResult.jibun},
+                {key:'zip',   label:'우편번호',    val:C.singleResult.zip},
+                {key:'coord', label:'좌표 (WGS84)', val:'위도 '+C.singleResult.lat+', 경도 '+C.singleResult.lng},
+                {key:'legal', label:'법정동',      val:C.singleResult.legalDong+' ('+C.singleResult.legalCode+')'},
+                {key:'admin', label:'행정동',      val:C.singleResult.adminDong+' ('+C.singleResult.adminCode+')'},
               ].map(({key,label,val,bold})=>(
                 <div key={key} className="flex items-center gap-3 px-4 py-3">
                   <div className="w-24 shrink-0 text-[11px] font-black text-slate-400">{label}</div>
@@ -794,18 +810,18 @@ const AddressAgent=({onBack})=>{
             </div>
 
             {/* ② 공동주택 코드 */}
-            {RESULT.buildType==='공동주택'&&(
+            {C.singleResult.buildType==='공동주택'&&(
               <div className="bg-white border-2 border-rose-100 rounded-2xl overflow-hidden divide-y divide-rose-50">
                 {/* 헤더: 단지명 + 단지코드 */}
                 <div className="px-4 py-3 bg-rose-50 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-rose-500 shrink-0"/>
-                    <span className="text-[13px] font-black text-rose-700">{RESULT.complexName}</span>
+                    <span className="text-[13px] font-black text-rose-700">{C.singleResult.complexName}</span>
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider ml-1">공동주택 코드</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-black font-mono text-slate-700">{RESULT.complexCode}</span>
-                    <CopyBtn fieldKey="complex" val={RESULT.complexCode}/>
+                    <span className="text-[13px] font-black font-mono text-slate-700">{C.singleResult.complexCode}</span>
+                    <CopyBtn fieldKey="complex" val={C.singleResult.complexCode}/>
                   </div>
                 </div>
 
@@ -814,7 +830,7 @@ const AddressAgent=({onBack})=>{
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider w-24 shrink-0">동 선택</span>
                     <div className="flex flex-wrap gap-1.5">
-                      {APT_RESULT.buildings.map((b,i)=>(
+                      {C.aptLookupResult.buildings.map((b,i)=>(
                         <button key={i} onClick={()=>{setSelectedDong(i);setSelectedHo(0);}}
                           className={cn('px-3 py-1 rounded-lg border text-[11px] font-black transition-all',
                             selectedDong===i
@@ -827,8 +843,8 @@ const AddressAgent=({onBack})=>{
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider w-24 shrink-0">동코드</span>
-                    <span className="text-[13px] font-mono text-slate-700 flex-1">{APT_RESULT.buildings[selectedDong].dongCode}</span>
-                    <CopyBtn fieldKey="dong" val={APT_RESULT.buildings[selectedDong].dongCode}/>
+                    <span className="text-[13px] font-mono text-slate-700 flex-1">{C.aptLookupResult.buildings[selectedDong].dongCode}</span>
+                    <CopyBtn fieldKey="dong" val={C.aptLookupResult.buildings[selectedDong].dongCode}/>
                   </div>
                 </div>
 
@@ -837,7 +853,7 @@ const AddressAgent=({onBack})=>{
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider w-24 shrink-0">호 선택</span>
                     <div className="flex flex-wrap gap-1.5">
-                      {APT_RESULT.units.map((u,i)=>(
+                      {C.aptLookupResult.units.map((u,i)=>(
                         <button key={i} onClick={()=>setSelectedHo(i)}
                           className={cn('px-3 py-1 rounded-lg border text-[11px] font-black transition-all',
                             selectedHo===i
@@ -851,18 +867,18 @@ const AddressAgent=({onBack})=>{
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider w-24 shrink-0">호코드</span>
-                    <span className="text-[13px] font-mono text-slate-700 flex-1">{APT_RESULT.units[selectedHo].hoCode}</span>
-                    <CopyBtn fieldKey="ho" val={APT_RESULT.units[selectedHo].hoCode}/>
+                    <span className="text-[13px] font-mono text-slate-700 flex-1">{C.aptLookupResult.units[selectedHo].hoCode}</span>
+                    <CopyBtn fieldKey="ho" val={C.aptLookupResult.units[selectedHo].hoCode}/>
                   </div>
                 </div>
 
                 {/* 선택 요약 */}
                 <div className="px-4 py-2.5 bg-slate-50 flex items-center gap-2 flex-wrap">
                   {[
-                    {label:'법정동', val:`${RESULT.legalDong} (${RESULT.legalCode})`},
-                    {label:'단지코드', val:RESULT.complexCode},
-                    {label:'동코드', val:APT_RESULT.buildings[selectedDong].dongCode},
-                    {label:'호코드', val:APT_RESULT.units[selectedHo].hoCode},
+                    {label:'법정동', val:`${C.singleResult.legalDong} (${C.singleResult.legalCode})`},
+                    {label:'단지코드', val:C.singleResult.complexCode},
+                    {label:'동코드', val:C.aptLookupResult.buildings[selectedDong].dongCode},
+                    {label:'호코드', val:C.aptLookupResult.units[selectedHo].hoCode},
                   ].map((item,i)=>(
                     <div key={i} className="flex items-center gap-1.5 text-[10px]">
                       {i>0&&<span className="text-slate-300">·</span>}
@@ -887,7 +903,7 @@ const AddressAgent=({onBack})=>{
           <>
             <div className="grid grid-cols-3 gap-3">
               {[
-                {label:'처리 건수', val:BATCH_RESULTS.length+'건', color:'text-orange-700 bg-orange-50 border-orange-200'},
+                {label:'처리 건수', val:C.batchResults.length+'건', color:'text-orange-700 bg-orange-50 border-orange-200'},
                 {label:'완전매칭', val:perfectMatch+'건',           color:'text-emerald-700 bg-emerald-50 border-emerald-200'},
                 {label:'완전매칭률', val:perfectMatchRate+'%',     color:'text-blue-700 bg-blue-50 border-blue-200'},
               ].map(s=>(
@@ -903,7 +919,7 @@ const AddressAgent=({onBack})=>{
                   <div key={h} className="px-3 py-2 font-black text-[10px] text-slate-500 uppercase border-r last:border-r-0">{h}</div>
                 ))}
               </div>
-              {BATCH_RESULTS.map((r,i)=>(
+              {C.batchResults.map((r,i)=>(
                 <div key={i} className="grid grid-cols-[1.2fr_1.8fr_2fr_0.8fr_0.9fr] border-b last:border-b-0 hover:bg-slate-50">
                   <div className="px-3 py-2.5 text-slate-600 truncate border-r">{r.input}</div>
                   <div className="px-3 py-2.5 text-slate-700 font-medium truncate border-r">{r.road}</div>
@@ -933,7 +949,7 @@ const AddressAgent=({onBack})=>{
         {/* ── OCR 결과 ── */}
         {mode==='ocr'&&(
           <div className="space-y-3">
-            {OCR_ADDR_RESULTS.map((r,i)=>(
+            {C.ocrAddrResults.map((r,i)=>(
               <div key={i}
                 onClick={()=>setOcrSelectedRow(ocrSelectedRow===i?null:i)}
                 className={cn('border-2 rounded-2xl p-4 cursor-pointer transition-all',

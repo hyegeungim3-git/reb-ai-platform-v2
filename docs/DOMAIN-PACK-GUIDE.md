@@ -138,6 +138,31 @@ orchestration: {
 **에이전트 ID 고정 목록** (오타 시 조용히 무시되므로 주의):
 `agent-chatbot` `agent-report` `agent-meeting` `agent-knowledge` `agent-internalreg` `agent-ocr` `agent-dbquery` `agent-address` `agent-dataanalysis` `agent-summary` `agent-translate` `agent-review` `agent-safety`
 
+### 2-3. 에이전트 내부 콘텐츠 + 코어 승격 필드 (도메인 이관, 2026-07-06)
+
+```js
+// 에이전트 내부 화면 콘텐츠 오버라이드 — 키 단위 병합(제공한 키만 교체, 나머지는 REB 기본값)
+agentContent: {
+  "agent-ocr": { extractedText: "…", maskLog: [/*4*/], /* … */ },
+  // 스키마 정본: 각 에이전트 파일 상단 export const CONTENT_DEFAULTS (shape 주석 포함)
+  // 전체 키 목록·계약: docs/AGENT-CONTENT-SCHEMA.md
+},
+
+secureSuggestions: [ /* 4개 — SECURE 탭 제안. SUGGESTIONS와 동일 shape */ ],
+
+modeAnswers: {  // REVIEW/TRANSLATE/REPORT 모드 + SECURE 응답 오버라이드 (answer 객체 shape)
+  REVIEW: { content: "…", citations: [], steps: [/*3*/] },
+  TRANSLATE: { … }, REPORT: { …, document: {/* 공문서 객체 — 생략 시 다운로드 버튼용 문서 없음 */} },
+  SECURE_DEFAULT: { … }, SECURE_AIRGAP: { … },
+},
+
+fileData: { d1: { title, date, secLevel, text, highlights: [] }, … },  // 인용 뷰어 원문 (docs[].id와 일치)
+// 공문서 다운로드 HTML은 generateDocHTML(doc, org)로 orgName·orgShort·brandColor 자동 주입 — 팩 작업 불필요
+```
+
+- **배열·객체는 통째 교체 계약**: agentContent의 각 키는 항목 수·필드 shape를 REB 기본값과 동일하게 유지할 것 (코어가 인덱스·키에 의존).
+- 일부 키는 값 계약이 있다(예: dbSources.key 'building'|'land'|'lup' 고정, address modeTypes.m 고정) — AGENT-CONTENT-SCHEMA.md의 "고정" 표기 참조.
+
 ## 3. 콘텐츠 품질 기준 (모델 무관 동일 수준을 위한 규칙)
 
 1. **실물 형식 재현**: 규정은 "제N조(제목) ① …" 조문 형식, 답변엔 "※ 출처: 문서명 (개정연월), N페이지"를 붙인다. 두루뭉술한 설명문은 실격.
@@ -152,13 +177,13 @@ orchestration: {
 
 | 영역 | 현상 | 우회/계획 |
 |---|---|---|
-| 에이전트 내부 화면 | 카드에서 실행하면 내부 mock(회의록 내용·OCR 샘플 등)은 REB 콘텐츠 | 데모 시 허브 화면까지만 시연하거나, 이관 작업(로드맵 참조) 선행 |
-| 관리자 시스템 | 조직명만 바뀌고 45개 페이지 콘텐츠는 REB | 데모는 사용자 포털 중심으로 |
-| REVIEW/TRANSLATE/REPORT 응답 | responses.js의 REB 공문서 템플릿 반환 | GENERAL 모드 중심 시연 |
-| 인용(citations) 뷰어 | FILE_DATA가 REB 문서 전용 | 팩 sampleAnswers는 citations:[] 유지 |
-| SECURE 탭 제안 | SECURE_SUGGESTIONS 전 도메인 공용 (문구는 도메인 중립) | 필요 시 팩 필드로 승격 |
+| ~~에이전트 내부 화면~~ | ✅ 이관 완료(2026-07-06) — `agentContent` 팩 필드로 키 단위 오버라이드 (§2-3) | 팩이 키를 생략하면 REB 기본값 노출 — 데모 도메인은 주요 에이전트 키를 채울 것 |
+| 관리자 시스템 | 조직명만 바뀌고 45개+AI기본법 페이지 콘텐츠는 REB | 데모는 사용자 포털 중심으로 |
+| ~~REVIEW/TRANSLATE/REPORT 응답~~ | ✅ 이관 완료 — `modeAnswers` 팩 필드 (SECURE 2종 포함, §2-3) | 생략 시 REB 기본 응답 |
+| ~~인용(citations) 뷰어~~ | ✅ 이관 완료 — `fileData` 팩 필드 | 생략 시 REB FILE_DATA. 팩 sampleAnswers의 citations id가 fileData 키와 일치해야 원문 열림 |
+| ~~SECURE 탭 제안~~ | ✅ 이관 완료 — `secureSuggestions` 팩 필드 | 생략 시 도메인 중립 기본 문구 |
 
-이 표의 항목을 이관할 때는: 코어에 팩 필드 소비 + REB fallback을 추가하는 커밋과, 팩에 콘텐츠를 채우는 커밋을 분리하라.
+이관 원칙(유지): 코어에 팩 필드 소비 + REB fallback을 추가하는 커밋과, 팩에 콘텐츠를 채우는 커밋을 분리하라.
 
 ## 5. 실수 사전 (이번 구축에서 실제로 겪은 것)
 

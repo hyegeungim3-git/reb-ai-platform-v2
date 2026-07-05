@@ -162,8 +162,6 @@ const FAQ_ITEMS = [
   },
 ];
 
-const FAQ_CATEGORIES = ['전체', '공시지가', '복무규정', '이의신청', '보안', '시스템'];
-
 /* ─── 에이전트 전달 규칙 ─── */
 const DELEGATE_RULES = [
   { keywords: ['보고서', '작성', '기안'],       agentId: 'agent-report',      agentName: '보고서 작성 에이전트', reason: '보고서 자동 작성 전문 에이전트입니다.' },
@@ -176,7 +174,7 @@ const DELEGATE_RULES = [
 
 /* ─── 질문 보정 ─── */
 const CORRECTIONS = {
-  short: ['더 구체적으로 질문해 주시면 정확한 답변이 가능합니다.', '예: "연차 사용 기준이 어떻게 되나요?"'],
+  short: ['더 구체적으로 질문해 주시면 정확한 답변이 가능합니다.'],
 };
 
 const SUGGEST_QUESTIONS = [
@@ -193,8 +191,36 @@ const MOCK_RESPONSES = {
   },
 };
 
-function detectDelegate(text) {
-  for (const rule of DELEGATE_RULES) {
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-chatbot"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS = {
+  welcomeText: MOCK_RESPONSES.default.text,          // 최초 인사 메시지 본문 (마크다운: **굵게**, - 목록, | 표 지원)
+  welcomeSources: MOCK_RESPONSES.default.sources,    // string[] — 출처명. sourcePreviews 키와 일치하면 원문 미리보기 가능
+  sourcePreviews: SOURCE_PREVIEWS,                   // { [출처명]: {title,type:'PDF'|'LAW'|'HWP',pages?,page?,section?,article?,excerpt:{text,hl}[]} } — 출처 칩 클릭 시 우측 원문 패널
+  faqItems: FAQ_ITEMS,                               // {id,q,category,a,sources:string[]}[6] — category는 faqCategories 항목과 일치해야 함
+  faqCategories: ['공시지가', '복무규정', '이의신청', '보안', '시스템'], // string[5] — FAQ 필터 탭. '전체' 탭은 코어가 자동으로 앞에 추가
+  faqCategoryColors: {                               // { [category]: tailwind 배지 클래스 } — faqCategories 전 항목 매핑 (미매핑 시 slate 폴백)
+    '공시지가': 'bg-blue-100 text-blue-700',
+    '복무규정': 'bg-emerald-100 text-emerald-700',
+    '이의신청': 'bg-amber-100 text-amber-700',
+    '보안':     'bg-rose-100 text-rose-700',
+    '시스템':   'bg-violet-100 text-violet-700',
+  },
+  delegateRules: DELEGATE_RULES,                     // {keywords:string[],agentId,agentName,reason}[6] — 질문에 keywords 포함 시 해당 에이전트 추천 배너
+  correctionExample: '예: "연차 사용 기준이 어떻게 되나요?"', // 짧은 질문 보정 배너의 예시 문구 1줄
+  suggestQuestions: SUGGEST_QUESTIONS,               // string[3] — 보정 배너의 추천 질문 칩 (faqItems.q와 일치 시 FAQ 답변 매칭됨)
+  fallbackAnswerBody: `한국부동산원 내부 지식베이스 및 규정을 검토한 결과, 관련 내용을 정리해 드립니다.\n\n현재 질문하신 내용과 관련하여 사내 규정집, 업무 지침서, 공시 관련 법령 등을 검색하였습니다. 보다 정확한 답변을 위해 구체적인 상황이나 관련 문서명을 함께 알려주시면 더 상세한 안내가 가능합니다.\n\n**참고 자료:**\n- 표준지공시지가 조사지침 (2026년 개정본)\n- 한국부동산원 업무 매뉴얼 v3.2\n- 부동산 가격공시에 관한 법률`, // FAQ 미매칭 질문의 답변 본문(마크다운) — 앞에 **"질문"** 헤더는 코어가 붙임
+  fallbackSources: ['표준지공시지가_조사지침.pdf', '업무매뉴얼_v3.2.pdf'], // string[2] — 미매칭 답변의 출처
+  headerSubtitle: '내부 지식베이스 · 규정집 · 공시 법령 기반 응답', // 헤더 부제 1줄
+  inputPlaceholder: '사내 규정이나 공시 업무에 대해 자유롭게 질문하세요...', // 입력창 placeholder
+  quickAgents: [                                     // {label,id,color}[3] — 우측 하단 '자주 사용하는 에이전트' 바로가기
+    { label: '회의록 작성 에이전트', id: 'agent-meeting',    color: 'bg-purple-100 text-purple-700' },
+    { label: '보고서 작성 에이전트', id: 'agent-report',     color: 'bg-emerald-100 text-emerald-700' },
+    { label: '내규 조회 에이전트',   id: 'agent-internalreg',color: 'bg-amber-100 text-amber-700' },
+  ],
+};
+
+function detectDelegate(text, rules) {
+  for (const rule of rules) {
     if (rule.keywords.some(k => text.includes(k))) return rule;
   }
   return null;
@@ -298,8 +324,8 @@ function getTypeStyle(type) {
 }
 
 /* ─── 출처 미리보기 패널 ─── */
-function SourcePreviewPanel({ sourceKey, onClose }) {
-  const data = SOURCE_PREVIEWS[sourceKey];
+function SourcePreviewPanel({ sourceKey, previews, onClose }) {
+  const data = previews[sourceKey];
   if (!data) return null;
   const { icon: TypeIcon, color: typeColor, label: typeLabel } = getTypeStyle(data.type);
 
@@ -359,13 +385,14 @@ function SourcePreviewPanel({ sourceKey, onClose }) {
 }
 
 /* ─── 메인 컴포넌트 ─── */
-export default function ChatbotAgent({ onBack }) {
+export default function ChatbotAgent({ onBack, domain }) {
+  const C = { ...CONTENT_DEFAULTS, ...(domain?.agentContent?.["agent-chatbot"] || {}) };
   const [messages, setMessages] = useState([
     {
       id: 'init',
       role: 'assistant',
-      text: MOCK_RESPONSES.default.text,
-      sources: MOCK_RESPONSES.default.sources,
+      text: C.welcomeText,
+      sources: C.welcomeSources,
       isFaq: false,
       isContext: false,
       delegate: null,
@@ -399,7 +426,7 @@ export default function ChatbotAgent({ onBack }) {
 
   const showCorrectionBanner = input.length > 0 && input.length < 8;
 
-  const filteredFaq = FAQ_ITEMS.filter(f => {
+  const filteredFaq = C.faqItems.filter(f => {
     const categoryMatch = faqCategory === '전체' || f.category === faqCategory;
     const searchMatch = faqSearch === '' || f.q.includes(faqSearch);
     return categoryMatch && searchMatch;
@@ -437,19 +464,19 @@ export default function ChatbotAgent({ onBack }) {
         responseText = faqItem.a;
         sources = faqItem.sources;
       } else {
-        const matched = FAQ_ITEMS.find(f =>
+        const matched = C.faqItems.find(f =>
           f.q.split(/[은는이가 ]+/).some(word => word.length > 2 && text.includes(word))
         );
         if (matched) {
           responseText = matched.a;
           sources = matched.sources;
         } else {
-          responseText = `**"${text.trim()}"** 에 대한 답변입니다.\n\n한국부동산원 내부 지식베이스 및 규정을 검토한 결과, 관련 내용을 정리해 드립니다.\n\n현재 질문하신 내용과 관련하여 사내 규정집, 업무 지침서, 공시 관련 법령 등을 검색하였습니다. 보다 정확한 답변을 위해 구체적인 상황이나 관련 문서명을 함께 알려주시면 더 상세한 안내가 가능합니다.\n\n**참고 자료:**\n- 표준지공시지가 조사지침 (2026년 개정본)\n- 한국부동산원 업무 매뉴얼 v3.2\n- 부동산 가격공시에 관한 법률`;
-          sources = ['표준지공시지가_조사지침.pdf', '업무매뉴얼_v3.2.pdf'];
+          responseText = `**"${text.trim()}"** 에 대한 답변입니다.\n\n${C.fallbackAnswerBody}`;
+          sources = C.fallbackSources;
         }
       }
 
-      const delegate = isFaq ? null : detectDelegate(text);
+      const delegate = isFaq ? null : detectDelegate(text, C.delegateRules);
       const isContext = userMsgCount >= 1;
 
       const aiMsg = {
@@ -496,7 +523,7 @@ export default function ChatbotAgent({ onBack }) {
     timerRef.current = [];
     setMessages([{
       id: 'init-' + Date.now(), role: 'assistant',
-      text: MOCK_RESPONSES.default.text, sources: MOCK_RESPONSES.default.sources,
+      text: C.welcomeText, sources: C.welcomeSources,
       isFaq: false, isContext: false, delegate: null, feedback: null, ts: new Date(),
     }]);
     setInput(''); setIsProcessing(false); setShowWorkflow(false); setWorkflowStep(0); setActiveSource(null);
@@ -525,7 +552,7 @@ export default function ChatbotAgent({ onBack }) {
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 truncate">내부 지식베이스 · 규정집 · 공시 법령 기반 응답</p>
+            <p className="text-xs text-slate-500 truncate">{C.headerSubtitle}</p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <button onClick={handleReset} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors" title="대화 초기화">
@@ -545,6 +572,7 @@ export default function ChatbotAgent({ onBack }) {
             <MessageBubble
               key={msg.id}
               msg={msg}
+              previews={C.sourcePreviews}
               onFeedback={handleFeedback}
               onCopy={handleCopy}
               copied={copied}
@@ -578,9 +606,9 @@ export default function ChatbotAgent({ onBack }) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-amber-700 mb-1">질문 보정 제안</p>
                 <p className="text-xs text-amber-600 mb-2">{CORRECTIONS.short[0]}</p>
-                <p className="text-xs text-amber-500 mb-2">{CORRECTIONS.short[1]}</p>
+                <p className="text-xs text-amber-500 mb-2">{C.correctionExample}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {SUGGEST_QUESTIONS.map((q, i) => (
+                  {C.suggestQuestions.map((q, i) => (
                     <button
                       key={i}
                       onClick={() => { setInput(q); inputRef.current?.focus(); }}
@@ -607,7 +635,7 @@ export default function ChatbotAgent({ onBack }) {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="사내 규정이나 공시 업무에 대해 자유롭게 질문하세요..."
+              placeholder={C.inputPlaceholder}
               rows={1}
               className="flex-1 resize-none bg-transparent text-sm text-slate-800 placeholder-slate-400 outline-none leading-relaxed py-0.5 max-h-32"
               style={{ minHeight: '24px' }}
@@ -633,7 +661,7 @@ export default function ChatbotAgent({ onBack }) {
       {/* ── 우측 패널: 출처 미리보기 또는 FAQ ── */}
       <div className="w-72 shrink-0 border-l border-slate-200 flex flex-col bg-white overflow-hidden">
         {activeSource ? (
-          <SourcePreviewPanel sourceKey={activeSource} onClose={() => setActiveSource(null)} />
+          <SourcePreviewPanel sourceKey={activeSource} previews={C.sourcePreviews} onClose={() => setActiveSource(null)} />
         ) : (
           <>
             {/* FAQ 헤더 */}
@@ -656,7 +684,7 @@ export default function ChatbotAgent({ onBack }) {
             {/* 카테고리 필터 */}
             <div className="shrink-0 px-3 py-2.5 border-b border-slate-100">
               <div className="flex flex-wrap gap-1.5">
-                {FAQ_CATEGORIES.map(cat => (
+                {['전체', ...C.faqCategories].map(cat => (
                   <button
                     key={cat}
                     onClick={() => setFaqCategory(cat)}
@@ -678,7 +706,7 @@ export default function ChatbotAgent({ onBack }) {
               ) : (
                 <div className="divide-y divide-slate-100">
                   {filteredFaq.map(item => (
-                    <FaqItem key={item.id} item={item} onClick={() => handleFaqClick(item)} />
+                    <FaqItem key={item.id} item={item} catColors={C.faqCategoryColors} onClick={() => handleFaqClick(item)} />
                   ))}
                 </div>
               )}
@@ -691,11 +719,7 @@ export default function ChatbotAgent({ onBack }) {
                 <span className="text-sm font-semibold text-slate-600">자주 사용하는 에이전트</span>
               </div>
               <div className="space-y-1">
-                {[
-                  { label: '회의록 작성 에이전트', id: 'agent-meeting',    color: 'bg-purple-100 text-purple-700' },
-                  { label: '보고서 작성 에이전트', id: 'agent-report',     color: 'bg-emerald-100 text-emerald-700' },
-                  { label: '내규 조회 에이전트',   id: 'agent-internalreg',color: 'bg-amber-100 text-amber-700' },
-                ].map(a => (
+                {C.quickAgents.map(a => (
                   <button
                     key={a.id}
                     onClick={onBack}
@@ -722,15 +746,8 @@ export default function ChatbotAgent({ onBack }) {
 }
 
 /* ─── FAQ 항목 ─── */
-function FaqItem({ item, onClick }) {
-  const CAT_COLOR = {
-    '공시지가': 'bg-blue-100 text-blue-700',
-    '복무규정': 'bg-emerald-100 text-emerald-700',
-    '이의신청': 'bg-amber-100 text-amber-700',
-    '보안':     'bg-rose-100 text-rose-700',
-    '시스템':   'bg-violet-100 text-violet-700',
-  };
-  const color = CAT_COLOR[item.category] || 'bg-slate-100 text-slate-600';
+function FaqItem({ item, catColors, onClick }) {
+  const color = catColors[item.category] || 'bg-slate-100 text-slate-600';
 
   return (
     <button onClick={onClick} className="w-full text-left px-4 py-3.5 hover:bg-blue-50 transition-colors group">
@@ -750,7 +767,7 @@ function FaqItem({ item, onClick }) {
 }
 
 /* ─── 메시지 말풍선 ─── */
-function MessageBubble({ msg, onFeedback, onCopy, copied, activeSource, onSourceClick }) {
+function MessageBubble({ msg, previews, onFeedback, onCopy, copied, activeSource, onSourceClick }) {
   const [expanded, setExpanded] = useState(true);
 
   if (msg.role === 'user') {
@@ -810,7 +827,7 @@ function MessageBubble({ msg, onFeedback, onCopy, copied, activeSource, onSource
                 <>
                   <div className="flex flex-wrap gap-2">
                     {msg.sources.map((src, i) => {
-                      const hasPreview = !!SOURCE_PREVIEWS[src];
+                      const hasPreview = !!previews[src];
                       const isActive = activeSource === src;
                       return (
                         <button
@@ -833,7 +850,7 @@ function MessageBubble({ msg, onFeedback, onCopy, copied, activeSource, onSource
                       );
                     })}
                   </div>
-                  {msg.sources.some(s => SOURCE_PREVIEWS[s]) && (
+                  {msg.sources.some(s => previews[s]) && (
                     <p className="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
                       <Sparkles size={11} className="text-amber-400" />
                       출처 칩을 클릭하면 오른쪽에서 원문 확인 가능

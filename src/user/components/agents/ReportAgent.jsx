@@ -149,70 +149,62 @@ const CustomTooltip=({active,payload,label})=>{
   );
 };
 
-const ReportAgent=({onBack})=>{
-  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS,{
-    onComplete:()=>setEditResult(buildRawText()),
-  });
-  const [reportType,setReportType]=useState('weekly');
-  const [dept,setDept]=useState('부동산공시처');
-  const [period,setPeriod]=useState('2026. 03. 09. ~ 03. 13.');
-  const [mainWork,setMainWork]=useState(
-    '- 표준지공시지가 현장조사 8건 완료 (서울 노원구·강북구)\n- 비교표준지 가격 검토 3건 처리\n- 이의신청 검토 의견서 작성 2건'
-  );
-  const [nextPlan,setNextPlan]=useState(
-    '- 표준지공시지가 현장조사 12건 예정 (서울 도봉구·중랑구)\n- 분기 실적 집계 및 보고서 작성\n- 이의신청 처리 결과 통보 3건'
-  );
-  const [special,setSpecial]=useState('- 노원구 일부 표준지 현황 변동 사항 발생 (재조사 필요 2건)');
-  const [viewMode,setViewMode]=useState('doc');
-  const [apvState,setApvState]=useState(null);
-  const [apvMsg,setApvMsg]=useState('검토 요청드립니다.');
-  const [editResult,setEditResult]=useState('');
-  const [tone,setTone]=useState('formal');
-  const [length,setLength]=useState('medium');
-  const [showExportMenu,setShowExportMenu]=useState(false);
+/* ── 도메인 이관: REB 기본 콘텐츠 (모듈 상수) ── */
+// 보도자료(통계 보고) 레이아웃용 데이터
+const PRESS_KPI_CARDS=[
+  {label:'매매가격',value:'▼ 0.39%',sub:'전분기 -0.39%',color:'#dc2626'},
+  {label:'전세가격',value:'▼ 0.25%',sub:'전분기 -0.22%',color:'#dc2626'},
+  {label:'월세가격',value:'▲ 0.20%',sub:'전분기 +0.49%',color:'#16a34a'},
+  {label:'전월세전환율',value:'6.35%',sub:'수익률 5.55%',color:'#1e40af'},
+];
+const PRESS_KPI_STATS=[
+  {label:'전국 매매 평균가격',value:'221,662천원'},
+  {label:'전국 전세가율',value:'85.18%'},
+  {label:'서울 월세 평균',value:'914천원/월'},
+];
+const PRESS_SECTIONS=[
+  {num:'1',title:'매매가격동향',
+    regions:[{area:'전국',rate:'-0.39%',prev:'-0.39%'},{area:'수도권',rate:'-0.34%',prev:'-0.31%'},{area:'지방',rate:'-0.56%',prev:'-0.72%'}],
+    details:[
+      {area:'서울',rate:'0.00%',note:'중대형 주택 상승 + 초소형 하락 상쇄 → 보합 전환 (전분기 0.03%→0.00%)'},
+      {area:'인천',rate:'-0.91%',note:'입주예정 매물 누적 하락세 지속. 역세권 신축 매수 문의 증가로 하락폭 소폭 축소 (-0.96%→-0.91%)'},
+      {area:'경기',rate:'-0.47%',note:'신도시 신축 공급 과잉이 하락 주도. 노후 단지 투자 수요 감소로 하락폭 확대 (-0.40%→-0.47%)'},
+    ],
+  },
+  {num:'2',title:'전세가격동향',
+    regions:[{area:'전국',rate:'-0.25%',prev:'-0.22%'},{area:'수도권',rate:'-0.23%',prev:'-0.16%'},{area:'지방',rate:'-0.30%',prev:'-0.44%'}],
+    details:[
+      {area:'서울',rate:'-0.02%',note:'이사철 마무리로 이주 수요 감소. 전세기피·월세전환 증가로 상승→하락 전환 (0.01%→-0.02%)'},
+      {area:'인천',rate:'-0.64%',note:'전세사기·역전세 우려로 전세기피 지속. 노후 주택 중심 하락폭 확대 (-0.47%→-0.64%)'},
+      {area:'경기',rate:'-0.31%',note:'매매가 하락에 따른 보증금 미반환 불안 확산. 공급 과잉 지역 중심 하락폭 확대 (-0.22%→-0.31%)'},
+    ],
+  },
+  {num:'3',title:'월세가격동향',
+    regions:[{area:'전국',rate:'+0.20%',prev:'+0.49%'},{area:'수도권',rate:'+0.25%',prev:'+0.56%'},{area:'지방',rate:'+0.04%',prev:'+0.20%'}],
+    details:[
+      {area:'서울',rate:'+0.28%',note:'역세권 입주여건 양호 지역 중심 상승. 이사철 마무리로 상승폭 축소 (0.44%→0.28%)'},
+      {area:'인천',rate:'+0.08%',note:'공급 과잉·노후 주택 하락으로 상승폭 대폭 축소 (1.30%→0.08%)'},
+      {area:'경기',rate:'+0.28%',note:'교통 양호 지역 월세선호 증가로 상승. 신도시 공급 과잉 지역은 하락 (0.43%→0.28%)'},
+    ],
+  },
+];
+const PRESS_INDEX_GROUPS=[
+  {label:'매매가격 (2023.12=100.0)',rows:[{a:'전국',v1:'97.82',v2:'97.71',v3:'97.57',c:'-0.39'},{a:'수도권',v1:'98.24',v2:'98.13',v3:'98.02',c:'-0.34'},{a:'서울',v1:'99.70',v2:'99.71',v3:'99.70',c:'0.00'}]},
+  {label:'전세가격 (2023.12=100.0)',rows:[{a:'전국',v1:'98.67',v2:'98.58',v3:'98.49',c:'-0.25'},{a:'수도권',v1:'99.03',v2:'98.95',v3:'98.87',c:'-0.23'},{a:'서울',v1:'99.81',v2:'99.79',v3:'99.80',c:'-0.02'}]},
+  {label:'월세가격 (2023.12=100.0)',rows:[{a:'전국',v1:'101.79',v2:'101.85',v3:'101.92',c:'+0.20'},{a:'수도권',v1:'102.31',v2:'102.38',v3:'102.47',c:'+0.25'},{a:'서울',v1:'102.24',v2:'102.33',v3:'102.42',c:'+0.28'}]},
+];
+const PRESS_RATIO_DATA=[
+  {area:'서울',전세가율:88.34,수익률:4.82},
+  {area:'인천',전세가율:87.20,수익률:5.41},
+  {area:'경기',전세가율:86.72,수익률:5.13},
+  {area:'부산',전세가율:83.45,수익률:5.77},
+  {area:'전국',전세가율:85.18,수익률:5.55},
+];
 
-  const DOC_NUM=DOC_NUMS[reportType]||'KREA-부동산공시처-2026-027';
-
-  /* 보고서 유형 변경 시 기본값 자동 세팅 */
-  useEffect(()=>{
-    const d=REPORT_DEFAULTS[reportType];
-    if(!d) return;
-    setDept(d.dept);
-    setPeriod(d.period);
-    setMainWork(d.mainWork);
-    setNextPlan(d.nextPlan);
-    setSpecial(d.special);
-  },[reportType]);
-
-  const startProcess=()=>startSim();
-
-  const reset=()=>{resetSim();setApvState(null);setApvMsg('검토 요청드립니다.');setShowExportMenu(false);};
-  const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
-
-  const buildRawText=()=>`[${REPORT_TYPES.find(t=>t.id===reportType)?.label||'주간실적보고'}]
-
-부서: ${dept}
-기간: ${period}
-문서번호: ${DOC_NUM}
-
-1. 주요 실적
-${mainWork}
-
-2. 차주 계획
-${nextPlan}
-
-3. 특이 사항
-${special||'(해당 없음)'}
-
-작성자: 김민준 (부동산공시처 과장)
-작성일: 2026. 03. 13.`;
-
-  const selectedType=REPORT_TYPES.find(t=>t.id===reportType);
-
-  const downloadDoc=()=>{
-    if(reportType==='officetel'){
-      const officetelHtml=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
-<title>주택가격동향조사 — ${DOC_NUM}</title>
+/* 인쇄용 HTML 빌더 — 도메인 팩이 함수 자체를 통째로 교체하는 계약.
+   buildPressHtml: 보도자료(통계) 레이아웃 / buildReportHtml: 일반 보고서 레이아웃 */
+const buildPressHtml=({title,docNum,dept,period,mainWork,nextPlan,special,apvLine,logo})=>`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<title>${title} — ${docNum}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
   @page{size:A4;margin:12mm 15mm}
@@ -269,12 +261,12 @@ ${special||'(해당 없음)'}
 </style></head><body>
 <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};</script>
 <div class="hd">
-  <div class="hd-logo"><img src="${REB_LOGO}" alt="한국부동산원"/></div>
-  <div class="hd-title"><div class="hd-h1">주택가격동향조사</div></div>
+  <div class="hd-logo"><img src="${logo}" alt="한국부동산원"/></div>
+  <div class="hd-title"><div class="hd-h1">${title}</div></div>
   <div class="hd-meta">
     <div class="hd-ml">담당부서</div><div class="hd-mv">${dept}</div>
     <div class="hd-ml">문서번호</div>
-    <div class="hd-mv-last"><span style="font-family:monospace;font-weight:700">${DOC_NUM}</span><span style="color:#6b7280;font-size:9px">수신: 내부결재</span></div>
+    <div class="hd-mv-last"><span style="font-family:monospace;font-weight:700">${docNum}</span><span style="color:#6b7280;font-size:9px">수신: 내부결재</span></div>
   </div>
 </div>
 
@@ -510,18 +502,12 @@ ${special||'(해당 없음)'}
 </div>
 
 <div class="sig-grid">
-  ${APV_LINE.map(p=>`<div class="sig-box"><div class="sig-lbl">${p.role}</div><div class="sig-sp"><div class="sig-name">${p.name}</div><div class="sig-dept">${p.dept}</div></div></div>`).join('')}
+  ${apvLine.map(p=>`<div class="sig-box"><div class="sig-lbl">${p.role}</div><div class="sig-sp"><div class="sig-name">${p.name}</div><div class="sig-dept">${p.dept}</div></div></div>`).join('')}
 </div>
 <p class="footer">본 보고서는 GENOS AI 보고서 작성 에이전트에 의해 자동 생성되었으며, 담당자 검토 후 확정됩니다.</p>
 </body></html>`;
-      const w=window.open('','_blank','width=900,height=1200');
-      w.document.write(officetelHtml);
-      w.document.close();
-      w.focus();
-      return;
-    }
 
-    const html=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${selectedType?.label} — ${DOC_NUM}</title>
+const buildReportHtml=({title,docNum,dept,period,mainWork,nextPlan,special,logo})=>`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>${title} — ${docNum}</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
       @page{size:A4;margin:15mm 18mm}
@@ -554,19 +540,19 @@ ${special||'(해당 없음)'}
     <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};</script>
     <div class="hd">
       <div class="hd-grid">
-        <div class="hd-logo"><img src="${REB_LOGO}" alt="REB 한국부동산원"/></div>
-        <div class="hd-title"><div class="hd-h1">${selectedType?.label||'주간실적보고'}</div></div>
+        <div class="hd-logo"><img src="${logo}" alt="REB 한국부동산원"/></div>
+        <div class="hd-title"><div class="hd-h1">${title}</div></div>
         <div class="hd-meta">
           <div class="hd-meta-lbl">담당부서</div>
           <div class="hd-meta-val">${dept}</div>
           <div class="hd-meta-lbl">문서번호</div>
-          <div class="hd-meta-val-last"><span style="font-family:monospace;font-weight:700">${DOC_NUM}</span><span style="color:#6b7280;font-size:9px">수신: 내부결재</span></div>
+          <div class="hd-meta-val-last"><span style="font-family:monospace;font-weight:700">${docNum}</span><span style="color:#6b7280;font-size:9px">수신: 내부결재</span></div>
         </div>
       </div>
     </div>
     <div class="body">
       <table class="info-tbl">
-        <tr><td class="lbl">보고 부서</td><td><strong>${dept}</strong></td><td class="lbl">문서번호</td><td><strong>${DOC_NUM}</strong></td></tr>
+        <tr><td class="lbl">보고 부서</td><td><strong>${dept}</strong></td><td class="lbl">문서번호</td><td><strong>${docNum}</strong></td></tr>
         <tr><td class="lbl">보고 기간</td><td colspan="3">${period}</td></tr>
       </table>
       <div class="sh"><span class="sn">1</span> 주요 실적</div>
@@ -581,6 +567,118 @@ ${special||'(해당 없음)'}
       </div>
     </div>
     </body></html>`;
+
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-report"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  apvLine: APV_LINE,                        // {name,dept,title,role}[3] — 작성자→검토자→승인자 순. [0]이 작성자 서명에 쓰임
+  reportTypes: REPORT_TYPES,                // {id,label,icon(이모지),desc}[5] — 첫 항목이 초기 선택값
+  docNums: DOC_NUMS,                        // {[typeId]: 문서번호} — reportTypes 전 id 매핑 권장
+  docNumFallback:'KREA-부동산공시처-2026-027', // docNums 미매핑 typeId의 문서번호
+  reportDefaults: REPORT_DEFAULTS,          // {[typeId]:{dept,period,mainWork,nextPlan,special}} — 유형 선택 시 입력폼 자동 채움
+  reportDate:'2026. 03. 13.',               // 일반 보고서 작성일 표기
+  approvalSystem:'WorksOn',                 // 전자결재 시스템명 (배지·링크 문구)
+  apvRefNo:'APV-2026-0313-027',             // 결재 진행 참조번호
+  logo: REB_LOGO,                           // 문서 헤더 로고 (data URI)
+  logoAlt:'REB 한국부동산원',                // 화면 문서 로고 대체텍스트
+  perfCharts:{                              // {[typeId]:{label,data:{item,[perfDoneKey],[perfGoalKey]}[3]}} — 미매핑 typeId는 첫 항목 사용
+    weekly:{label:'주간',data:WEEKLY_CHART},
+    monthly:{label:'월간',data:MONTHLY_CHART},
+    field:{label:'현장조사',data:FIELD_CHART},
+  },
+  perfDoneKey:'완료', perfGoalKey:'목표',     // 실적 차트 dataKey — perfCharts data 행의 키와 일치해야 함
+  pressTypeId:'officetel',                  // 보도자료(통계) 레이아웃을 쓰는 reportTypes id — 없는 id를 주면 비활성
+  pressDistDate:'2025년 7월 15일 (화)',      // 보도자료 배포 일시
+  pressDate:'2025. 07. 15.',                // 보도자료 작성일 표기
+  pressKpiTitle:'▪ 2025년 2분기 주택가격동향 핵심 지표 (전분기 대비)', // KPI 박스 제목
+  pressKpiCards: PRESS_KPI_CARDS,           // {label,value,sub,color(hex)}[4] — KPI 카드
+  pressKpiStats: PRESS_KPI_STATS,           // {label,value}[3] — KPI 하단 보조 지표
+  pressTrendTitle:'▪ 가격지수 월별 추이 (2023.12=100.0)', // 좌측 꺾은선 차트 제목
+  pressTrendData: INDEX_TREND,              // {month,...시리즈키}[3] — 시리즈키는 pressTrendSeries.key와 일치
+  pressTrendSeries:[{key:'매매',color:'#dc2626'},{key:'전세',color:'#2563eb'},{key:'월세',color:'#16a34a'}], // {key,color}[3]
+  pressTrendDomain:[96.5,103],              // 꺾은선 Y축 [min,max]
+  pressBarTitle:'▪ 지역별 변동률 (전분기 대비, %)', // 우측 막대 차트 제목
+  pressBarData: REGION_RATE,                // {area,...시리즈키}[5] — 시리즈키는 pressBarSeries.key와 일치
+  pressBarSeries:[{key:'매매',color:'#fca5a5',posColor:'#86efac'},{key:'전세',color:'#93c5fd',posColor:'#6ee7b7'},{key:'월세',color:'#6ee7b7',posColor:'#86efac'}], // 값<0이면 color, 0 이상이면 posColor
+  pressSections: PRESS_SECTIONS,            // {num,title,regions:{area,rate,prev}[3],details:{area,rate,note}[3]}[3] — 본문 섹션 1~3
+  pressIndexTitle:'2025년 4~6월 가격지수 및 변동률', // 섹션 4 제목
+  pressIndexHead:['구분','2025.4','2025.5','2025.6','전분기 변동률(%)'], // string[5] — 지수 테이블 헤더
+  pressIndexGroups: PRESS_INDEX_GROUPS,     // {label,rows:{a,v1,v2,v3,c}[3]}[3] — 그룹 헤더행 label + 데이터행
+  pressIndexNote:'* 지수산정: 제본스지수 | 통계청 국가통계 승인번호 408002', // 지수 테이블 각주
+  pressRatioTitle:'지역별 전세가율 및 수익률', // 섹션 5 제목
+  pressRatioData: PRESS_RATIO_DATA,         // {area,[leftKey]:number,[rightKey]:number}[5]
+  pressRatioLeftKey:'전세가율', pressRatioRightKey:'수익률', // 이중축 막대 dataKey — pressRatioData 행 키와 일치
+  pressRatioLeftDomain:[78,92], pressRatioRightDomain:[4,7], // 좌·우 Y축 [min,max]
+  pressRatioThreshold:85,                   // leftKey 값이 이 이상이면 경고색 막대
+  pressRatioRefLabel:'위험선 85%',           // 기준선 라벨
+  pressRatioNote:'* 전세가율 85% 이상(빨간 막대): 전세사기·깡통전세 고위험 임계치 | 수익률: 월세 연환산 ÷ 전세보증금', // 섹션 5 각주
+  pressContact:'부동산통계처 상업자산통계부장 최윤주 ☎ (053)663-8531 | 담당 차장 박병희 ☎ (053)663-8532　｜　자료확인: R-ONE 부동산통계정보시스템 www.reb.or.kr/r-one', // 문의처 1줄 ('문의' 라벨은 코어)
+  buildPressHtml,                           // ({title,docNum,dept,period,mainWork,nextPlan,special,apvLine,logo})=>html 문자열 — 보도자료 인쇄본. 팩이 전체 교체
+  buildReportHtml,                          // ({title,docNum,dept,period,mainWork,nextPlan,special,logo})=>html 문자열 — 일반 보고서 인쇄본. 팩이 전체 교체
+};
+
+const ReportAgent=({onBack,domain})=>{
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-report"]||{})};
+  const initialDefaults=C.reportDefaults[C.reportTypes[0].id]||{};
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS,{
+    onComplete:()=>setEditResult(buildRawText()),
+  });
+  const [reportType,setReportType]=useState(C.reportTypes[0].id);
+  const [dept,setDept]=useState(initialDefaults.dept||'');
+  const [period,setPeriod]=useState(initialDefaults.period||'');
+  const [mainWork,setMainWork]=useState(initialDefaults.mainWork||'');
+  const [nextPlan,setNextPlan]=useState(initialDefaults.nextPlan||'');
+  const [special,setSpecial]=useState(initialDefaults.special||'');
+  const [viewMode,setViewMode]=useState('doc');
+  const [apvState,setApvState]=useState(null);
+  const [apvMsg,setApvMsg]=useState('검토 요청드립니다.');
+  const [editResult,setEditResult]=useState('');
+  const [tone,setTone]=useState('formal');
+  const [length,setLength]=useState('medium');
+  const [showExportMenu,setShowExportMenu]=useState(false);
+
+  const DOC_NUM=C.docNums[reportType]||C.docNumFallback;
+
+  /* 보고서 유형 변경 시 기본값 자동 세팅 */
+  useEffect(()=>{
+    const d=C.reportDefaults[reportType];
+    if(!d) return;
+    setDept(d.dept);
+    setPeriod(d.period);
+    setMainWork(d.mainWork);
+    setNextPlan(d.nextPlan);
+    setSpecial(d.special);
+  },[reportType]);
+
+  const startProcess=()=>startSim();
+
+  const reset=()=>{resetSim();setApvState(null);setApvMsg('검토 요청드립니다.');setShowExportMenu(false);};
+  const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
+
+  const buildRawText=()=>`[${C.reportTypes.find(t=>t.id===reportType)?.label||C.reportTypes[0].label}]
+
+부서: ${dept}
+기간: ${period}
+문서번호: ${DOC_NUM}
+
+1. 주요 실적
+${mainWork}
+
+2. 차주 계획
+${nextPlan}
+
+3. 특이 사항
+${special||'(해당 없음)'}
+
+작성자: ${C.apvLine[0].name} (${C.apvLine[0].dept} ${C.apvLine[0].title})
+작성일: ${C.reportDate}`;
+
+  const selectedType=C.reportTypes.find(t=>t.id===reportType);
+
+  const downloadDoc=()=>{
+    const docTitle=selectedType?.label||C.reportTypes[0].label;
+    const html=reportType===C.pressTypeId
+      ?C.buildPressHtml({title:docTitle,docNum:DOC_NUM,dept,period,mainWork,nextPlan,special,apvLine:C.apvLine,logo:C.logo})
+      :C.buildReportHtml({title:docTitle,docNum:DOC_NUM,dept,period,mainWork,nextPlan,special,logo:C.logo});
     const w=window.open('','_blank','width=900,height=1200');
     w.document.write(html);
     w.document.close();
@@ -602,7 +700,7 @@ ${special||'(해당 없음)'}
         <div className="space-y-1.5">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">1 · 보고서 유형 선택</label>
           <div className="grid grid-cols-2 gap-3">
-            {REPORT_TYPES.map(t=>(
+            {C.reportTypes.map(t=>(
               <button key={t.id} onClick={()=>setReportType(t.id)}
                 className={cn(
                   'flex flex-col items-start gap-1.5 px-4 py-3.5 border-2 rounded-2xl text-left transition-all',
@@ -814,10 +912,10 @@ ${special||'(해당 없음)'}
             <div className="flex items-center gap-1.5 shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"/>
               <span className="text-[11px] font-black text-slate-700">결재 현황</span>
-              <span className="text-[9px] font-bold text-white bg-emerald-700 px-1.5 py-0.5 rounded">WorksOn</span>
+              <span className="text-[9px] font-bold text-white bg-emerald-700 px-1.5 py-0.5 rounded">{C.approvalSystem}</span>
             </div>
             <div className="flex items-center gap-1 flex-1 min-w-0">
-              {APV_LINE.map((p,i)=>(
+              {C.apvLine.map((p,i)=>(
                 <React.Fragment key={i}>
                   <div className={cn(
                     'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] border whitespace-nowrap',
@@ -831,13 +929,13 @@ ${special||'(해당 없음)'}
                       {i===0?'서명 완료':i===1?'검토 중':'대기'}
                     </span>
                   </div>
-                  {i<APV_LINE.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
+                  {i<C.apvLine.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
                 </React.Fragment>
               ))}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[10px] text-slate-400 font-mono">APV-2026-0313-027</span>
-              <a href="#" onClick={e=>e.preventDefault()} className="text-[10px] font-bold text-blue-500 hover:underline flex items-center gap-0.5">WorksOn에서 보기<ExternalLink className="w-2.5 h-2.5"/></a>
+              <span className="text-[10px] text-slate-400 font-mono">{C.apvRefNo}</span>
+              <a href="#" onClick={e=>e.preventDefault()} className="text-[10px] font-bold text-blue-500 hover:underline flex items-center gap-0.5">{C.approvalSystem}에서 보기<ExternalLink className="w-2.5 h-2.5"/></a>
             </div>
           </div>
         </div>
@@ -845,7 +943,7 @@ ${special||'(해당 없음)'}
 
       {apvState==='selfcheck'&&(
         <SelfCheckModal
-          docType={reportType==='officetel'?'officetel':'report'}
+          docType={reportType===C.pressTypeId?'officetel':'report'}
           onClose={()=>setApvState(null)}
           onProceed={()=>setApvState('modal')}
         />
@@ -855,7 +953,7 @@ ${special||'(해당 없음)'}
         <ApprovalModal
           docTitle={`${selectedType?.label} — ${period}`}
           docNum={DOC_NUM}
-          apvLine={APV_LINE}
+          apvLine={C.apvLine}
           apvMsg={apvMsg} setApvMsg={setApvMsg}
           onClose={()=>setApvState(null)}
           onSubmit={submitApv}
@@ -879,12 +977,12 @@ ${special||'(해당 없음)'}
             <div style={{border:'1px solid #091D58',display:'grid',gridTemplateColumns:'170px 1fr',gridTemplateRows:'auto auto'}}>
               {/* 로고 — 2행 span */}
               <div style={{gridColumn:'1',gridRow:'1/3',display:'flex',alignItems:'center',justifyContent:'center',padding:'16px 14px',background:'#fff',borderRight:'1px solid #091D58'}}>
-                <img src={REB_LOGO} alt="REB 한국부동산원" style={{width:'130px',height:'auto'}}/>
+                <img src={C.logo} alt={C.logoAlt} style={{width:'130px',height:'auto'}}/>
               </div>
               {/* 문서 제목 */}
               <div style={{gridColumn:'2',gridRow:'1',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px 14px',background:'#e6e6e6',borderBottom:'1px solid #091D58',overflow:'hidden'}}>
                 <div style={{fontSize:'34px',fontWeight:900,letterSpacing:'0.4em',paddingRight:'0.4em',fontFamily:"'HY견고딕','돋움','맑은 고딕',sans-serif",color:'#041E54',lineHeight:1.2,whiteSpace:'nowrap'}}>
-                  {selectedType?.label||'주간실적보고'}
+                  {selectedType?.label||C.reportTypes[0].label}
                 </div>
               </div>
               {/* 메타 정보 행 */}
@@ -906,7 +1004,7 @@ ${special||'(해당 없음)'}
             </div>
 
             {/* Document body */}
-            {reportType==='officetel' ? (
+            {reportType===C.pressTypeId ? (
             /* ── 주택가격동향조사 보도자료 형식 ── */
             <div className="bg-white px-8 py-7 space-y-6" style={{fontFamily:"'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif",lineHeight:1.85,wordBreak:'keep-all',letterSpacing:'-0.01em'}}>
               {/* 메타 정보 */}
@@ -920,7 +1018,7 @@ ${special||'(해당 없음)'}
                     <td className="py-2.5 font-bold text-[#003087] whitespace-nowrap">조사 기간</td>
                     <td className="py-2.5 text-slate-700 pr-6">{period}</td>
                     <td className="py-2.5 font-bold text-[#003087] w-24 whitespace-nowrap">배포 일시</td>
-                    <td className="py-2.5 text-slate-700">2025년 7월 15일 (화)</td>
+                    <td className="py-2.5 text-slate-700">{C.pressDistDate}</td>
                   </tr>
                   <tr className="border-b border-slate-200">
                     <td className="py-2.5 font-bold text-[#003087] whitespace-nowrap">문서번호</td>
@@ -932,15 +1030,10 @@ ${special||'(해당 없음)'}
               {/* 핵심 지표 요약 */}
               <div style={{background:'#eef2ff',border:'1px solid #c7d2fe',borderRadius:'10px',padding:'16px 18px'}}>
                 <div style={{fontSize:'11px',fontWeight:800,color:'#003087',letterSpacing:'0.05em',marginBottom:'12px'}}>
-                  ▪ 2025년 2분기 주택가격동향 핵심 지표 (전분기 대비)
+                  {C.pressKpiTitle}
                 </div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'10px'}}>
-                  {[
-                    {label:'매매가격',value:'▼ 0.39%',sub:'전분기 -0.39%',color:'#dc2626'},
-                    {label:'전세가격',value:'▼ 0.25%',sub:'전분기 -0.22%',color:'#dc2626'},
-                    {label:'월세가격',value:'▲ 0.20%',sub:'전분기 +0.49%',color:'#16a34a'},
-                    {label:'전월세전환율',value:'6.35%',sub:'수익률 5.55%',color:'#1e40af'},
-                  ].map(({label,value,sub,color})=>(
+                  {C.pressKpiCards.map(({label,value,sub,color})=>(
                     <div key={label} style={{background:'#fff',border:'1px solid #e0e7ff',borderRadius:'8px',padding:'10px 12px',textAlign:'center'}}>
                       <div style={{fontSize:'10px',color:'#6b7280',fontWeight:700,marginBottom:'4px'}}>{label}</div>
                       <div style={{fontSize:'18px',fontWeight:900,color,lineHeight:1.2}}>{value}</div>
@@ -949,11 +1042,7 @@ ${special||'(해당 없음)'}
                   ))}
                 </div>
                 <div style={{marginTop:'12px',display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'8px'}}>
-                  {[
-                    {label:'전국 매매 평균가격',value:'221,662천원'},
-                    {label:'전국 전세가율',value:'85.18%'},
-                    {label:'서울 월세 평균',value:'914천원/월'},
-                  ].map(({label,value})=>(
+                  {C.pressKpiStats.map(({label,value})=>(
                     <div key={label} style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:'6px',padding:'7px 10px',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                       <span style={{fontSize:'10px',color:'#6b7280',fontWeight:600}}>{label}</span>
                       <span style={{fontSize:'12px',color:'#1e3a8a',fontWeight:800}}>{value}</span>
@@ -967,18 +1056,18 @@ ${special||'(해당 없음)'}
                 {/* 가격지수 월별 추이 꺾은선 */}
                 <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:'10px',padding:'14px 16px'}}>
                   <div style={{fontSize:'11px',fontWeight:800,color:'#003087',marginBottom:'12px',letterSpacing:'0.03em'}}>
-                    ▪ 가격지수 월별 추이 (2023.12=100.0)
+                    {C.pressTrendTitle}
                   </div>
                   <ResponsiveContainer width="100%" height={180}>
-                    <LineChart data={INDEX_TREND} margin={{top:5,right:12,left:-20,bottom:0}}>
+                    <LineChart data={C.pressTrendData} margin={{top:5,right:12,left:-20,bottom:0}}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                       <XAxis dataKey="month" tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false}/>
-                      <YAxis domain={[96.5,103]} tick={{fontSize:9,fill:'#94a3b8'}} tickLine={false} axisLine={false}/>
+                      <YAxis domain={C.pressTrendDomain} tick={{fontSize:9,fill:'#94a3b8'}} tickLine={false} axisLine={false}/>
                       <Tooltip content={<CustomTooltip/>}/>
                       <Legend wrapperStyle={{fontSize:'10px',paddingTop:'6px'}}/>
-                      <Line type="monotone" dataKey="매매" stroke="#dc2626" strokeWidth={2.5} dot={{r:4,fill:'#dc2626'}} activeDot={{r:6}}/>
-                      <Line type="monotone" dataKey="전세" stroke="#2563eb" strokeWidth={2.5} dot={{r:4,fill:'#2563eb'}} activeDot={{r:6}}/>
-                      <Line type="monotone" dataKey="월세" stroke="#16a34a" strokeWidth={2.5} dot={{r:4,fill:'#16a34a'}} activeDot={{r:6}}/>
+                      {C.pressTrendSeries.map(s=>(
+                        <Line key={s.key} type="monotone" dataKey={s.key} stroke={s.color} strokeWidth={2.5} dot={{r:4,fill:s.color}} activeDot={{r:6}}/>
+                      ))}
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -986,57 +1075,28 @@ ${special||'(해당 없음)'}
                 {/* 지역별 변동률 막대 그래프 */}
                 <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:'10px',padding:'14px 16px'}}>
                   <div style={{fontSize:'11px',fontWeight:800,color:'#003087',marginBottom:'12px',letterSpacing:'0.03em'}}>
-                    ▪ 지역별 변동률 (전분기 대비, %)
+                    {C.pressBarTitle}
                   </div>
                   <ResponsiveContainer width="100%" height={180}>
-                    <BarChart data={REGION_RATE} margin={{top:5,right:8,left:-24,bottom:0}} barCategoryGap="25%">
+                    <BarChart data={C.pressBarData} margin={{top:5,right:8,left:-24,bottom:0}} barCategoryGap="25%">
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false}/>
                       <XAxis dataKey="area" tick={{fontSize:10,fill:'#64748b'}} tickLine={false}/>
                       <YAxis tick={{fontSize:9,fill:'#94a3b8'}} tickLine={false} axisLine={false}/>
                       <ReferenceLine y={0} stroke="#94a3b8" strokeWidth={1.5}/>
                       <Tooltip content={<CustomTooltip/>}/>
                       <Legend wrapperStyle={{fontSize:'10px',paddingTop:'6px'}}/>
-                      <Bar dataKey="매매" fill="#fca5a5" radius={[3,3,0,0]}>
-                        {REGION_RATE.map((e,i)=><Cell key={i} fill={e.매매<0?'#fca5a5':'#86efac'}/>)}
-                      </Bar>
-                      <Bar dataKey="전세" fill="#93c5fd" radius={[3,3,0,0]}>
-                        {REGION_RATE.map((e,i)=><Cell key={i} fill={e.전세<0?'#93c5fd':'#6ee7b7'}/>)}
-                      </Bar>
-                      <Bar dataKey="월세" fill="#6ee7b7" radius={[3,3,0,0]}>
-                        {REGION_RATE.map((_,i)=><Cell key={i} fill="#86efac"/>)}
-                      </Bar>
+                      {C.pressBarSeries.map(s=>(
+                        <Bar key={s.key} dataKey={s.key} fill={s.color} radius={[3,3,0,0]}>
+                          {C.pressBarData.map((e,i)=><Cell key={i} fill={e[s.key]<0?s.color:s.posColor}/>)}
+                        </Bar>
+                      ))}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              {/* 매매 / 전세 / 월세 섹션 */}
-              {[
-                {num:'1',title:'매매가격동향',
-                  regions:[{area:'전국',rate:'-0.39%',prev:'-0.39%'},{area:'수도권',rate:'-0.34%',prev:'-0.31%'},{area:'지방',rate:'-0.56%',prev:'-0.72%'}],
-                  details:[
-                    {area:'서울',rate:'0.00%',note:'중대형 주택 상승 + 초소형 하락 상쇄 → 보합 전환 (전분기 0.03%→0.00%)'},
-                    {area:'인천',rate:'-0.91%',note:'입주예정 매물 누적 하락세 지속. 역세권 신축 매수 문의 증가로 하락폭 소폭 축소 (-0.96%→-0.91%)'},
-                    {area:'경기',rate:'-0.47%',note:'신도시 신축 공급 과잉이 하락 주도. 노후 단지 투자 수요 감소로 하락폭 확대 (-0.40%→-0.47%)'},
-                  ],
-                },
-                {num:'2',title:'전세가격동향',
-                  regions:[{area:'전국',rate:'-0.25%',prev:'-0.22%'},{area:'수도권',rate:'-0.23%',prev:'-0.16%'},{area:'지방',rate:'-0.30%',prev:'-0.44%'}],
-                  details:[
-                    {area:'서울',rate:'-0.02%',note:'이사철 마무리로 이주 수요 감소. 전세기피·월세전환 증가로 상승→하락 전환 (0.01%→-0.02%)'},
-                    {area:'인천',rate:'-0.64%',note:'전세사기·역전세 우려로 전세기피 지속. 노후 주택 중심 하락폭 확대 (-0.47%→-0.64%)'},
-                    {area:'경기',rate:'-0.31%',note:'매매가 하락에 따른 보증금 미반환 불안 확산. 공급 과잉 지역 중심 하락폭 확대 (-0.22%→-0.31%)'},
-                  ],
-                },
-                {num:'3',title:'월세가격동향',
-                  regions:[{area:'전국',rate:'+0.20%',prev:'+0.49%'},{area:'수도권',rate:'+0.25%',prev:'+0.56%'},{area:'지방',rate:'+0.04%',prev:'+0.20%'}],
-                  details:[
-                    {area:'서울',rate:'+0.28%',note:'역세권 입주여건 양호 지역 중심 상승. 이사철 마무리로 상승폭 축소 (0.44%→0.28%)'},
-                    {area:'인천',rate:'+0.08%',note:'공급 과잉·노후 주택 하락으로 상승폭 대폭 축소 (1.30%→0.08%)'},
-                    {area:'경기',rate:'+0.28%',note:'교통 양호 지역 월세선호 증가로 상승. 신도시 공급 과잉 지역은 하락 (0.43%→0.28%)'},
-                  ],
-                },
-              ].map(({num,title,regions,details})=>(
+              {/* 본문 섹션 (지표 그룹별) */}
+              {C.pressSections.map(({num,title,regions,details})=>(
                 <section key={num}>
                   <h3 className="flex items-center gap-2 text-[14px] font-black text-slate-800 mb-3">
                     <span className="w-6 h-6 rounded-md bg-[#003087] flex items-center justify-center text-white text-[10px] font-black shrink-0">{num}</span>
@@ -1067,26 +1127,22 @@ ${special||'(해당 없음)'}
               <section>
                 <h3 className="flex items-center gap-2 text-[14px] font-black text-slate-800 mb-3">
                   <span className="w-6 h-6 rounded-md bg-[#003087] flex items-center justify-center text-white text-[10px] font-black shrink-0">4</span>
-                  2025년 4~6월 가격지수 및 변동률
+                  {C.pressIndexTitle}
                 </h3>
                 <div className="ml-8">
                   <table className="w-full border-collapse text-[12px]" style={{border:'1px solid #e2e8f0'}}>
                     <thead>
                       <tr style={{background:'#003087',color:'#fff'}}>
-                        {['구분','2025.4','2025.5','2025.6','전분기 변동률(%)'].map(h=>(
+                        {C.pressIndexHead.map(h=>(
                           <th key={h} className="py-2 px-3 font-bold text-left">{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {[
-                        {cat:'매매',rows:[{a:'전국',v1:'97.82',v2:'97.71',v3:'97.57',c:'-0.39'},{a:'수도권',v1:'98.24',v2:'98.13',v3:'98.02',c:'-0.34'},{a:'서울',v1:'99.70',v2:'99.71',v3:'99.70',c:'0.00'}]},
-                        {cat:'전세',rows:[{a:'전국',v1:'98.67',v2:'98.58',v3:'98.49',c:'-0.25'},{a:'수도권',v1:'99.03',v2:'98.95',v3:'98.87',c:'-0.23'},{a:'서울',v1:'99.81',v2:'99.79',v3:'99.80',c:'-0.02'}]},
-                        {cat:'월세',rows:[{a:'전국',v1:'101.79',v2:'101.85',v3:'101.92',c:'+0.20'},{a:'수도권',v1:'102.31',v2:'102.38',v3:'102.47',c:'+0.25'},{a:'서울',v1:'102.24',v2:'102.33',v3:'102.42',c:'+0.28'}]},
-                      ].map(({cat,rows})=>(
-                        <React.Fragment key={cat}>
+                      {C.pressIndexGroups.map(({label,rows})=>(
+                        <React.Fragment key={label}>
                           <tr style={{background:'#dbeafe'}}>
-                            <td className="py-1.5 px-3 font-black text-[#003087] text-[11px]" colSpan={5}>{cat}가격 (2023.12=100.0)</td>
+                            <td className="py-1.5 px-3 font-black text-[#003087] text-[11px]" colSpan={5}>{label}</td>
                           </tr>
                           {rows.map(r=>(
                             <tr key={r.a} className="border-b border-slate-100">
@@ -1101,7 +1157,7 @@ ${special||'(해당 없음)'}
                       ))}
                     </tbody>
                   </table>
-                  <p style={{fontSize:'10px',color:'#9ca3af',marginTop:'5px'}}>* 지수산정: 제본스지수 | 통계청 국가통계 승인번호 408002</p>
+                  <p style={{fontSize:'10px',color:'#9ca3af',marginTop:'5px'}}>{C.pressIndexNote}</p>
                 </div>
               </section>
 
@@ -1109,25 +1165,19 @@ ${special||'(해당 없음)'}
               <section>
                 <h3 className="flex items-center gap-2 text-[14px] font-black text-slate-800 mb-3">
                   <span className="w-6 h-6 rounded-md bg-[#003087] flex items-center justify-center text-white text-[10px] font-black shrink-0">5</span>
-                  지역별 전세가율 및 수익률
+                  {C.pressRatioTitle}
                 </h3>
                 <div className="ml-8">
                   <ResponsiveContainer width="100%" height={180}>
                     <BarChart
-                      data={[
-                        {area:'서울',전세가율:88.34,수익률:4.82},
-                        {area:'인천',전세가율:87.20,수익률:5.41},
-                        {area:'경기',전세가율:86.72,수익률:5.13},
-                        {area:'부산',전세가율:83.45,수익률:5.77},
-                        {area:'전국',전세가율:85.18,수익률:5.55},
-                      ]}
+                      data={C.pressRatioData}
                       margin={{top:5,right:16,left:-10,bottom:0}}
                       barCategoryGap="30%"
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false}/>
                       <XAxis dataKey="area" tick={{fontSize:11,fill:'#64748b'}} tickLine={false}/>
-                      <YAxis yAxisId="left" domain={[78,92]} tick={{fontSize:9,fill:'#94a3b8'}} tickLine={false} axisLine={false} tickFormatter={v=>`${v}%`}/>
-                      <YAxis yAxisId="right" orientation="right" domain={[4,7]} tick={{fontSize:9,fill:'#94a3b8'}} tickLine={false} axisLine={false} tickFormatter={v=>`${v}%`}/>
+                      <YAxis yAxisId="left" domain={C.pressRatioLeftDomain} tick={{fontSize:9,fill:'#94a3b8'}} tickLine={false} axisLine={false} tickFormatter={v=>`${v}%`}/>
+                      <YAxis yAxisId="right" orientation="right" domain={C.pressRatioRightDomain} tick={{fontSize:9,fill:'#94a3b8'}} tickLine={false} axisLine={false} tickFormatter={v=>`${v}%`}/>
                       <Tooltip content={({active,payload,label})=>{
                         if(!active||!payload?.length)return null;
                         return(
@@ -1144,38 +1194,37 @@ ${special||'(해당 없음)'}
                         );
                       }}/>
                       <Legend wrapperStyle={{fontSize:'10px',paddingTop:'6px'}}/>
-                      <ReferenceLine yAxisId="left" y={85} stroke="#ef4444" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'위험선 85%',position:'insideTopRight',fontSize:9,fill:'#ef4444'}}/>
-                      <Bar yAxisId="left" dataKey="전세가율" fill="#bfdbfe" radius={[3,3,0,0]}>
-                        {[{area:'서울'},{area:'인천'},{area:'경기'},{area:'부산'},{area:'전국'}].map((_,i,arr)=>(
-                          <Cell key={i} fill={[0.8834,0.872,0.8672,0.8345,0.8518][i]>=0.85?'#fca5a5':'#bfdbfe'}/>
+                      <ReferenceLine yAxisId="left" y={C.pressRatioThreshold} stroke="#ef4444" strokeDasharray="4 3" strokeWidth={1.5} label={{value:C.pressRatioRefLabel,position:'insideTopRight',fontSize:9,fill:'#ef4444'}}/>
+                      <Bar yAxisId="left" dataKey={C.pressRatioLeftKey} fill="#bfdbfe" radius={[3,3,0,0]}>
+                        {C.pressRatioData.map((row,i)=>(
+                          <Cell key={i} fill={row[C.pressRatioLeftKey]>=C.pressRatioThreshold?'#fca5a5':'#bfdbfe'}/>
                         ))}
-                        <LabelList dataKey="전세가율" position="top" style={{fontSize:9,fontWeight:700,fill:'#3b82f6'}} formatter={v=>`${v}%`}/>
+                        <LabelList dataKey={C.pressRatioLeftKey} position="top" style={{fontSize:9,fontWeight:700,fill:'#3b82f6'}} formatter={v=>`${v}%`}/>
                       </Bar>
-                      <Bar yAxisId="right" dataKey="수익률" fill="#6ee7b7" radius={[3,3,0,0]}>
-                        <LabelList dataKey="수익률" position="top" style={{fontSize:9,fontWeight:700,fill:'#16a34a'}} formatter={v=>`${v}%`}/>
+                      <Bar yAxisId="right" dataKey={C.pressRatioRightKey} fill="#6ee7b7" radius={[3,3,0,0]}>
+                        <LabelList dataKey={C.pressRatioRightKey} position="top" style={{fontSize:9,fontWeight:700,fill:'#16a34a'}} formatter={v=>`${v}%`}/>
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                  <p style={{fontSize:'10px',color:'#9ca3af',marginTop:'4px'}}>* 전세가율 85% 이상(빨간 막대): 전세사기·깡통전세 고위험 임계치 | 수익률: 월세 연환산 ÷ 전세보증금</p>
+                  <p style={{fontSize:'10px',color:'#9ca3af',marginTop:'4px'}}>{C.pressRatioNote}</p>
                 </div>
               </section>
 
               {/* 문의처 */}
               <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:'8px',padding:'10px 14px',fontSize:'11px',color:'#64748b'}}>
-                <span style={{fontWeight:700,color:'#003087'}}>문의</span>　부동산통계처 상업자산통계부장 최윤주 ☎ (053)663-8531 | 담당 차장 박병희 ☎ (053)663-8532
-                　｜　자료확인: R-ONE 부동산통계정보시스템 www.reb.or.kr/r-one
+                <span style={{fontWeight:700,color:'#003087'}}>문의</span>　{C.pressContact}
               </div>
 
               {/* 작성 정보 */}
               <div className="flex items-center justify-between text-[12px] text-slate-500">
-                <span>작성자: <strong className="text-slate-700">김민준</strong> · {dept} 과장</span>
-                <span>작성일: 2025. 07. 15.</span>
+                <span>작성자: <strong className="text-slate-700">{C.apvLine[0].name}</strong> · {dept} {C.apvLine[0].title}</span>
+                <span>작성일: {C.pressDate}</span>
               </div>
 
               {/* 서명란 */}
               <div style={{borderTop:'2px solid #003087',paddingTop:'14px'}}>
                 <div className="grid grid-cols-3 gap-4">
-                  {APV_LINE.map((p,i)=>(
+                  {C.apvLine.map((p,i)=>(
                     <div key={i} className="border border-slate-300 rounded-lg overflow-hidden">
                       <div className="py-2 text-center text-[12px] font-bold text-white" style={{background:'#003087'}}>{p.role}</div>
                       <div className="h-14 flex flex-col items-center justify-end pb-2 gap-0.5">
@@ -1212,9 +1261,10 @@ ${special||'(해당 없음)'}
 
               {/* 실적 현황 차트 */}
               {(()=>{
-                const chartData=reportType==='monthly'?MONTHLY_CHART:reportType==='field'?FIELD_CHART:WEEKLY_CHART;
+                const perf=C.perfCharts[reportType]||Object.values(C.perfCharts)[0];
+                const chartData=perf.data;
                 const accentColor='#064e3b';
-                const label=reportType==='monthly'?'월간':reportType==='field'?'현장조사':'주간';
+                const label=perf.label;
                 return(
                   <div style={{background:'#f0fdf4',border:'1px solid #bbf7d0',borderRadius:'10px',padding:'14px 18px'}}>
                     <div style={{fontSize:'11px',fontWeight:800,color:accentColor,marginBottom:'12px',letterSpacing:'0.03em'}}>
@@ -1227,15 +1277,15 @@ ${special||'(해당 없음)'}
                           <XAxis type="number" tick={{fontSize:10,fill:'#6b7280'}} tickLine={false} axisLine={false}/>
                           <YAxis type="category" dataKey="item" tick={{fontSize:11,fill:'#374151',fontWeight:600}} tickLine={false} axisLine={false} width={52}/>
                           <Tooltip content={<CustomTooltip/>}/>
-                          <Bar dataKey="목표" fill="#d1fae5" radius={[0,3,3,0]} barSize={12}/>
-                          <Bar dataKey="완료" fill={accentColor} radius={[0,3,3,0]} barSize={12}>
-                            <LabelList dataKey="완료" position="right" style={{fontSize:10,fontWeight:700,fill:accentColor}}/>
+                          <Bar dataKey={C.perfGoalKey} fill="#d1fae5" radius={[0,3,3,0]} barSize={12}/>
+                          <Bar dataKey={C.perfDoneKey} fill={accentColor} radius={[0,3,3,0]} barSize={12}>
+                            <LabelList dataKey={C.perfDoneKey} position="right" style={{fontSize:10,fontWeight:700,fill:accentColor}}/>
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
                       <div className="space-y-2.5">
                         {chartData.map(d=>{
-                          const pct=Math.round(d.완료/d.목표*100);
+                          const pct=Math.round(d[C.perfDoneKey]/d[C.perfGoalKey]*100);
                           return(
                             <div key={d.item}>
                               <div className="flex justify-between text-[11px] mb-1">
@@ -1245,7 +1295,7 @@ ${special||'(해당 없음)'}
                               <div className="h-2 bg-emerald-100 rounded-full overflow-hidden">
                                 <div className="h-full rounded-full transition-all" style={{width:`${Math.min(pct,100)}%`,background:pct>=100?'#16a34a':pct>=80?accentColor:'#f59e0b'}}/>
                               </div>
-                              <div className="text-[10px] text-slate-400 mt-0.5">{d.완료} / {d.목표}건</div>
+                              <div className="text-[10px] text-slate-400 mt-0.5">{d[C.perfDoneKey]} / {d[C.perfGoalKey]}건</div>
                             </div>
                           );
                         })}
@@ -1276,13 +1326,13 @@ ${special||'(해당 없음)'}
               <div className="flex items-center gap-3"><div className="flex-1 h-px bg-slate-200"/><div className="w-1.5 h-1.5 rounded-full bg-slate-300"/><div className="flex-1 h-px bg-slate-200"/></div>
 
               <div className="flex items-center justify-between text-[13px] text-slate-500">
-                <span>작성자: <strong className="text-slate-700">김민준</strong> · {dept} 과장</span>
-                <span>작성일: 2026. 03. 13.</span>
+                <span>작성자: <strong className="text-slate-700">{C.apvLine[0].name}</strong> · {dept} {C.apvLine[0].title}</span>
+                <span>작성일: {C.reportDate}</span>
               </div>
 
               <div className="pt-4" style={{borderTop:'2px solid #064e3b'}}>
                 <div className="grid grid-cols-3 gap-4">
-                  {APV_LINE.map((p,i)=>(
+                  {C.apvLine.map((p,i)=>(
                     <div key={i} className="border border-slate-300 rounded-lg overflow-hidden">
                       <div className="py-2 text-center text-[12px] font-bold text-white" style={{background:'#064e3b'}}>{p.role}</div>
                       <div className="h-16 flex flex-col items-center justify-end pb-2 gap-1">

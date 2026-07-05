@@ -6,6 +6,7 @@ import Toast from "./user/components/Toast.jsx";
 import {
   MODES as BASE_MODES, HISTORY as BASE_HISTORY, DOCS as BASE_DOCS,
   SUGGESTIONS as BASE_SUGGESTIONS, AGENT_TEAMS as BASE_AGENT_TEAMS,
+  SECURE_SUGGESTIONS as BASE_SECURE_SUGGESTIONS,
 } from "./user/data/constants.js";
 import { AI_RESPONSES, generateDocHTML } from "./user/data/responses.js";
 import { checkInputFilter, applyOutputGuardrails } from "./user/guardrails.js";
@@ -78,6 +79,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
     () => (domain.suggestions ? { ...BASE_SUGGESTIONS, GENERAL: domain.suggestions } : BASE_SUGGESTIONS),
     [domain]
   );
+  const SECURE_SUGG = domain.secureSuggestions || BASE_SECURE_SUGGESTIONS;
 
   const [chatTab, setChatTab] = useState("GENERAL");   // GENERAL | AGENT | SECURE
   const [mode, setMode] = useState("GENERAL");          // GENERAL 탭 서브모드
@@ -160,9 +162,10 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
   /* ---------------------------------------------------------------- */
   const getAIResponse = (query) => {
     const q = query.toLowerCase();
+    const MA = domain.modeAnswers || {};   // 팩 오버라이드: SECURE_AIRGAP/SECURE_DEFAULT/REVIEW/TRANSLATE/REPORT
     if (isSecure) {
-      if (q.includes("망분리") || q.includes("보안") || q.includes("차단")) return AI_RESPONSES.SECURE_AIRGAP;
-      return AI_RESPONSES.SECURE_DEFAULT;
+      if (q.includes("망분리") || q.includes("보안") || q.includes("차단")) return MA.SECURE_AIRGAP || AI_RESPONSES.SECURE_AIRGAP;
+      return MA.SECURE_DEFAULT || AI_RESPONSES.SECURE_DEFAULT;
     }
     if (isAgent) {
       if (selectedAgent.id === "agent-1") return AI_RESPONSES.AGENT1;
@@ -183,9 +186,9 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
         if (q.includes("예산") || q.includes("과업") || q.includes("사업비") || q.includes("금액") || q.includes("기간")) return AI_RESPONSES.GENERAL_BUDGET;
       }
     }
-    if (mode === "REVIEW") return AI_RESPONSES.REVIEW_DEFAULT;
-    if (mode === "TRANSLATE") return AI_RESPONSES.TRANSLATE_DEFAULT;
-    if (mode === "REPORT") return AI_RESPONSES.REPORT_DEFAULT;
+    if (mode === "REVIEW") return MA.REVIEW || AI_RESPONSES.REVIEW_DEFAULT;
+    if (mode === "TRANSLATE") return MA.TRANSLATE || AI_RESPONSES.TRANSLATE_DEFAULT;
+    if (mode === "REPORT") return MA.REPORT || AI_RESPONSES.REPORT_DEFAULT;
     return { content: `**[${mc.label} 모드]**\n\n${ragMode ? "사내 지식망(RAG)에서 검색했으나 정확히 일치하는 항목을 찾지 못했습니다." : "직접 응답 모드(LLM Only)로 답변드립니다."}\n\n좀 더 구체적인 질문을 입력해 주세요.`, citations: [], steps: null };
   };
 
@@ -246,7 +249,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
   };
 
   const handleDocDownload = (doc) => {
-    const html = generateDocHTML(doc);
+    const html = generateDocHTML(doc, { name: domain.orgName, short: domain.orgShort, color: domain.brandColor, en: domain.orgEn });
     const blob = new Blob([html], { type: "text/html;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -341,19 +344,19 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
               {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} /> :
                activeAgentId === "orchestration" && domain.orchestration
                                                       ? <OrchestrationScenario scenario={domain.orchestration} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-chatbot"      ? <ChatbotAgent      onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-report"       ? <ReportAgent       onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-internalreg"  ? <InternalRegAgent  onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-ocr"          ? <OCRAgent          onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-knowledge"    ? <KnowledgeAgent    onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-dbquery"      ? <DBQueryAgent      onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-address"      ? <AddressAgent      onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-dataanalysis" ? <DataAnalysisAgent onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-summary"      ? <SummaryAgent      onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-translate"    ? <TranslateAgent    onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-review"       ? <DocReviewAgent    onBack={() => setActiveAgentId(null)} /> :
-               activeAgentId === "agent-safety"       ? <SafetyPlanAgent   onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-chatbot"      ? <ChatbotAgent      domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-report"       ? <ReportAgent       domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-internalreg"  ? <InternalRegAgent  domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-ocr"          ? <OCRAgent          domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-knowledge"    ? <KnowledgeAgent    domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-dbquery"      ? <DBQueryAgent      domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-address"      ? <AddressAgent      domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-dataanalysis" ? <DataAnalysisAgent domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-summary"      ? <SummaryAgent      domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-translate"    ? <TranslateAgent    domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-review"       ? <DocReviewAgent    domain={domain} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId === "agent-safety"       ? <SafetyPlanAgent   domain={domain} onBack={() => setActiveAgentId(null)} /> :
                <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} />}
             </Suspense>
           )}
@@ -364,7 +367,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
               th={th} isSecure={isSecure} isAgent={isAgent} mc={mc} mode={mode}
               messages={messages} isTyping={isTyping} messagesEndRef={messagesEndRef}
               USER_INFO={USER_INFO} selectedAgent={selectedAgent} activeWs={activeWs}
-              DOCS={DOCS} HISTORY={HISTORY} SUGGESTIONS={SUGGESTIONS}
+              DOCS={DOCS} HISTORY={HISTORY} SUGGESTIONS={SUGGESTIONS} SECURE_SUGGESTIONS={SECURE_SUGG}
               translateLang={translateLang} setTranslateLang={setTranslateLang}
               summaryLen={summaryLen} setSummaryLen={setSummaryLen}
               activeLLM={activeLLM}
@@ -396,7 +399,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
           rightOpen={rightOpen} setRightOpen={setRightOpen}
           panelView={panelView} setPanelView={setPanelView} activeCitation={activeCitation}
           domain={domain} setActiveAgentId={setActiveAgentId} activeLLM={activeLLM}
-          DOCS={DOCS} SUGGESTIONS={SUGGESTIONS} mode={mode} handleSend={handleSend}
+          DOCS={DOCS} SUGGESTIONS={SUGGESTIONS} SECURE_SUGGESTIONS={SECURE_SUGG} mode={mode} handleSend={handleSend}
           fileInputRef={fileInputRef} onSwitchToAdmin={onSwitchToAdmin}
         />
       </div>

@@ -12,59 +12,20 @@ import { AGENT_TEAMS } from "../../data/constants.js";
 import { REB_LOGO } from "../../data/logos.js";
 import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
 
-const MeetingMinutesAgent = ({ onBack }) => {
-  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(MEET_AGENTS);
-  const [title,setTitle]=useState('표준지공시지가 조사·평가 방법론 개선 회의');
-  const [meetDate,setMeetDate]=useState('2026-03-14');
-  const [place,setPlace]=useState('본사 9층 대회의실 (904호)');
-  const [attendees,setAttendees]=useState([
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-meeting"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS = {
+  defaultTitle:'표준지공시지가 조사·평가 방법론 개선 회의',   // string — 회의명 초기값
+  defaultDate:'2026-03-14',                                    // string — YYYY-MM-DD
+  defaultPlace:'본사 9층 대회의실 (904호)',                    // string — 장소 초기값
+  defaultAttendees:[                                           // {name,dept,role}[4] — 참석자 초기값
     {name:'고성민',dept:'부동산공시처',role:'주재(처장)'},
     {name:'이수진',dept:'부동산통계처',role:'부장'},
     {name:'김민준',dept:'부동산공시처',role:'과장'},
     {name:'최윤아',dept:'연구개발실',role:'대리'},
-  ]);
-  const [agenda,setAgenda]=useState(['AI 기반 표준지 선정 모델 도입 검토','2026년 공시지가 조사 일정 및 역할 분담']);
-  const [audioFile,setAudioFile]=useState(null);
-  const [audioDrag,setAudioDrag]=useState(false);
-  const [refFile,setRefFile]=useState(null);
-  const [refDrag,setRefDrag]=useState(false);
-  const [result,setResult]=useState(MEET_RESULT);
-  const [viewMode,setViewMode]=useState('doc');
-  const [apvState,setApvState]=useState(null);
-  const [apvMsg,setApvMsg]=useState('검토 요청드립니다.');
-  const [sttWords,setSttWords]=useState([]);   // 스트리밍 단어
-  const [sttMeta,setSttMeta]=useState(null);   // { wer, conf, speakers }
-  const [activeUtterance,setActiveUtterance]=useState(null); // 발언자 뷰 선택 발언 인덱스
-  const fileRef=useRef(null);
-  const refFileRef=useRef(null);
-
-  /* STT 스트리밍 시뮬레이션 — 첫 번째 에이전트(STT)가 활성일 때 */
-  const STT_SAMPLE = '안녕하십니까 오늘 회의를 시작하겠습니다 주요 안건은 AI 기반 표준지 선정 모델 도입과 공시지가 조사 일정입니다 부동산통계처에서 검토한 AI 모델 정확도 분석 결과를 공유하겠습니다 국토부 기준 대비 오차율 1.2% 이내로 확인됐습니다 수작업 대비 표준지 선정 시간을 약 60% 단축할 것으로 분석됩니다 부동산 가격공시법 제3조에 따라 AI 보조 도구 활용은 가능하나 최종 결정은 감정평가사 검토를 거쳐야 합니다 50개 시군구 시범 적용을 2026년 하반기에 제안드립니다'.split(' ');
-
-  useEffect(()=>{
-    if(agentIdx!==0){return;}
-    setSttWords([]);setSttMeta(null);
-    let idx=0;
-    const id=setInterval(()=>{
-      if(idx>=STT_SAMPLE.length){clearInterval(id);setSttMeta({wer:4.2,speakers:4});return;}
-      setSttWords(p=>[...p,STT_SAMPLE[idx]]);
-      idx++;
-    },120);
-    return ()=>clearInterval(id);
-  },[agentIdx]); // eslint-disable-line
-
-  const addAttendee=()=>setAttendees(p=>[...p,{name:'',dept:'',role:''}]);
-  const removeAttendee=(i)=>setAttendees(p=>p.filter((_,j)=>j!==i));
-  const addAgenda=()=>setAgenda(p=>[...p,'']);
-  const removeAgenda=(i)=>setAgenda(p=>p.filter((_,j)=>j!==i));
-
-  const startProcess=()=>startSim();
-
-  const reset=()=>{resetSim();setAudioFile(null);setRefFile(null);setApvState(null);setApvMsg('검토 요청드립니다.');};
-  const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
-
-  /* ── Mock Speaker Diarization data ─────────────────── */
-  const DIARIZATION=[
+  ],
+  defaultAgenda:['AI 기반 표준지 선정 모델 도입 검토','2026년 공시지가 조사 일정 및 역할 분담'], // string[2] — 안건 초기값
+  sttSampleText:'안녕하십니까 오늘 회의를 시작하겠습니다 주요 안건은 AI 기반 표준지 선정 모델 도입과 공시지가 조사 일정입니다 부동산통계처에서 검토한 AI 모델 정확도 분석 결과를 공유하겠습니다 국토부 기준 대비 오차율 1.2% 이내로 확인됐습니다 수작업 대비 표준지 선정 시간을 약 60% 단축할 것으로 분석됩니다 부동산 가격공시법 제3조에 따라 AI 보조 도구 활용은 가능하나 최종 결정은 감정평가사 검토를 거쳐야 합니다 50개 시군구 시범 적용을 2026년 하반기에 제안드립니다', // string — 공백 구분, STT 스트리밍 시뮬레이션 문장
+  diarization:[ // {time,speaker,color,bg,border,text,docKey,meetingText}[8] — docKey는 docSections.key와 일치, color/bg/border는 tailwind 클래스
     {time:'00:00:12',speaker:'김민준',color:'text-indigo-700',bg:'bg-indigo-50',border:'border-indigo-200',
       text:'안녕하십니까. 오늘 회의를 시작하겠습니다. 주요 안건은 AI 기반 표준지 선정 모델 도입과 2026년 공시지가 조사 일정 두 가지입니다.',
       docKey:'open',
@@ -97,10 +58,8 @@ const MeetingMinutesAgent = ({ onBack }) => {
       text:'오늘 논의된 내용을 바탕으로 각자 담당 사항을 기한 내 이행해 주시기 바랍니다. 이상으로 회의를 마치겠습니다.',
       docKey:'close',
       meetingText:'차기 회의: 2026년 3월 27일(금) 14:00 예정. AI 플랫폼 연동 검토 결과는 서면 공람 예정.'},
-  ];
-
-  /* ── 회의록 섹션 구조 (발언-회의록 연결용) ── */
-  const DOC_SECTIONS=[
+  ],
+  docSections:[ // {key,num,label,brief,color}[7] — 회의록 섹션 아웃라인(key는 diarization.docKey와 연결)
     {key:'open',     num:'§1', label:'개회',               brief:'부동산공시처장 주재로 회의 개최. 참석 인원 확인 및 목적 공유.', color:'slate'},
     {key:'agenda1',  num:'§2-①', label:'안건 1 · AI 표준지 선정 모델', brief:'오차율 1.2% 이내 · 60% 시간단축 · 부동산 가격공시법 제3조 검토.', color:'violet'},
     {key:'agenda1_conc', num:'  └결론', label:'안건 1 결론', brief:'AI 1차 스크리닝 도구 활용, 2026년 하반기 50개 시군구 시범 적용.', color:'violet'},
@@ -108,7 +67,87 @@ const MeetingMinutesAgent = ({ onBack }) => {
     {key:'decision', num:'§3', label:'결정 사항',           brief:'① AI 1차 스크리닝 도입  ② 조사 일정 확정  ③ AI 플랫폼 연동 테스트 4/15 완료.', color:'emerald'},
     {key:'action',   num:'§4', label:'조치 사항',           brief:'4개 항목 · 담당자 배정 · 기한 2026.03.25~04.30.', color:'amber'},
     {key:'close',    num:'§5', label:'폐회',               brief:'차기 회의: 2026.03.27(금) 14:00 예정.', color:'slate'},
-  ];
+  ],
+  speakerLegend:[ // {name,color,bg,border}[4] — 발언자 범례(diarization 화자와 일치)
+    {name:'김민준',color:'text-indigo-700',bg:'bg-indigo-100',border:'border-indigo-200'},
+    {name:'이수진',color:'text-violet-700',bg:'bg-violet-100',border:'border-violet-200'},
+    {name:'박준영',color:'text-emerald-700',bg:'bg-emerald-100',border:'border-emerald-200'},
+    {name:'최윤아',color:'text-rose-700',bg:'bg-rose-100',border:'border-rose-200'},
+  ],
+  actions:[ // {label,person,dept,due}[4] — §4 조치 사항 표
+    {label:'AI 표준지 선정 모델 검증 보고서 작성',person:'이수진',dept:'부동산통계처',due:'2026.03.31'},
+    {label:'공시지가 조사 일정 세부 계획 수립',person:'김민준',dept:'부동산공시처',due:'2026.03.25'},
+    {label:'AI 플랫폼 연동 테스트 결과 보고',person:'최윤아',dept:'연구개발실',due:'2026.04.15'},
+    {label:'공표 기준 개정안 초안 작성',person:'고성민',dept:'부동산공시처',due:'2026.04.30'},
+  ],
+  deptName:'부동산공시처',              // string — 문서 헤더 담당부서
+  docNum:'KREA-부동산공시처-2026-031',  // string — 문서번호(결재 모달 공용)
+  openingLines:['부동산공시처장 주재로 회의 개최','참석 인원 확인 및 회의 목적 공유'], // string[2] — §1 개회 불릿
+  agendaDiscussions:[ // {lines:string[],conclusion:string}[2] — 안건 인덱스 순서 대응(배열 밖 안건은 자동 추출 문구 표시)
+    {lines:['이수진 팀장: AI 모델 오차율 1.2% 이내, 수작업 대비 60% 시간 단축 가능.','박준영 과장: 지역별 편차 보정 로직 추가 필요 의견.','최윤아 대리: 부동산 가격공시법 제3조에 따라 AI 보조 도구 활용 가능, 최종 결정은 감정평가사 검토 필요.'],
+     conclusion:'AI 모델 1차 스크리닝 활용 — 2026년 하반기 50개 시군구 시범 적용'},
+    {lines:['박준영 과장: 2026.04.01. 착수, 2026.09.30. 완료 목표로 세부 계획 수립 예정.','김민준 처장: 수도권·광역시 우선 AI 시범 적용 후 전국 확대 방침.'],
+     conclusion:'2026.04.01. 조사 착수, 2026.09.30. 완료 목표 확정'},
+  ],
+  decisions:[ // string[3] — §3 결정 사항
+    'AI 기반 표준지 선정 모델 1차 스크리닝 도입 — 2026년 하반기 50개 시군구 시범 적용',
+    '공시지가 조사: 2026.04.01. 착수 · 2026.09.30. 완료 목표',
+    'AI 플랫폼 연동 테스트 2026.04.15. 이전 완료 후 전면 도입 여부 결정',
+  ],
+  specialNotes:['차기 회의: 2026년 3월 27일(금) 14:00 예정','AI 플랫폼 연동 검토 결과는 서면으로 공람 예정'], // string[2] — §5 특이사항 불릿
+  footerText:'본 회의록은 한국부동산원 GENOS AI 회의록 에이전트 v1.0에 의해 자동 생성되었으며, 담당자 검토 후 확정됩니다.', // string — 문서 하단 문구
+  logo: REB_LOGO,               // string(data URI) — 문서 헤더 로고
+  logoAlt:'REB 한국부동산원',   // string — 로고 대체 텍스트
+  resultText: MEET_RESULT,      // string — 원본 편집 탭 초기 텍스트
+  apvLine: APV_LINE_MEET,       // {name,...}[3] — 결재선(ApprovalModal 공용)
+};
+
+const MeetingMinutesAgent = ({ onBack, domain }) => {
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-meeting"]||{})};
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(MEET_AGENTS);
+  const [title,setTitle]=useState(C.defaultTitle);
+  const [meetDate,setMeetDate]=useState(C.defaultDate);
+  const [place,setPlace]=useState(C.defaultPlace);
+  const [attendees,setAttendees]=useState(C.defaultAttendees);
+  const [agenda,setAgenda]=useState(C.defaultAgenda);
+  const [audioFile,setAudioFile]=useState(null);
+  const [audioDrag,setAudioDrag]=useState(false);
+  const [refFile,setRefFile]=useState(null);
+  const [refDrag,setRefDrag]=useState(false);
+  const [result,setResult]=useState(C.resultText);
+  const [viewMode,setViewMode]=useState('doc');
+  const [apvState,setApvState]=useState(null);
+  const [apvMsg,setApvMsg]=useState('검토 요청드립니다.');
+  const [sttWords,setSttWords]=useState([]);   // 스트리밍 단어
+  const [sttMeta,setSttMeta]=useState(null);   // { wer, conf, speakers }
+  const [activeUtterance,setActiveUtterance]=useState(null); // 발언자 뷰 선택 발언 인덱스
+  const fileRef=useRef(null);
+  const refFileRef=useRef(null);
+
+  /* STT 스트리밍 시뮬레이션 — 첫 번째 에이전트(STT)가 활성일 때 */
+  const STT_SAMPLE = C.sttSampleText.split(' ');
+
+  useEffect(()=>{
+    if(agentIdx!==0){return;}
+    setSttWords([]);setSttMeta(null);
+    let idx=0;
+    const id=setInterval(()=>{
+      if(idx>=STT_SAMPLE.length){clearInterval(id);setSttMeta({wer:4.2,speakers:4});return;}
+      setSttWords(p=>[...p,STT_SAMPLE[idx]]);
+      idx++;
+    },120);
+    return ()=>clearInterval(id);
+  },[agentIdx]); // eslint-disable-line
+
+  const addAttendee=()=>setAttendees(p=>[...p,{name:'',dept:'',role:''}]);
+  const removeAttendee=(i)=>setAttendees(p=>p.filter((_,j)=>j!==i));
+  const addAgenda=()=>setAgenda(p=>[...p,'']);
+  const removeAgenda=(i)=>setAgenda(p=>p.filter((_,j)=>j!==i));
+
+  const startProcess=()=>startSim();
+
+  const reset=()=>{resetSim();setAudioFile(null);setRefFile(null);setApvState(null);setApvMsg('검토 요청드립니다.');};
+  const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
 
   if(step===1) return(
     <div className="flex-1 overflow-y-auto px-6 py-8 bg-white">
@@ -297,13 +336,6 @@ const MeetingMinutesAgent = ({ onBack }) => {
     </div>
   );
 
-  const ACTIONS=[
-    {label:'AI 표준지 선정 모델 검증 보고서 작성',person:'이수진',dept:'부동산통계처',due:'2026.03.31'},
-    {label:'공시지가 조사 일정 세부 계획 수립',person:'김민준',dept:'부동산공시처',due:'2026.03.25'},
-    {label:'AI 플랫폼 연동 테스트 결과 보고',person:'최윤아',dept:'연구개발실',due:'2026.04.15'},
-    {label:'공표 기준 개정안 초안 작성',person:'고성민',dept:'부동산공시처',due:'2026.04.30'},
-  ];
-
   const downloadDoc=()=>{
     const html=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>회의록 — ${title}</title>
     <style>
@@ -355,13 +387,13 @@ const MeetingMinutesAgent = ({ onBack }) => {
     <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};</script>
     <div class="hd">
       <div class="hd-grid">
-        <div class="hd-logo"><img src="${REB_LOGO}" alt="REB 한국부동산원"/></div>
+        <div class="hd-logo"><img src="${C.logo}" alt="${C.logoAlt}"/></div>
         <div class="hd-title"><div class="hd-h1">회 의 록</div></div>
         <div class="hd-meta">
           <div class="hd-meta-lbl">담당부서</div>
-          <div class="hd-meta-val">부동산공시처</div>
+          <div class="hd-meta-val">${C.deptName}</div>
           <div class="hd-meta-lbl">문서번호</div>
-          <div class="hd-meta-val-last"><span style="font-family:monospace;font-weight:700;font-size:12px">KREA-부동산공시처-2026-031</span><span style="color:#6b7280;font-size:10px">수신: 내부결재</span></div>
+          <div class="hd-meta-val-last"><span style="font-family:monospace;font-weight:700;font-size:12px">${C.docNum}</span><span style="color:#6b7280;font-size:10px">수신: 내부결재</span></div>
         </div>
       </div>
     </div>
@@ -373,18 +405,18 @@ const MeetingMinutesAgent = ({ onBack }) => {
       </table>
       <div class="dvd"><hr><span></span><hr></div>
       <div class="sh"><span class="sn">1</span> 개회</div>
-      <div class="sc" style="color:#4a5568;font-size:13px"><p style="margin:1px 0">· 부동산공시처장 주재로 회의 개최</p><p style="margin:1px 0">· 참석 인원 확인 및 회의 목적 공유</p></div>
+      <div class="sc" style="color:#4a5568;font-size:13px">${C.openingLines.map(l=>`<p style="margin:1px 0">· ${l}</p>`).join('')}</div>
       <div class="sh"><span class="sn">2</span> 안건 토의</div>
-      <div class="sc">${agenda.map((ag,i)=>`<div class="ag"><div class="ag-hd"><span class="ag-tag">[안건 ${i+1}]</span><strong>${ag}</strong></div><div class="ag-bd">${i===0?'<p>· 이수진 팀장: AI 모델 오차율 1.2% 이내, 수작업 대비 60% 시간 단축 가능.</p><p>· 박준영 과장: 지역별 편차 보정 로직 추가 필요 의견.</p><p>· 최윤아 대리: 부동산 가격공시법 제3조에 따라 AI 보조 도구 활용 가능, 최종 결정은 감정평가사 검토 필요.</p>':i===1?'<p>· 박준영 과장: 2026.04.01. 착수, 2026.09.30. 완료 목표 세부 계획 수립 예정.</p><p>· 김민준 처장: 수도권·광역시 우선 AI 시범 적용 후 전국 확대 방침.</p>':'<p style="color:#a0aec0;font-style:italic">· 안건 내용이 STT 에이전트에 의해 자동 추출되었습니다.</p>'}<div class="conc"><span class="conc-badge">결론</span>${i===0?'AI 모델 1차 스크리닝 활용 — 2026년 하반기 50개 시군구 시범 적용':i===1?'2026.04.01. 조사 착수, 2026.09.30. 완료 목표 확정':'추후 논의 예정'}</div></div></div>`).join('')}</div>
+      <div class="sc">${agenda.map((ag,i)=>`<div class="ag"><div class="ag-hd"><span class="ag-tag">[안건 ${i+1}]</span><strong>${ag}</strong></div><div class="ag-bd">${C.agendaDiscussions[i]?C.agendaDiscussions[i].lines.map(l=>`<p>· ${l}</p>`).join(''):'<p style="color:#a0aec0;font-style:italic">· 안건 내용이 STT 에이전트에 의해 자동 추출되었습니다.</p>'}<div class="conc"><span class="conc-badge">결론</span>${C.agendaDiscussions[i]?.conclusion||'추후 논의 예정'}</div></div></div>`).join('')}</div>
       <div class="sh"><span class="sn">3</span> 결정 사항</div>
-      <div class="sc">${['AI 기반 표준지 선정 모델 1차 스크리닝 도입 — 2026년 하반기 50개 시군구 시범 적용','공시지가 조사: 2026.04.01. 착수 · 2026.09.30. 완료 목표','AI 플랫폼 연동 테스트 2026.04.15. 이전 완료 후 전면 도입 여부 결정'].map((d,i)=>`<div class="dec"><span class="dn">${i+1}</span><span>${d}</span></div>`).join('')}</div>
+      <div class="sc">${C.decisions.map((d,i)=>`<div class="dec"><span class="dn">${i+1}</span><span>${d}</span></div>`).join('')}</div>
       <div class="sh"><span class="sn">4</span> 조치 사항</div>
-      <div class="sc"><table class="atbl"><thead><tr><th style="width:32px">No.</th><th>조치 내용</th><th style="width:66px;text-align:center">담당자</th><th style="width:82px;text-align:center">부서</th><th style="width:82px;text-align:center">완료 기한</th></tr></thead><tbody>${ACTIONS.map((a,i)=>`<tr><td class="dnum" style="text-align:center">${i+1}</td><td>${a.label}</td><td style="text-align:center;font-weight:700">${a.person}</td><td style="text-align:center">${a.dept}</td><td class="due" style="text-align:center">${a.due}</td></tr>`).join('')}</tbody></table></div>
+      <div class="sc"><table class="atbl"><thead><tr><th style="width:32px">No.</th><th>조치 내용</th><th style="width:66px;text-align:center">담당자</th><th style="width:82px;text-align:center">부서</th><th style="width:82px;text-align:center">완료 기한</th></tr></thead><tbody>${C.actions.map((a,i)=>`<tr><td class="dnum" style="text-align:center">${i+1}</td><td>${a.label}</td><td style="text-align:center;font-weight:700">${a.person}</td><td style="text-align:center">${a.dept}</td><td class="due" style="text-align:center">${a.due}</td></tr>`).join('')}</tbody></table></div>
       <div class="sh"><span class="sn">5</span> 특이사항</div>
-      <div class="sc" style="color:#4a5568;font-size:13px"><p style="margin:1px 0">· 차기 회의: 2026년 3월 27일(금) 14:00 예정</p><p style="margin:1px 0">· AI 플랫폼 연동 검토 결과는 서면으로 공람 예정</p></div>
+      <div class="sc" style="color:#4a5568;font-size:13px">${C.specialNotes.map(l=>`<p style="margin:1px 0">· ${l}</p>`).join('')}</div>
       <div class="sig-area">
         <div class="sig-grid">${['작  성  자','검  토  자','승  인  자'].map(r=>`<div class="sig-box"><div class="sig-lbl">${r}</div><div class="sig-sp"></div></div>`).join('')}</div>
-        <p class="footer">본 회의록은 한국부동산원 GENOS AI 회의록 에이전트 v1.0에 의해 자동 생성되었으며, 담당자 검토 후 확정됩니다.</p>
+        <p class="footer">${C.footerText}</p>
       </div>
     </div>
     </body></html>`;
@@ -427,14 +459,14 @@ const MeetingMinutesAgent = ({ onBack }) => {
               <span className="text-[9px] font-bold text-white bg-[#003087] px-1.5 py-0.5 rounded">WorksOn</span>
             </div>
             <div className="flex items-center gap-1 flex-1 min-w-0">
-              {APV_LINE_MEET.map((p,i)=>(
+              {C.apvLine.map((p,i)=>(
                 <React.Fragment key={i}>
                   <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] border whitespace-nowrap ${i===0?'bg-emerald-50 border-emerald-200':i===1?'bg-blue-50 border-blue-200 shadow-sm':'bg-white border-slate-200'}`}>
                     {i===0?<CheckCircle className="w-3 h-3 text-emerald-500 shrink-0"/>:i===1?<Loader2 className="w-3 h-3 text-blue-500 animate-spin shrink-0"/>:<Clock className="w-3 h-3 text-slate-300 shrink-0"/>}
                     <span className="font-bold text-slate-700">{p.name}</span>
                     <span className={`font-black text-[9px] ${i===0?'text-emerald-500':i===1?'text-blue-500':'text-slate-300'}`}>{i===0?'서명 완료':i===1?'검토 중':'대기'}</span>
                   </div>
-                  {i<APV_LINE_MEET.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
+                  {i<C.apvLine.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
                 </React.Fragment>
               ))}
             </div>
@@ -457,8 +489,8 @@ const MeetingMinutesAgent = ({ onBack }) => {
       {(apvState==='modal'||apvState==='submitting')&&(
         <ApprovalModal
           docTitle={`회의록 — ${title}`}
-          docNum="KREA-부동산공시처-2026-031"
-          apvLine={APV_LINE_MEET}
+          docNum={C.docNum}
+          apvLine={C.apvLine}
           apvMsg={apvMsg} setApvMsg={setApvMsg}
           onClose={()=>setApvState(null)}
           onSubmit={submitApv}
@@ -485,19 +517,14 @@ const MeetingMinutesAgent = ({ onBack }) => {
                 </div>
                 <div className="ml-auto shrink-0">
                   <div className="text-[10px] px-2 py-1 bg-violet-100 text-violet-700 rounded-lg font-bold border border-violet-200">
-                    {DIARIZATION.length}개 발언
+                    {C.diarization.length}개 발언
                   </div>
                 </div>
               </div>
               {/* Speaker legend */}
               <div className="flex flex-wrap gap-1.5 mb-3 p-2.5 bg-slate-50 rounded-xl border border-slate-100">
                 <span className="text-[10px] font-black text-slate-400 mr-0.5 self-center">참석자</span>
-                {[
-                  {name:'김민준',color:'text-indigo-700',bg:'bg-indigo-100',border:'border-indigo-200'},
-                  {name:'이수진',color:'text-violet-700',bg:'bg-violet-100',border:'border-violet-200'},
-                  {name:'박준영',color:'text-emerald-700',bg:'bg-emerald-100',border:'border-emerald-200'},
-                  {name:'최윤아',color:'text-rose-700',bg:'bg-rose-100',border:'border-rose-200'},
-                ].map((s,i)=>(
+                {C.speakerLegend.map((s,i)=>(
                   <span key={i} className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold border ${s.bg} ${s.border} ${s.color}`}>
                     <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70 shrink-0"/>
                     {s.name}
@@ -506,9 +533,9 @@ const MeetingMinutesAgent = ({ onBack }) => {
               </div>
               {/* Transcript — clickable */}
               <div className="space-y-2">
-                {DIARIZATION.map((d,i)=>{
+                {C.diarization.map((d,i)=>{
                   const isActive=activeUtterance===i;
-                  const sameSection=activeUtterance!==null&&DIARIZATION[activeUtterance]?.docKey===d.docKey&&!isActive;
+                  const sameSection=activeUtterance!==null&&C.diarization[activeUtterance]?.docKey===d.docKey&&!isActive;
                   return(
                     <div key={i}
                       onClick={()=>setActiveUtterance(isActive?null:i)}
@@ -537,7 +564,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
                       <div className="shrink-0 self-start pt-0.5">
                         <span className={`text-[9px] font-black px-1.5 py-0.5 rounded border transition-all
                           ${isActive?'bg-violet-600 text-white border-violet-600':'bg-white/70 text-slate-400 border-slate-200'}`}>
-                          {DOC_SECTIONS.find(s=>s.key===d.docKey)?.num}
+                          {C.docSections.find(s=>s.key===d.docKey)?.num}
                         </span>
                       </div>
                     </div>
@@ -556,9 +583,9 @@ const MeetingMinutesAgent = ({ onBack }) => {
               <MessageSquare className="w-3 h-3"/>회의록 구조
             </div>
             <div className="space-y-1.5">
-              {DOC_SECTIONS.map(sec=>{
-                const isHighlighted=activeUtterance!==null&&DIARIZATION[activeUtterance]?.docKey===sec.key;
-                const utterCount=DIARIZATION.filter(d=>d.docKey===sec.key).length;
+              {C.docSections.map(sec=>{
+                const isHighlighted=activeUtterance!==null&&C.diarization[activeUtterance]?.docKey===sec.key;
+                const utterCount=C.diarization.filter(d=>d.docKey===sec.key).length;
                 return(
                   <div key={sec.key}
                     className={`rounded-xl border p-2.5 transition-all duration-200
@@ -590,7 +617,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
             <div className={`mt-4 p-2.5 rounded-xl border text-[10px] leading-relaxed transition-all
               ${activeUtterance!==null?'bg-violet-50 border-violet-200 text-violet-600':'bg-slate-50 border-slate-100 text-slate-400'}`}>
               {activeUtterance!==null
-                ?`"${DIARIZATION[activeUtterance].speaker}" 발언이 회의록 ${DOC_SECTIONS.find(s=>s.key===DIARIZATION[activeUtterance].docKey)?.label} 항목에 반영되었습니다.`
+                ?`"${C.diarization[activeUtterance].speaker}" 발언이 회의록 ${C.docSections.find(s=>s.key===C.diarization[activeUtterance].docKey)?.label} 항목에 반영되었습니다.`
                 :'발언을 클릭하면 회의록 반영 위치를 확인할 수 있습니다.'}
             </div>
           </div>
@@ -614,7 +641,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
             <div style={{border:'1px solid #091D58',display:'grid',gridTemplateColumns:'170px 1fr',gridTemplateRows:'auto auto'}}>
               {/* 로고 — 2행 span */}
               <div style={{gridColumn:'1',gridRow:'1/3',display:'flex',alignItems:'center',justifyContent:'center',padding:'16px 14px',background:'#fff',borderRight:'1px solid #091D58'}}>
-                <img src={REB_LOGO} alt="REB 한국부동산원" style={{width:'130px',height:'auto'}}/>
+                <img src={C.logo} alt={C.logoAlt} style={{width:'130px',height:'auto'}}/>
               </div>
               {/* 문서 제목 */}
               <div style={{gridColumn:'2',gridRow:'1',display:'flex',alignItems:'center',justifyContent:'center',padding:'18px 14px',background:'#e6e6e6',borderBottom:'1px solid #091D58',overflow:'hidden'}}>
@@ -628,13 +655,13 @@ const MeetingMinutesAgent = ({ onBack }) => {
                   <span style={{fontSize:'12px',fontWeight:700,color:'#091D58'}}>담당부서</span>
                 </div>
                 <div style={{padding:'7px 12px',borderRight:'1px solid #091D58',display:'flex',alignItems:'center'}}>
-                  <span style={{fontSize:'13px',color:'#1a202c',fontWeight:600}}>부동산공시처</span>
+                  <span style={{fontSize:'13px',color:'#1a202c',fontWeight:600}}>{C.deptName}</span>
                 </div>
                 <div style={{padding:'7px 10px',background:'#dfeaf5',borderRight:'1px solid #091D58',display:'flex',alignItems:'center',justifyContent:'center'}}>
                   <span style={{fontSize:'12px',fontWeight:700,color:'#091D58'}}>문서번호</span>
                 </div>
                 <div style={{padding:'7px 12px',display:'flex',flexDirection:'column',justifyContent:'center',gap:'2px'}}>
-                  <span style={{fontSize:'12px',fontFamily:'monospace',fontWeight:700,color:'#1a202c'}}>KREA-부동산공시처-2026-031</span>
+                  <span style={{fontSize:'12px',fontFamily:'monospace',fontWeight:700,color:'#1a202c'}}>{C.docNum}</span>
                   <span style={{fontSize:'10px',color:'#6b7280'}}>수신: 내부결재</span>
                 </div>
               </div>
@@ -675,8 +702,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
                   <span className="w-7 h-7 rounded-md bg-[#0f2a5e] flex items-center justify-center text-white text-[11px] font-black shrink-0">1</span>개회
                 </h3>
                 <div className="ml-9 text-[14px] text-slate-700 leading-relaxed space-y-1.5">
-                  <p>· 부동산공시처장 주재로 회의 개최</p>
-                  <p>· 참석 인원 확인 및 회의 목적 공유</p>
+                  {C.openingLines.map((l,i)=>(<p key={i}>· {l}</p>))}
                 </div>
               </section>
               <section>
@@ -691,12 +717,12 @@ const MeetingMinutesAgent = ({ onBack }) => {
                         <span className="text-[13px] font-bold text-slate-700">{ag}</span>
                       </div>
                       <div className="px-4 py-3 space-y-1.5 text-[12px] text-slate-600 leading-relaxed">
-                        {i===0&&<><p>· 이수진 팀장: AI 모델 오차율 1.2% 이내, 수작업 대비 60% 시간 단축 가능.</p><p>· 박준영 과장: 지역별 편차 보정 로직 추가 필요 의견.</p><p>· 최윤아 대리: 부동산 가격공시법 제3조에 따라 AI 보조 도구 활용 가능, 최종 결정은 감정평가사 검토 필요.</p></>}
-                        {i===1&&<><p>· 박준영 과장: 2026.04.01. 착수, 2026.09.30. 완료 목표로 세부 계획 수립 예정.</p><p>· 김민준 처장: 수도권·광역시 우선 AI 시범 적용 후 전국 확대 방침.</p></>}
-                        {i>1&&<p className="text-slate-400 italic">· 안건 내용이 STT 에이전트에 의해 자동 추출되었습니다.</p>}
+                        {C.agendaDiscussions[i]
+                          ? C.agendaDiscussions[i].lines.map((l,li)=>(<p key={li}>· {l}</p>))
+                          : <p className="text-slate-400 italic">· 안건 내용이 STT 에이전트에 의해 자동 추출되었습니다.</p>}
                         <div className="mt-2 pt-2 border-t border-dashed border-slate-200 flex items-center gap-1.5">
                           <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">결론</span>
-                          <span className="text-[11px] text-slate-500">{i===0?'AI 모델 1차 스크리닝 활용 — 2026년 하반기 50개 시군구 시범 적용':i===1?'2026.04.01. 조사 착수, 2026.09.30. 완료 목표 확정':'추후 논의 예정'}</span>
+                          <span className="text-[11px] text-slate-500">{C.agendaDiscussions[i]?.conclusion||'추후 논의 예정'}</span>
                         </div>
                       </div>
                     </div>
@@ -708,7 +734,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
                   <span className="w-7 h-7 rounded-md bg-[#0f2a5e] flex items-center justify-center text-white text-[11px] font-black shrink-0">3</span>결정 사항
                 </h3>
                 <div className="ml-9 space-y-2">
-                  {['AI 기반 표준지 선정 모델 1차 스크리닝 도입 — 2026년 하반기 50개 시군구 시범 적용','공시지가 조사: 2026.04.01. 착수 · 2026.09.30. 완료 목표','AI 플랫폼 연동 테스트 2026.04.15. 이전 완료 후 전면 도입 여부 결정'].map((d,i)=>(
+                  {C.decisions.map((d,i)=>(
                     <div key={i} className="flex items-start gap-2.5 text-[14px] text-slate-700">
                       <span className="w-5 h-5 rounded-full bg-[#003087] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i+1}</span>
                       <span>{d}</span>
@@ -732,7 +758,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {ACTIONS.map((a,i)=>(
+                      {C.actions.map((a,i)=>(
                         <tr key={i} className={i%2===0?'bg-white':'bg-slate-50/60'} style={{borderBottom:'1px solid #e2e8f0'}}>
                           <td className="py-2.5 px-3 text-center font-bold text-[#003087]">{i+1}</td>
                           <td className="py-2.5 px-3 text-slate-700 font-medium">{a.label}</td>
@@ -750,8 +776,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
                   <span className="w-7 h-7 rounded-md bg-[#0f2a5e] flex items-center justify-center text-white text-[11px] font-black shrink-0">5</span>특이사항
                 </h3>
                 <div className="ml-9 text-[14px] text-slate-700 space-y-1.5">
-                  <p>· 차기 회의: 2026년 3월 27일(금) 14:00 예정</p>
-                  <p>· AI 플랫폼 연동 검토 결과는 서면으로 공람 예정</p>
+                  {C.specialNotes.map((l,i)=>(<p key={i}>· {l}</p>))}
                 </div>
               </section>
               <div className="pt-4" style={{borderTop:'2px solid #0f2a5e'}}>
@@ -766,7 +791,7 @@ const MeetingMinutesAgent = ({ onBack }) => {
                   ))}
                 </div>
                 <p className="text-center text-[11px] text-slate-400 mt-4">
-                  본 회의록은 한국부동산원 GENOS AI 회의록 에이전트 v1.0에 의해 자동 생성되었으며, 담당자 검토 후 확정됩니다.
+                  {C.footerText}
                 </p>
               </div>
             </div>

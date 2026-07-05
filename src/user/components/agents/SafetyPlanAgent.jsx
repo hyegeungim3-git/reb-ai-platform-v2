@@ -12,14 +12,82 @@ import { AGENT_TEAMS } from "../../data/constants.js";
 import { REB_LOGO } from "../../data/logos.js";
 import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
 
-const SafetyPlanAgent = ({ onBack }) => {
-  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(SAFE_AGENTS);
-  const [projName,setProjName]=useState('표준지공시지가 현장조사 (서울·경기 북부권)');
-  const [projType,setProjType]=useState('현장 실사');
-  const [projLoc,setProjLoc]=useState('서울 노원구 일대');
-  const [duration,setDuration]=useState('3개월');
-  const [selectedRisks,setSelectedRisks]=useState(['낙상·추락','교통사고','폭염·한파 노출']);
-  const [result,setResult]=useState(SAFE_RESULT);
+const RISK_DATA={
+  '낙상·추락':{level:'높음',freq:'보통',sev:4,lkl:3,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'미끄럼 방지 신발 착용, 현장 지면 상태 사전 확인'},
+  '교통사고':{level:'매우 높음',freq:'높음',sev:5,lkl:4,lvlColor:'bg-red-100 text-red-700 border-red-200',measure:'형광 안전조끼 착용, 2인 1조 이동, 차도 횡단 최소화'},
+  '폭염·한파 노출':{level:'높음',freq:'보통',sev:4,lkl:3,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'조사 시간 조정 (폭염 시 10~15시 회피), 수분 보충'},
+  '개·맹수 접근':{level:'보통',freq:'낮음',sev:3,lkl:2,lvlColor:'bg-yellow-100 text-yellow-700 border-yellow-200',measure:'방문 전 농가·주민 사전 연락, 접이식 우산 지참'},
+  '낙석·지반 붕괴':{level:'높음',freq:'낮음',sev:4,lkl:2,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'경사지 접근 금지, 헬멧 착용, 지반 상태 사전 확인'},
+  '우천 미끄럼':{level:'높음',freq:'보통',sev:4,lkl:3,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'우천 시 현장조사 일정 재조정, 방수 장비 착용'},
+  '독충·벌레 피해':{level:'보통',freq:'보통',sev:3,lkl:3,lvlColor:'bg-yellow-100 text-yellow-700 border-yellow-200',measure:'긴팔·긴바지 착용, 기피제 사용, 봄·여름철 특별 주의'},
+  '고압선 인근 작업':{level:'매우 높음',freq:'낮음',sev:5,lkl:2,lvlColor:'bg-red-100 text-red-700 border-red-200',measure:'고압선 이격거리(2m 이상) 확보, 금속 장비 사용 금지'},
+  '수해 지역 진입':{level:'높음',freq:'낮음',sev:4,lkl:2,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'수해 지역 진입 전 관할 기관 허가 취득'},
+  '야간 조사':{level:'높음',freq:'낮음',sev:4,lkl:2,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'야간 조사 원칙적 금지, 불가피 시 2인 1조 및 관리자 보고'},
+};
+const SAFE_CHECKLIST=['현장 출발 전 조사 경로 및 현장 위험 정보 확인','형광 안전조끼·미끄럼 방지 신발 착용 여부','2인 1조 구성 및 조사 일정 관리자 공유 여부','현장 이동 중 교통법규 준수 및 횡단보도 이용','현장 내 지면·경사 상태 사전 육안 확인','폭염·한파 기상특보 발령 시 일정 재조정 여부','비상 연락처(119, 관리자) 현장 등록 확인'];
+const SAFE_LAWS=['산업안전보건법 제36조 (위험성평가 의무)','도로교통법 제11조 (보행자 통행 원칙)','자연재해대책법 제31조 (재해 위험 지역 관리)','한국부동산원 현장업무 안전수칙 제7조 (외부 현장 2인 1조 원칙)','공시지가 조사업무 처리지침 제15조 (조사 안전 관리)'];
+const RAG_DOC_HITS=[
+  {name:'표준지공시지가 현장조사 안전지침.pdf', hits:8},
+  {name:'한국부동산원 현장업무 안전수칙.pdf', hits:5},
+  {name:'산업안전보건법 제36조.pdf', hits:4},
+  {name:'도로교통법 제11조 (보행자 안전).pdf', hits:3},
+  {name:'현장조사 위험성평가 매뉴얼.pdf', hits:2},
+];
+const RAG_TAGS=['산업안전보건법','도로교통법','자연재해대책법','현장업무 안전수칙','공시지가 조사지침','재난안전법'];
+const ORG_MEMBERS=['[현장조사원] 김민준 과장','[비상연락담당] 공시조사부장'];
+const EMERGENCY_STEPS=[
+  {label:'위험 상황 발생',sub:'즉시 현장 대피',color:'bg-red-600'},
+  {label:'관리자 연락',sub:'박지현 과장 010-XXXX-XXXX',color:'bg-orange-500'},
+  {label:'119·112 신고',sub:'필요 시 경찰·소방 즉시 요청',color:'bg-orange-500'},
+  {label:'조사관리책임자 보고',sub:'원인 조사 및 재발 방지',color:'bg-slate-700'},
+];
+const PLAN_SECTIONS=[
+  {sub:'3.1  조사 출발 전 안전 관리',items:['조사 전일 기상정보 및 현장 위험 요소 확인','형광 안전조끼·미끄럼 방지 신발 착용 확인 (2인 1조)','조사 일정·경로 관리자 사전 보고 및 비상연락처 등록']},
+  {sub:'3.2  현장 이동 안전',items:['횡단보도·육교 우선 이용, 도로변 최소 노출','교통사고 위험 지역 사전 파악 및 우회 경로 준비','현장 내 차량 접근 경계 및 형광 안전조끼 상시 착용']},
+  {sub:'3.3  자연 재해·기상 안전',items:['폭염특보 발령 시 10~15시 현장조사 중단','우천 시 경사지·젖은 노면 진입 금지','조사 중 이상 기상 발생 시 즉시 안전한 장소로 대피']},
+];
+
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-safety"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  agents: SAFE_AGENTS,             // {icon:LucideIcon,label,sub,color,ms}[4] — 시뮬레이션 단계 카드. 배열 통째 교체(아이콘·타이밍 포함)
+  riskOptions: SAFE_RISK_OPTIONS,  // string[10] — 위험 요인 선택지. riskData의 키와 반드시 일치. 배열 통째 교체
+  riskData: RISK_DATA,             // {[riskOption]:{level,freq,sev:1~5,lkl:1~5,lvlColor,measure}} — 위험요인별 평가(매트릭스·표에 사용). 객체 통째 교체
+  resultText: SAFE_RESULT,         // string — 계획서 전문 텍스트(원본 편집·PDF 출력 본문)
+  apvLine: APV_LINE_SAFE,          // {name,dept,title,role}[3] — 결재선. 배열 통째 교체
+  defaultProjName:'표준지공시지가 현장조사 (서울·경기 북부권)', // string — 조사명 초기값
+  defaultProjType:'현장 실사',      // string — 조사 유형 초기값
+  defaultProjLoc:'서울 노원구 일대', // string — 조사 위치 초기값
+  defaultDuration:'3개월',          // string — 조사 기간 초기값
+  defaultRisks:['낙상·추락','교통사고','폭염·한파 노출'], // string[3] — 초기 선택 위험 요인(riskOptions의 부분집합)
+  projTypePlaceholder:'조사 유형 (현장 실사, 공시지가 조사 등)', // string — 조사 유형 입력 placeholder
+  uploadHint:'현장 사진, 지적도, 이전 조사 보고서, 현장 위험 정보 등을 업로드하세요 (선택)', // string — 업로드 안내 문구
+  ragDocs: RAG_DOC_HITS,           // {name,hits:number}[5] — RAG 검색 티커 문서 목록. 배열 통째 교체
+  ragTags: RAG_TAGS,               // string[6] — 자동 참조 법령·규정 태그. 배열 통째 교체
+  checklist: SAFE_CHECKLIST,       // string[7] — 안전 체크리스트 항목. 배열 통째 교체
+  laws: SAFE_LAWS,                 // string[5] — 관련 법령 및 규정. 배열 통째 교체
+  orgLeader:'[안전관리책임자] 이상호 처장',   // string — 조직도 최상위 1줄
+  orgManager:'[조사관리담당] 박지현 과장',    // string — 조직도 중간 관리자 1줄
+  orgMembers: ORG_MEMBERS,         // string[2] — 조직도 하위 2줄(├─, └─ 순서). 배열 통째 교체
+  emergencySteps: EMERGENCY_STEPS, // {label,sub,color:tailwind bg 클래스}[4] — 비상 연락 체계 4단계. 배열 통째 교체
+  planSections: PLAN_SECTIONS,     // {sub,items:string[3]}[3] — 안전관리 계획 3개 소절. 배열 통째 교체
+  dept:'부동산공시처',                        // string — 담당부서(문서 헤더·PDF)
+  docNum:'KREA-부동산공시처-2026-032',       // string — 문서번호(문서 헤더·PDF·결재 모달)
+  brandLine:'KREA · 한국부동산원',            // string — 문서 헤더 브랜드 라인
+  logoSrc: REB_LOGO,               // string(data URI) — PDF 출력 헤더 로고
+  logoAlt:'REB 한국부동산원',       // string — 로고 대체 텍스트
+  apvRef:'APV-2026-0227-032',      // string — 결재 진행 참조번호
+  periodRange:'2026. 03. 01. ~ 2026. 05. 30.', // string — 문서 보기 조사 기간(뒤에 (duration) 병기)
+};
+
+const SafetyPlanAgent = ({ onBack, domain }) => {
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-safety"]||{})};
+  const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(C.agents);
+  const [projName,setProjName]=useState(C.defaultProjName);
+  const [projType,setProjType]=useState(C.defaultProjType);
+  const [projLoc,setProjLoc]=useState(C.defaultProjLoc);
+  const [duration,setDuration]=useState(C.defaultDuration);
+  const [selectedRisks,setSelectedRisks]=useState(C.defaultRisks);
+  const [result,setResult]=useState(C.resultText);
   const [safeViewMode,setSafeViewMode]=useState('doc');
   const [checkState,setCheckState]=useState({});
   const [apvState,setApvState]=useState(null);
@@ -27,13 +95,7 @@ const SafetyPlanAgent = ({ onBack }) => {
   const [uploadedFiles,setUploadedFiles]=useState([]);
   const [fileDrag,setFileDrag]=useState(false);
   const safeFileRef=useRef(null);
-  const [ragDocs]=useState([
-    {name:'표준지공시지가 현장조사 안전지침.pdf', hits:8},
-    {name:'한국부동산원 현장업무 안전수칙.pdf', hits:5},
-    {name:'산업안전보건법 제36조.pdf', hits:4},
-    {name:'도로교통법 제11조 (보행자 안전).pdf', hits:3},
-    {name:'현장조사 위험성평가 매뉴얼.pdf', hits:2},
-  ]);
+  const [ragDocs]=useState(C.ragDocs);
 
   const toggleRisk=(r)=>setSelectedRisks(p=>p.includes(r)?p.filter(x=>x!==r):[...p,r]);
 
@@ -41,21 +103,6 @@ const SafetyPlanAgent = ({ onBack }) => {
 
   const reset=()=>{resetSim();setUploadedFiles([]);setApvState(null);setApvMsg('검토 요청드립니다.');};
   const submitApv=()=>{setApvState('submitting');setTimeout(()=>{setApvState('done');},1600);};
-
-  const RISK_DATA={
-    '낙상·추락':{level:'높음',freq:'보통',sev:4,lkl:3,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'미끄럼 방지 신발 착용, 현장 지면 상태 사전 확인'},
-    '교통사고':{level:'매우 높음',freq:'높음',sev:5,lkl:4,lvlColor:'bg-red-100 text-red-700 border-red-200',measure:'형광 안전조끼 착용, 2인 1조 이동, 차도 횡단 최소화'},
-    '폭염·한파 노출':{level:'높음',freq:'보통',sev:4,lkl:3,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'조사 시간 조정 (폭염 시 10~15시 회피), 수분 보충'},
-    '개·맹수 접근':{level:'보통',freq:'낮음',sev:3,lkl:2,lvlColor:'bg-yellow-100 text-yellow-700 border-yellow-200',measure:'방문 전 농가·주민 사전 연락, 접이식 우산 지참'},
-    '낙석·지반 붕괴':{level:'높음',freq:'낮음',sev:4,lkl:2,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'경사지 접근 금지, 헬멧 착용, 지반 상태 사전 확인'},
-    '우천 미끄럼':{level:'높음',freq:'보통',sev:4,lkl:3,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'우천 시 현장조사 일정 재조정, 방수 장비 착용'},
-    '독충·벌레 피해':{level:'보통',freq:'보통',sev:3,lkl:3,lvlColor:'bg-yellow-100 text-yellow-700 border-yellow-200',measure:'긴팔·긴바지 착용, 기피제 사용, 봄·여름철 특별 주의'},
-    '고압선 인근 작업':{level:'매우 높음',freq:'낮음',sev:5,lkl:2,lvlColor:'bg-red-100 text-red-700 border-red-200',measure:'고압선 이격거리(2m 이상) 확보, 금속 장비 사용 금지'},
-    '수해 지역 진입':{level:'높음',freq:'낮음',sev:4,lkl:2,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'수해 지역 진입 전 관할 기관 허가 취득'},
-    '야간 조사':{level:'높음',freq:'낮음',sev:4,lkl:2,lvlColor:'bg-orange-100 text-orange-700 border-orange-200',measure:'야간 조사 원칙적 금지, 불가피 시 2인 1조 및 관리자 보고'},
-  };
-  const SAFE_CHECKLIST=['현장 출발 전 조사 경로 및 현장 위험 정보 확인','형광 안전조끼·미끄럼 방지 신발 착용 여부','2인 1조 구성 및 조사 일정 관리자 공유 여부','현장 이동 중 교통법규 준수 및 횡단보도 이용','현장 내 지면·경사 상태 사전 육안 확인','폭염·한파 기상특보 발령 시 일정 재조정 여부','비상 연락처(119, 관리자) 현장 등록 확인'];
-  const SAFE_LAWS=['산업안전보건법 제36조 (위험성평가 의무)','도로교통법 제11조 (보행자 통행 원칙)','자연재해대책법 제31조 (재해 위험 지역 관리)','한국부동산원 현장업무 안전수칙 제7조 (외부 현장 2인 1조 원칙)','공시지가 조사업무 처리지침 제15조 (조사 안전 관리)'];
 
   if(step===1) return(
     <div className="flex-1 overflow-y-auto px-6 py-8 bg-white">
@@ -110,7 +157,7 @@ const SafetyPlanAgent = ({ onBack }) => {
           <div className="text-[11px] text-slate-400">
             {uploadedFiles.length>0
               ?<><span className="text-orange-600 font-bold">{uploadedFiles.length}개 파일 업로드됨</span> — 업로드된 자료가 RAG 분석에 우선 참조됩니다</>
-              :'현장 사진, 지적도, 이전 조사 보고서, 현장 위험 정보 등을 업로드하세요 (선택)'}
+              :C.uploadHint}
           </div>
         </div>
 
@@ -118,7 +165,7 @@ const SafetyPlanAgent = ({ onBack }) => {
           <label className="text-[15px] font-black text-slate-600 uppercase tracking-wider">2 · 조사 기본 정보</label>
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2"><input value={projName} onChange={e=>setProjName(e.target.value)} placeholder="조사명" className="w-full border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/></div>
-            <input value={projType} onChange={e=>setProjType(e.target.value)} placeholder="조사 유형 (현장 실사, 공시지가 조사 등)" className="border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/>
+            <input value={projType} onChange={e=>setProjType(e.target.value)} placeholder={C.projTypePlaceholder} className="border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/>
             <input value={projLoc} onChange={e=>setProjLoc(e.target.value)} placeholder="조사 위치" className="border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/>
             <input value={duration} onChange={e=>setDuration(e.target.value)} placeholder="조사 기간 (예: 3개월)" className="border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/>
           </div>
@@ -127,7 +174,7 @@ const SafetyPlanAgent = ({ onBack }) => {
         <div className="space-y-1.5">
           <label className="text-[15px] font-black text-slate-600 uppercase tracking-wider">3 · 예상 위험 요인 선택</label>
           <div className="flex flex-wrap gap-2">
-            {SAFE_RISK_OPTIONS.map(r=>(
+            {C.riskOptions.map(r=>(
               <button key={r} onClick={()=>toggleRisk(r)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition-all ${selectedRisks.includes(r)?'bg-orange-50 border-orange-400 text-orange-700 shadow-sm':'border-slate-200 text-slate-400 hover:border-slate-300'}`}>
                 {r}
@@ -140,7 +187,7 @@ const SafetyPlanAgent = ({ onBack }) => {
         <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-2">
           <div className="flex items-center gap-2 text-xs font-black text-blue-700"><Database className="w-3.5 h-3.5"/>자동 참조 법령·규정 (RAG 지식 DB)</div>
           <div className="flex flex-wrap gap-1.5">
-            {['산업안전보건법','도로교통법','자연재해대책법','현장업무 안전수칙','공시지가 조사지침','재난안전법'].map(l=>(
+            {C.ragTags.map(l=>(
               <span key={l} className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-bold">{l}</span>
             ))}
           </div>
@@ -165,7 +212,7 @@ const SafetyPlanAgent = ({ onBack }) => {
             <div className="text-sm text-slate-400 mt-1">4개 전문 에이전트가 병렬·순차 협력하여 계획서를 작성합니다</div>
           </div>
           <div className="space-y-3">
-            {SAFE_AGENTS.map((ag,i)=>{
+            {C.agents.map((ag,i)=>{
               const isDone=doneIdx.includes(i);
               const isActive=agentIdx===i;
               const AgIcon=ag.icon;
@@ -210,7 +257,7 @@ const SafetyPlanAgent = ({ onBack }) => {
                     )}
                     {isActive&&<div className="mt-3"><div className="h-1 bg-orange-100 rounded-full overflow-hidden"><div className="h-1 bg-orange-500 rounded-full animate-pulse" style={{width:'65%'}}/></div></div>}
                   </div>
-                  {i<SAFE_AGENTS.length-1&&<div className="flex justify-center my-1"><ChevronRight className="w-4 h-4 text-slate-300 rotate-90"/></div>}
+                  {i<C.agents.length-1&&<div className="flex justify-center my-1"><ChevronRight className="w-4 h-4 text-slate-300 rotate-90"/></div>}
                 </div>
               );
             })}
@@ -245,7 +292,7 @@ const SafetyPlanAgent = ({ onBack }) => {
         </div>
         <button onClick={reset} className="flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-[11px] font-bold text-slate-500 hover:bg-slate-50 transition-colors"><RotateCcw className="w-3 h-3"/>새 계획서</button>
         <button onClick={()=>{
-          const html=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>안전관리계획서 — KREA-부동산공시처-2026-032</title>
+          const html=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>안전관리계획서 — ${C.docNum}</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
             @page{size:A4;margin:15mm 18mm}
@@ -273,13 +320,13 @@ const SafetyPlanAgent = ({ onBack }) => {
           <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();};};</script>
           <div class="hd">
             <div class="hd-grid">
-              <div class="hd-logo"><img src="${REB_LOGO}" alt="REB 한국부동산원"/></div>
+              <div class="hd-logo"><img src="${C.logoSrc}" alt="${C.logoAlt}"/></div>
               <div class="hd-title"><div class="hd-h1">안 전 관 리 계 획 서</div></div>
               <div class="hd-meta">
                 <div class="hd-meta-lbl">담당부서</div>
-                <div class="hd-meta-val">부동산공시처</div>
+                <div class="hd-meta-val">${C.dept}</div>
                 <div class="hd-meta-lbl">문서번호</div>
-                <div class="hd-meta-val-last"><span style="font-family:monospace;font-weight:700;font-size:12px">KREA-부동산공시처-2026-032</span><span style="color:#6b7280;font-size:10px">수신: 내부결재</span></div>
+                <div class="hd-meta-val-last"><span style="font-family:monospace;font-weight:700;font-size:12px">${C.docNum}</span><span style="color:#6b7280;font-size:10px">수신: 내부결재</span></div>
               </div>
             </div>
           </div>
@@ -308,19 +355,19 @@ const SafetyPlanAgent = ({ onBack }) => {
               <span className="text-[9px] font-bold text-white bg-[#7c2d12] px-1.5 py-0.5 rounded">WorksOn</span>
             </div>
             <div className="flex items-center gap-1 flex-1 min-w-0">
-              {APV_LINE_SAFE.map((p,i)=>(
+              {C.apvLine.map((p,i)=>(
                 <React.Fragment key={i}>
                   <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] border whitespace-nowrap ${i===0?'bg-emerald-50 border-emerald-200':i===1?'bg-blue-50 border-blue-200 shadow-sm':'bg-white border-slate-200'}`}>
                     {i===0?<CheckCircle className="w-3 h-3 text-emerald-500 shrink-0"/>:i===1?<Loader2 className="w-3 h-3 text-blue-500 animate-spin shrink-0"/>:<Clock className="w-3 h-3 text-slate-300 shrink-0"/>}
                     <span className="font-bold text-slate-700">{p.name}</span>
                     <span className={`font-black text-[9px] ${i===0?'text-emerald-500':i===1?'text-blue-500':'text-slate-300'}`}>{i===0?'서명 완료':i===1?'검토 중':'대기'}</span>
                   </div>
-                  {i<APV_LINE_SAFE.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
+                  {i<C.apvLine.length-1&&<ChevronRight className="w-3 h-3 text-slate-300 shrink-0"/>}
                 </React.Fragment>
               ))}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[10px] text-slate-400 font-mono">APV-2026-0227-032</span>
+              <span className="text-[10px] text-slate-400 font-mono">{C.apvRef}</span>
               <a href="#" onClick={e=>e.preventDefault()} className="text-[10px] font-bold text-blue-500 hover:underline flex items-center gap-0.5">WorksOn에서 보기<ExternalLink className="w-2.5 h-2.5"/></a>
             </div>
           </div>
@@ -338,8 +385,8 @@ const SafetyPlanAgent = ({ onBack }) => {
       {(apvState==='modal'||apvState==='submitting')&&(
         <ApprovalModal
           docTitle={`안전관리계획서 — ${projName}`}
-          docNum="KREA-부동산공시처-2026-032"
-          apvLine={APV_LINE_SAFE}
+          docNum={C.docNum}
+          apvLine={C.apvLine}
           apvMsg={apvMsg} setApvMsg={setApvMsg}
           onClose={()=>setApvState(null)}
           onSubmit={submitApv}
@@ -382,7 +429,7 @@ const SafetyPlanAgent = ({ onBack }) => {
                       {[1,2,3,4,5].map(lkl=>{
                         const score=sev*lkl;
                         const bg=score>=16?'bg-red-100 border-red-300':score>=10?'bg-orange-100 border-orange-300':score>=5?'bg-yellow-100 border-yellow-300':'bg-emerald-100 border-emerald-300';
-                        const cellRisks=selectedRisks.filter(r=>RISK_DATA[r]&&RISK_DATA[r].sev===sev&&RISK_DATA[r].lkl===lkl);
+                        const cellRisks=selectedRisks.filter(r=>C.riskData[r]&&C.riskData[r].sev===sev&&C.riskData[r].lkl===lkl);
                         return(
                           <div key={lkl} className={`flex-1 border-2 rounded-xl mx-0.5 px-1 py-1 min-h-[58px] flex flex-col items-center justify-start ${bg}`}>
                             <div className="text-[8px] text-slate-400 font-mono self-end">{score}</div>
@@ -410,7 +457,7 @@ const SafetyPlanAgent = ({ onBack }) => {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {selectedRisks.map(r=>{
-                const d=RISK_DATA[r];
+                const d=C.riskData[r];
                 if(!d)return null;
                 const score=d.sev*d.lkl;
                 const sc=score>=16?'text-red-700 bg-red-50 border-red-200':score>=10?'text-orange-700 bg-orange-50 border-orange-200':score>=5?'text-yellow-700 bg-yellow-50 border-yellow-200':'text-emerald-700 bg-emerald-50 border-emerald-200';
@@ -437,12 +484,12 @@ const SafetyPlanAgent = ({ onBack }) => {
             <div style={{background:'linear-gradient(135deg,#431407 0%,#7c2d12 55%,#c2410c 100%)'}}>
               <div className="px-10 pt-7 pb-2 flex items-start justify-between">
                 <div>
-                  <div className="text-[10px] tracking-[0.4em] text-orange-200 mb-0.5 font-medium">KREA · 한국부동산원</div>
-                  <div className="text-[11px] text-orange-300 font-medium">부동산공시처</div>
+                  <div className="text-[10px] tracking-[0.4em] text-orange-200 mb-0.5 font-medium">{C.brandLine}</div>
+                  <div className="text-[11px] text-orange-300 font-medium">{C.dept}</div>
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] text-orange-300">문서번호</div>
-                  <div className="text-[12px] font-bold text-white font-mono">KREA-부동산공시처-2026-032</div>
+                  <div className="text-[12px] font-bold text-white font-mono">{C.docNum}</div>
                   <div className="text-[10px] text-orange-300 mt-0.5">수신: 내부결재</div>
                 </div>
               </div>
@@ -474,7 +521,7 @@ const SafetyPlanAgent = ({ onBack }) => {
                   </tr>
                   <tr className="border-b border-slate-200">
                     <td className="py-3 pr-4 font-bold text-[#7c2d12] whitespace-nowrap">조사 기간</td>
-                    <td className="py-3 text-slate-700" colSpan={3}>2026. 03. 01. ~ 2026. 05. 30. ({duration})</td>
+                    <td className="py-3 text-slate-700" colSpan={3}>{C.periodRange} ({duration})</td>
                   </tr>
                 </tbody>
               </table>
@@ -484,10 +531,10 @@ const SafetyPlanAgent = ({ onBack }) => {
                   <span className="w-6 h-6 rounded-md bg-[#7c2d12] flex items-center justify-center text-white text-[10px] font-black shrink-0">1</span>안전관리 조직
                 </h3>
                 <div className="ml-8 bg-orange-50 border border-orange-100 rounded-xl p-4 text-[12px] font-mono leading-relaxed space-y-1">
-                  <div className="font-bold text-[#7c2d12]">[안전관리책임자] 이상호 처장</div>
-                  <div className="ml-4 text-slate-500">└─ <span className="text-slate-700 font-semibold">[조사관리담당] 박지현 과장</span></div>
-                  <div className="ml-12 text-slate-500">├─ <span className="text-slate-700">[현장조사원] 김민준 과장</span></div>
-                  <div className="ml-12 text-slate-500">└─ <span className="text-slate-700">[비상연락담당] 공시조사부장</span></div>
+                  <div className="font-bold text-[#7c2d12]">{C.orgLeader}</div>
+                  <div className="ml-4 text-slate-500">└─ <span className="text-slate-700 font-semibold">{C.orgManager}</span></div>
+                  <div className="ml-12 text-slate-500">├─ <span className="text-slate-700">{C.orgMembers[0]}</span></div>
+                  <div className="ml-12 text-slate-500">└─ <span className="text-slate-700">{C.orgMembers[1]}</span></div>
                 </div>
               </section>
               <section>
@@ -506,7 +553,7 @@ const SafetyPlanAgent = ({ onBack }) => {
                     </thead>
                     <tbody>
                       {selectedRisks.map((r,i)=>{
-                        const d=RISK_DATA[r]||{level:'보통',freq:'-',lvlColor:'bg-yellow-100 text-yellow-700 border-yellow-200',measure:'별도 안전 대책 수립 필요'};
+                        const d=C.riskData[r]||{level:'보통',freq:'-',lvlColor:'bg-yellow-100 text-yellow-700 border-yellow-200',measure:'별도 안전 대책 수립 필요'};
                         return(
                           <tr key={i} className={i%2===0?'bg-white':'bg-slate-50/60'} style={{borderBottom:'1px solid #e2e8f0'}}>
                             <td className="py-2.5 px-3 font-bold text-slate-700">{r}</td>
@@ -527,11 +574,7 @@ const SafetyPlanAgent = ({ onBack }) => {
                   <span className="w-6 h-6 rounded-md bg-[#7c2d12] flex items-center justify-center text-white text-[10px] font-black shrink-0">3</span>안전관리 계획 (조사 유형별)
                 </h3>
                 <div className="ml-8 space-y-3">
-                  {[
-                    {sub:'3.1  조사 출발 전 안전 관리',items:['조사 전일 기상정보 및 현장 위험 요소 확인','형광 안전조끼·미끄럼 방지 신발 착용 확인 (2인 1조)','조사 일정·경로 관리자 사전 보고 및 비상연락처 등록']},
-                    {sub:'3.2  현장 이동 안전',items:['횡단보도·육교 우선 이용, 도로변 최소 노출','교통사고 위험 지역 사전 파악 및 우회 경로 준비','현장 내 차량 접근 경계 및 형광 안전조끼 상시 착용']},
-                    {sub:'3.3  자연 재해·기상 안전',items:['폭염특보 발령 시 10~15시 현장조사 중단','우천 시 경사지·젖은 노면 진입 금지','조사 중 이상 기상 발생 시 즉시 안전한 장소로 대피']},
-                  ].map((sec,si)=>(
+                  {C.planSections.map((sec,si)=>(
                     <div key={si} className="border border-slate-200 rounded-xl overflow-hidden">
                       <div className="px-4 py-2 bg-orange-50 border-b border-orange-100">
                         <span className="text-[12px] font-black text-[#7c2d12]">{sec.sub}</span>
@@ -554,12 +597,7 @@ const SafetyPlanAgent = ({ onBack }) => {
                 </h3>
                 <div className="ml-8 bg-red-50 border border-red-100 rounded-xl p-4">
                   <div className="flex items-center gap-2 flex-wrap">
-                    {[
-                      {label:'위험 상황 발생',sub:'즉시 현장 대피',color:'bg-red-600'},
-                      {label:'관리자 연락',sub:'박지현 과장 010-XXXX-XXXX',color:'bg-orange-500'},
-                      {label:'119·112 신고',sub:'필요 시 경찰·소방 즉시 요청',color:'bg-orange-500'},
-                      {label:'조사관리책임자 보고',sub:'원인 조사 및 재발 방지',color:'bg-slate-700'},
-                    ].map((s,i,arr)=>(
+                    {C.emergencySteps.map((s,i,arr)=>(
                       <React.Fragment key={i}>
                         <div className="flex flex-col items-center gap-1">
                           <div className={`${s.color} text-white text-[11px] font-black px-3 py-1.5 rounded-lg text-center whitespace-nowrap`}>{s.label}</div>
@@ -576,7 +614,7 @@ const SafetyPlanAgent = ({ onBack }) => {
                   <span className="w-6 h-6 rounded-md bg-[#7c2d12] flex items-center justify-center text-white text-[10px] font-black shrink-0">5</span>관련 법령 및 규정
                 </h3>
                 <div className="ml-8 space-y-2">
-                  {SAFE_LAWS.map((l,i)=>(
+                  {C.laws.map((l,i)=>(
                     <div key={i} className="flex items-start gap-2.5 text-[13px] text-slate-700">
                       <span className="w-5 h-5 rounded-full bg-[#7c2d12] text-white text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">{i+1}</span>
                       <span>{l}</span>
@@ -590,9 +628,9 @@ const SafetyPlanAgent = ({ onBack }) => {
                 </h3>
                 <div className="ml-8">
                   <div className="border border-slate-200 rounded-xl overflow-hidden">
-                    {SAFE_CHECKLIST.map((item,i)=>(
+                    {C.checklist.map((item,i)=>(
                       <button key={i} onClick={()=>setCheckState(p=>({...p,[i]:!p[i]}))}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-[12px] text-left transition-colors ${checkState[i]?'bg-emerald-50':(i%2===0?'bg-white':'bg-slate-50/60')} ${i<SAFE_CHECKLIST.length-1?'border-b border-slate-100':''} hover:bg-emerald-50/60`}>
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-[12px] text-left transition-colors ${checkState[i]?'bg-emerald-50':(i%2===0?'bg-white':'bg-slate-50/60')} ${i<C.checklist.length-1?'border-b border-slate-100':''} hover:bg-emerald-50/60`}>
                         <div className={`w-4 h-4 border-2 rounded shrink-0 flex items-center justify-center transition-all ${checkState[i]?'bg-emerald-500 border-emerald-500':'border-slate-300'}`}>
                           {checkState[i]&&<svg className="w-2.5 h-2.5 text-white" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                         </div>
@@ -601,8 +639,8 @@ const SafetyPlanAgent = ({ onBack }) => {
                     ))}
                   </div>
                   <div className="mt-2 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-400">{Object.values(checkState).filter(Boolean).length}/{SAFE_CHECKLIST.length}건 확인 완료</span>
-                    {Object.values(checkState).filter(Boolean).length===SAFE_CHECKLIST.length&&(
+                    <span className="text-slate-400">{Object.values(checkState).filter(Boolean).length}/{C.checklist.length}건 확인 완료</span>
+                    {Object.values(checkState).filter(Boolean).length===C.checklist.length&&(
                       <span className="text-emerald-600 font-black flex items-center gap-1"><CheckCircle className="w-3 h-3"/>전체 확인 완료</span>
                     )}
                   </div>

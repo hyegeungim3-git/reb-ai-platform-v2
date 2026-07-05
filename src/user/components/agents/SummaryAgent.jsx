@@ -75,6 +75,41 @@ const SUMMARY_CONTENT=`**제1장 총칙**
 **제5장 보칙**
 조사 완료 후 업무 보고서는 시스템에 등록하고 **5년간 보존**하여야 한다. 조사 기록 관리 부실 시 관련 규정에 따라 징계 처분이 가능하다.`;
 
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-summary"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  docAName:'표준지공시지가_조사업무_처리지침.pdf',           // 업로드 mock 문서 A 파일명
+  docBName:'표준지공시지가_조사업무_처리지침_개정안.pdf',    // 업로드 mock 문서 B 파일명 (비교 모드)
+  resultDocLabel:'표준지공시지가_조사업무_처리지침.pdf',     // 결과 헤더 문서명 (단일)
+  resultCompareLabel:'처리지침.pdf  vs  처리지침_개정안.pdf',// 결과 헤더 문서명 (비교 모드)
+  structureHints:['제1장 총칙','제2장 조사 방법','제3장 가격 산정','제4장 검증 및 공시...'], // string[4] — step2 구조 파악 칩
+  summaryStats:[                                             // {label,val}[4] — 단일 요약 통계 카드
+    {label:'원문',val:'18,240자'},
+    {label:'요약',val:'860자'},
+    {label:'압축률',val:'95.3%'},
+    {label:'섹션',val:'5개'},
+  ],
+  compareStats:[                                             // {label,val}[4] — 비교 모드 통계 카드
+    {label:'비교 항목',val:'8개'},
+    {label:'변경 항목',val:'6개'},
+    {label:'동일 항목',val:'2개'},
+    {label:'주요 차이',val:'기준 강화'},
+  ],
+  compareRows:COMPARE_ROWS,                                  // {category,docA,docB,diff}[8] — diff '동일'이면 회색, 그 외 붉은 배지
+  docALabel:'문서 A (현행)',                                 // 비교 표 헤더 좌측
+  docBLabel:'문서 B (개정안)',                               // 비교 표 헤더 우측
+  compareFootnote:'Llama-3-Korean 70B 분석 · 주요 변경: 조사 항목 확대, 검증 기한 단축, 임계치 강화', // 비교 표 하단 각주
+  tableSummaryRows:[                                         // {ch,content,key}[5] — 표 형식 요약 행
+    {ch:'제1장 총칙',   content:'표준지공시지가 조사·산정 업무 표준화 절차 및 기준 규정',  key:'공시기준일: 매년 1월 1일'},
+    {ch:'제2장 조사',   content:'조사 구역 설정 · 현장실사 12개 항목 의무 확인',          key:'담당 최대 800필지'},
+    {ch:'제3장 산정',   content:'비교 표준지 3개 이상 분석 · 개별 조건 반영 가격 조정',   key:'±30% 재심의 기준'},
+    {ch:'제4장 검증',   content:'시·도 심의 후 본원 14일 내 최종 검토 · 이의신청 처리',  key:'30일 이의신청'},
+    {ch:'제5장 보칙',   content:'업무보고 시스템 등록 · 기록 5년 보존 · 징계 규정',      key:'5년 보존'},
+  ],
+  keywords:KEYWORDS,                                         // {word,pct(number)}[12] — 핵심 키워드 칩
+  sections:SECTIONS,                                         // {id,title,children:string[]}[5] — 문서 구조 맵
+  summaryContent:SUMMARY_CONTENT,                            // '**헤더**\n본문' 블록을 빈 줄(\n\n)로 구분, **굵게** 마크업 사용
+};
+
 const SectionTree=({sections})=>{
   const [open,setOpen]=useState({});
   const toggle=(id)=>setOpen(p=>({...p,[id]:!p[id]}));
@@ -102,7 +137,8 @@ const SectionTree=({sections})=>{
   );
 };
 
-const SummaryAgent=({onBack})=>{
+const SummaryAgent=({onBack,domain})=>{
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-summary"]||{})};
   const {step,setStep,agentIdx,doneIdx,start:startSim,resetSim}=useAgentSimulation(AGENTS);
   const [inputMode,setInputMode]=useState('file');
   const [textInput,setTextInput]=useState('');
@@ -122,7 +158,7 @@ const SummaryAgent=({onBack})=>{
   const reset=()=>{resetSim();setCopied(false);};
 
   const handleCopy=()=>{
-    navigator.clipboard?.writeText(SUMMARY_CONTENT.replace(/\*\*/g,''));
+    navigator.clipboard?.writeText(C.summaryContent.replace(/\*\*/g,''));
     setCopied(true);
     setTimeout(()=>setCopied(false),2000);
   };
@@ -200,7 +236,7 @@ const SummaryAgent=({onBack})=>{
                   <FileText className="w-4 h-4 text-white"/>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-bold text-slate-700 truncate">표준지공시지가_조사업무_처리지침.pdf</div>
+                  <div className="text-xs font-bold text-slate-700 truncate">{C.docAName}</div>
                   <div className="text-[11px] text-slate-400 mt-0.5">3.2MB · PDF · 업로드 완료</div>
                 </div>
                 <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
@@ -218,7 +254,7 @@ const SummaryAgent=({onBack})=>{
                       <FileText className="w-4 h-4 text-white"/>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-bold text-slate-700 truncate">표준지공시지가_조사업무_처리지침_개정안.pdf</div>
+                      <div className="text-xs font-bold text-slate-700 truncate">{C.docBName}</div>
                       <div className="text-[11px] text-slate-400 mt-0.5">2.8MB · PDF · 업로드 완료</div>
                     </div>
                     <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0">
@@ -347,7 +383,7 @@ const SummaryAgent=({onBack})=>{
                       {/* structure discovery hint for first agent */}
                       {isActive&&i===0&&(
                         <div className="mt-2 flex flex-wrap gap-1">
-                          {['제1장 총칙','제2장 조사 방법','제3장 가격 산정','제4장 검증 및 공시...'].map((s,si)=>(
+                          {C.structureHints.map((s,si)=>(
                             <span key={si} className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-semibold animate-pulse">{s}</span>
                           ))}
                         </div>
@@ -408,7 +444,7 @@ const SummaryAgent=({onBack})=>{
                 </div>
                 <span className="text-[15px] font-black text-slate-800">{compareMode?'문서 비교 요약':'문서 요약'}</span>
               </div>
-              <div className="text-[12px] text-slate-400">{compareMode?'처리지침.pdf  vs  처리지침_개정안.pdf':'표준지공시지가_조사업무_처리지침.pdf'}</div>
+              <div className="text-[12px] text-slate-400">{compareMode?C.resultCompareLabel:C.resultDocLabel}</div>
             </div>
             <div className="flex items-center gap-1.5 flex-wrap justify-end shrink-0">
               {compareMode&&<span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-700">비교 모드</span>}
@@ -419,17 +455,7 @@ const SummaryAgent=({onBack})=>{
 
           {/* stats */}
           <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-slate-100">
-          {(compareMode?[
-            {label:'비교 항목',val:'8개'},
-            {label:'변경 항목',val:'6개'},
-            {label:'동일 항목',val:'2개'},
-            {label:'주요 차이',val:'기준 강화'},
-          ]:[
-            {label:'원문',val:'18,240자'},
-            {label:'요약',val:'860자'},
-            {label:'압축률',val:'95.3%'},
-            {label:'섹션',val:'5개'},
-          ]).map(s=>(
+          {(compareMode?C.compareStats:C.summaryStats).map(s=>(
             <div key={s.label} className={cn('border rounded-xl p-2.5 text-center', compareMode?'bg-indigo-50 border-indigo-100':'bg-amber-50 border-amber-100')}>
               <div className={cn('text-xs font-black', compareMode?'text-indigo-700':'text-amber-700')}>{s.val}</div>
               <div className="text-[10px] text-slate-500 mt-0.5">{s.label}</div>
@@ -444,7 +470,7 @@ const SummaryAgent=({onBack})=>{
             <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600">
               <ArrowLeftRight className="w-3.5 h-3.5 text-indigo-200"/>
               <span className="text-[12px] font-black text-white">항목별 비교 분석</span>
-              <span className="ml-auto text-[10px] text-indigo-200">AI 자동 비교 · {COMPARE_ROWS.length}개 항목</span>
+              <span className="ml-auto text-[10px] text-indigo-200">AI 자동 비교 · {C.compareRows.length}개 항목</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-[12px] border-collapse">
@@ -452,16 +478,16 @@ const SummaryAgent=({onBack})=>{
                   <tr className="bg-indigo-50">
                     <th className="text-left px-3 py-2 font-black text-indigo-800 w-28 border-b border-indigo-100">비교 항목</th>
                     <th className="text-left px-3 py-2 font-black text-amber-700 border-b border-indigo-100">
-                      <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"/>문서 A (현행)</span>
+                      <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"/>{C.docALabel}</span>
                     </th>
                     <th className="text-left px-3 py-2 font-black text-indigo-700 border-b border-indigo-100">
-                      <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500"/>문서 B (개정안)</span>
+                      <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500"/>{C.docBLabel}</span>
                     </th>
                     <th className="text-center px-3 py-2 font-black text-slate-500 border-b border-indigo-100 w-20">변경 여부</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {COMPARE_ROWS.map((row,i)=>(
+                  {C.compareRows.map((row,i)=>(
                     <tr key={i} className={i%2===0?'bg-white':'bg-slate-50/40'} style={{borderBottom:'1px solid #e0e7ff'}}>
                       <td className="px-3 py-2.5 font-bold text-slate-700">{row.category}</td>
                       <td className="px-3 py-2.5 text-slate-600">{row.docA}</td>
@@ -477,7 +503,7 @@ const SummaryAgent=({onBack})=>{
               </table>
             </div>
             <div className="px-4 py-2.5 bg-indigo-50 border-t border-indigo-100 text-[10px] text-indigo-500">
-              Llama-3-Korean 70B 분석 · 주요 변경: 조사 항목 확대, 검증 기한 단축, 임계치 강화
+              {C.compareFootnote}
             </div>
           </div>
         )}
@@ -498,13 +524,7 @@ const SummaryAgent=({onBack})=>{
                 </tr>
               </thead>
               <tbody>
-                {[
-                  {ch:'제1장 총칙',   content:'표준지공시지가 조사·산정 업무 표준화 절차 및 기준 규정',  key:'공시기준일: 매년 1월 1일'},
-                  {ch:'제2장 조사',   content:'조사 구역 설정 · 현장실사 12개 항목 의무 확인',          key:'담당 최대 800필지'},
-                  {ch:'제3장 산정',   content:'비교 표준지 3개 이상 분석 · 개별 조건 반영 가격 조정',   key:'±30% 재심의 기준'},
-                  {ch:'제4장 검증',   content:'시·도 심의 후 본원 14일 내 최종 검토 · 이의신청 처리',  key:'30일 이의신청'},
-                  {ch:'제5장 보칙',   content:'업무보고 시스템 등록 · 기록 5년 보존 · 징계 규정',      key:'5년 보존'},
-                ].map((r,i)=>(
+                {C.tableSummaryRows.map((r,i)=>(
                   <tr key={i} className={i%2===0?'bg-white':'bg-teal-50/30'} style={{borderBottom:'1px solid #99f6e4'}}>
                     <td className="px-3 py-2.5 font-bold text-teal-700">{r.ch}</td>
                     <td className="px-3 py-2.5 text-slate-600">{r.content}</td>
@@ -523,7 +543,7 @@ const SummaryAgent=({onBack})=>{
             <span className="text-xs font-black text-slate-700 uppercase tracking-wide">요약 내용</span>
           </div>
           <div className="space-y-4 text-sm text-slate-700 leading-relaxed">
-            {SUMMARY_CONTENT.split('\n\n').map((block,bi)=>{
+            {C.summaryContent.split('\n\n').map((block,bi)=>{
               const lines=block.split('\n');
               const header=lines[0].replace(/\*\*/g,'');
               const body=lines.slice(1).join(' ');
@@ -556,10 +576,10 @@ const SummaryAgent=({onBack})=>{
         <div className="border border-slate-200 rounded-xl bg-white p-4">
           <div className="flex items-center gap-2 mb-3">
             <Tag className="w-4 h-4 text-amber-600"/>
-            <span className="text-xs font-black text-slate-700 uppercase tracking-wide">핵심 키워드 ({KEYWORDS.length}개)</span>
+            <span className="text-xs font-black text-slate-700 uppercase tracking-wide">핵심 키워드 ({C.keywords.length}개)</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {KEYWORDS.map((kw,i)=>(
+            {C.keywords.map((kw,i)=>(
               <span key={i} className={cn('px-2.5 py-1 rounded-full text-[11px] font-bold',KEYWORD_COLORS[i%KEYWORD_COLORS.length])}>
                 {kw.word} <span className="opacity-70">{kw.pct}%</span>
               </span>
@@ -573,7 +593,7 @@ const SummaryAgent=({onBack})=>{
             <Layers className="w-4 h-4 text-amber-600"/>
             <span className="text-xs font-black text-slate-700 uppercase tracking-wide">문서 구조 맵</span>
           </div>
-          <SectionTree sections={SECTIONS}/>
+          <SectionTree sections={C.sections}/>
         </div>
 
 

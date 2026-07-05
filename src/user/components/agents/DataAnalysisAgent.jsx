@@ -67,7 +67,27 @@ const STATS_TABLE=[
 const STATUS_COLORS={normal:'text-slate-600',high:'text-rose-600',warning:'text-amber-600'};
 const STATUS_BG   ={normal:'bg-slate-50',   high:'bg-rose-50',    warning:'bg-amber-50'};
 
-const DataAnalysisAgent=({onBack})=>{
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-dataanalysis"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS={
+  sampleFiles: SAMPLE_FILES,                       // {id,name,rows,cols,size}[3]
+  trendCaption:'주택가격지수 추세 (2025.7 ~ 2026.3) · 기준: 2021년 6월=100',
+  trendData: PRICE_TREND,                          // {month,...seriesKey}[9]
+  trendSeries:[{key:'매매',color:'#f97316'},{key:'전세',color:'#3b82f6'},{key:'월세',color:'#10b981'}],
+  trendDomain:[96,103], trendRef:100, trendRefLabel:'기준(100)',
+  barTabLabel:'지역별',
+  barCaption:'지역별 공시지가 변동률 (2026.3 기준) · 단위: %',
+  barData: REGION_BAR, barXKey:'region', barValueKey:'변동률', barUnit:'%',
+  stackTabLabel:'이의신청',
+  stackCaption:'이의신청 접수·처리·미결 현황 (2026년 분기) · 단위: 건',
+  stackData: APPEAL_MONTHLY, stackSeries:[{key:'접수',color:'#f97316'},{key:'처리',color:'#10b981'},{key:'미결',color:'#ef4444'}],
+  statsTable: STATS_TABLE,                         // {metric,value,change,status}[6]
+  outlierSummary:'23건 (1.8%)',
+  docStandard:'KREA 표준 형식',
+  docStandardNote:'리포트 형식을 선택하면 KREA 표준 양식으로 자동 생성됩니다',
+};
+
+const DataAnalysisAgent=({onBack,domain})=>{
+  const C={...CONTENT_DEFAULTS,...(domain?.agentContent?.["agent-dataanalysis"]||{})};
   const [step,setStep]=useState(1);
   const [selectedFile,setSelectedFile]=useState('f1');
   const [analysisType,setAnalysisType]=useState('comprehensive');
@@ -91,7 +111,7 @@ const DataAnalysisAgent=({onBack})=>{
 
   const reset=()=>{setStep(1);setAgentIdx(-1);setDoneIdx([]);setChartTab('trend');};
 
-  const file=SAMPLE_FILES.find(f=>f.id===selectedFile);
+  const file=C.sampleFiles.find(f=>f.id===selectedFile);
 
   if(step===1)return(
     <div className="flex-1 overflow-y-auto px-6 py-8 bg-white">
@@ -119,7 +139,7 @@ const DataAnalysisAgent=({onBack})=>{
           </div>
           <div className="space-y-2">
             <p className="text-[11px] font-bold text-slate-500">또는 샘플 파일 선택</p>
-            {SAMPLE_FILES.map(f=>(
+            {C.sampleFiles.map(f=>(
               <label key={f.id} className={cn(
                 'flex items-center gap-3 px-4 py-3 border rounded-xl cursor-pointer transition-all select-none',
                 selectedFile===f.id?'bg-orange-50 border-orange-300':'border-slate-200 hover:bg-slate-50'
@@ -263,7 +283,7 @@ const DataAnalysisAgent=({onBack})=>{
           {[
             {label:'총 데이터',value:`${file?.rows.toLocaleString()}행`,color:'text-orange-700',bg:'bg-orange-50 border-orange-200'},
             {label:'분석 열',  value:`${file?.cols}개`,                color:'text-blue-700',  bg:'bg-blue-50 border-blue-200'},
-            {label:'이상치',   value:'23건 (1.8%)',                    color:'text-amber-600', bg:'bg-amber-50 border-amber-200'},
+            {label:'이상치',   value:C.outlierSummary,                 color:'text-amber-600', bg:'bg-amber-50 border-amber-200'},
             {label:'결측치',   value:'0건',                            color:'text-emerald-600',bg:'bg-emerald-50 border-emerald-200'},
           ].map(({label,value,color,bg})=>(
             <div key={label} className={cn('border rounded-xl px-4 py-3 text-center',bg)}>
@@ -289,7 +309,7 @@ const DataAnalysisAgent=({onBack})=>{
                 </tr>
               </thead>
               <tbody>
-                {STATS_TABLE.map((r,i)=>(
+                {C.statsTable.map((r,i)=>(
                   <tr key={i} className={cn('border-b last:border-0',STATUS_BG[r.status])}>
                     <td className="px-4 py-2.5 font-medium text-slate-700">{r.metric}</td>
                     <td className="px-4 py-2.5 font-mono text-slate-800 font-bold">{r.value}</td>
@@ -314,8 +334,8 @@ const DataAnalysisAgent=({onBack})=>{
             <div className="ml-auto flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
               {[
                 {key:'trend', label:'추세'},
-                {key:'region', label:'지역별'},
-                {key:'appeal', label:'이의신청'},
+                {key:'region', label:C.barTabLabel},
+                {key:'appeal', label:C.stackTabLabel},
               ].map(({key,label})=>(
                 <button key={key} onClick={()=>setChartTab(key)}
                   className={cn('px-3 py-1 rounded-md text-[11px] font-bold transition-all',
@@ -331,19 +351,19 @@ const DataAnalysisAgent=({onBack})=>{
               <>
                 <p className="text-[11px] text-slate-400 font-bold mb-4 flex items-center gap-2">
                   <TrendingUp className="w-3.5 h-3.5 text-orange-500"/>
-                  주택가격지수 추세 (2025.7 ~ 2026.3) · 기준: 2021년 6월=100
+                  {C.trendCaption}
                 </p>
                 <ResponsiveContainer width="100%" height={220}>
-                  <LineChart data={PRICE_TREND} margin={{top:5,right:20,left:-10,bottom:5}}>
+                  <LineChart data={C.trendData} margin={{top:5,right:20,left:-10,bottom:5}}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
                     <XAxis dataKey="month" tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false}/>
-                    <YAxis domain={[96,103]} tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false} axisLine={false}/>
+                    <YAxis domain={C.trendDomain} tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false} axisLine={false}/>
                     <Tooltip contentStyle={{fontSize:11,borderRadius:8,border:'1px solid #e2e8f0'}}/>
                     <Legend wrapperStyle={{fontSize:11}}/>
-                    <ReferenceLine y={100} stroke="#94a3b8" strokeDasharray="4 4" label={{value:'기준(100)',position:'right',fontSize:9,fill:'#94a3b8'}}/>
-                    <Line type="monotone" dataKey="매매" stroke="#f97316" strokeWidth={2} dot={false}/>
-                    <Line type="monotone" dataKey="전세" stroke="#3b82f6" strokeWidth={2} dot={false}/>
-                    <Line type="monotone" dataKey="월세" stroke="#10b981" strokeWidth={2} dot={false}/>
+                    {C.trendRef!=null&&<ReferenceLine y={C.trendRef} stroke="#94a3b8" strokeDasharray="4 4" label={{value:C.trendRefLabel,position:'right',fontSize:9,fill:'#94a3b8'}}/>}
+                    {C.trendSeries.map(s=>(
+                      <Line key={s.key} type="monotone" dataKey={s.key} stroke={s.color} strokeWidth={2} dot={false}/>
+                    ))}
                   </LineChart>
                 </ResponsiveContainer>
               </>
@@ -352,20 +372,20 @@ const DataAnalysisAgent=({onBack})=>{
               <>
                 <p className="text-[11px] text-slate-400 font-bold mb-4 flex items-center gap-2">
                   <BarChart2 className="w-3.5 h-3.5 text-orange-500"/>
-                  지역별 공시지가 변동률 (2026.3 기준) · 단위: %
+                  {C.barCaption}
                 </p>
                 <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={REGION_BAR} margin={{top:5,right:20,left:-10,bottom:5}}>
+                  <BarChart data={C.barData} margin={{top:5,right:20,left:-10,bottom:5}}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false}/>
-                    <XAxis dataKey="region" tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false}/>
+                    <XAxis dataKey={C.barXKey} tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false} axisLine={false}/>
-                    <Tooltip contentStyle={{fontSize:11,borderRadius:8,border:'1px solid #e2e8f0'}} formatter={(v)=>[`${v}%`,'변동률']}/>
+                    <Tooltip contentStyle={{fontSize:11,borderRadius:8,border:'1px solid #e2e8f0'}} formatter={(v)=>[`${v}${C.barUnit}`,C.barValueKey]}/>
                     <ReferenceLine y={0} stroke="#94a3b8"/>
-                    <Bar dataKey="변동률" radius={[4,4,0,0]}>
-                      {REGION_BAR.map((entry,index)=>(
-                        <Cell key={index} fill={entry.변동률>=0?'#10b981':'#f97316'}/>
+                    <Bar dataKey={C.barValueKey} radius={[4,4,0,0]}>
+                      {C.barData.map((entry,index)=>(
+                        <Cell key={index} fill={entry[C.barValueKey]>=0?'#10b981':'#f97316'}/>
                       ))}
-                      <LabelList dataKey="변동률" position="top" style={{fontSize:10,fill:'#64748b'}} formatter={v=>`${v}%`}/>
+                      <LabelList dataKey={C.barValueKey} position="top" style={{fontSize:10,fill:'#64748b'}} formatter={v=>`${v}${C.barUnit}`}/>
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -375,24 +395,20 @@ const DataAnalysisAgent=({onBack})=>{
               <>
                 <p className="text-[11px] text-slate-400 font-bold mb-4 flex items-center gap-2">
                   <Activity className="w-3.5 h-3.5 text-orange-500"/>
-                  이의신청 접수·처리·미결 현황 (2026년 분기) · 단위: 건
+                  {C.stackCaption}
                 </p>
                 <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={APPEAL_MONTHLY} margin={{top:5,right:20,left:-10,bottom:5}}>
+                  <BarChart data={C.stackData} margin={{top:5,right:20,left:-10,bottom:5}}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false}/>
                     <XAxis dataKey="month" tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false}/>
                     <YAxis tick={{fontSize:10,fill:'#94a3b8'}} tickLine={false} axisLine={false}/>
                     <Tooltip contentStyle={{fontSize:11,borderRadius:8,border:'1px solid #e2e8f0'}}/>
                     <Legend wrapperStyle={{fontSize:11}}/>
-                    <Bar dataKey="접수" fill="#f97316" radius={[3,3,0,0]}>
-                      <LabelList dataKey="접수" position="top" style={{fontSize:10}}/>
-                    </Bar>
-                    <Bar dataKey="처리" fill="#10b981" radius={[3,3,0,0]}>
-                      <LabelList dataKey="처리" position="top" style={{fontSize:10}}/>
-                    </Bar>
-                    <Bar dataKey="미결" fill="#ef4444" radius={[3,3,0,0]}>
-                      <LabelList dataKey="미결" position="top" style={{fontSize:10}}/>
-                    </Bar>
+                    {C.stackSeries.map(s=>(
+                      <Bar key={s.key} dataKey={s.key} fill={s.color} radius={[3,3,0,0]}>
+                        <LabelList dataKey={s.key} position="top" style={{fontSize:10}}/>
+                      </Bar>
+                    ))}
                   </BarChart>
                 </ResponsiveContainer>
               </>
@@ -405,7 +421,7 @@ const DataAnalysisAgent=({onBack})=>{
           <div className="px-5 py-3.5 border-b flex items-center gap-2">
             <FileText className="w-4 h-4 text-orange-600"/>
             <span className="text-[13px] font-black text-slate-800">표준화 분석 리포트 자동 생성</span>
-            <span className="ml-auto text-[10px] text-slate-400">KREA 표준 형식</span>
+            <span className="ml-auto text-[10px] text-slate-400">{C.docStandard}</span>
           </div>
           <div className="p-5">
             <div className="grid grid-cols-3 gap-3 mb-4">
@@ -423,7 +439,7 @@ const DataAnalysisAgent=({onBack})=>{
                 </button>
               ))}
             </div>
-            <p className="text-[11px] text-slate-400 text-center">리포트 형식을 선택하면 KREA 표준 양식으로 자동 생성됩니다</p>
+            <p className="text-[11px] text-slate-400 text-center">{C.docStandardNote}</p>
           </div>
         </div>
 

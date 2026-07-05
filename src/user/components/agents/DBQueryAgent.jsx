@@ -10,11 +10,14 @@ import { AGENT_TEAMS } from "../../data/constants.js";
 import { cn } from "../../utils.jsx";
 
 
+/* ── 데이터 소스 아이콘 (key 고정: building | land | lup) ── */
+const SOURCE_ICONS = { building: Building2, land: MapPin, lup: TreePine };
+
 /* ── 데이터 소스 ── */
 const DB_SOURCES = [
-  { key: 'building', label: '건축물대장',       icon: Building2, desc: '건물명·구조·용도·면적·건축연도' },
-  { key: 'land',     label: '토지대장',          icon: MapPin,    desc: '지번·지목·면적·소유구분' },
-  { key: 'lup',      label: '토지이용계획확인원', icon: TreePine,  desc: '용도지역·지구·각종 규제사항' },
+  { key: 'building', label: '건축물대장',       desc: '건물명·구조·용도·면적·건축연도' },
+  { key: 'land',     label: '토지대장',          desc: '지번·지목·면적·소유구분' },
+  { key: 'lup',      label: '토지이용계획확인원', desc: '용도지역·지구·각종 규제사항' },
 ];
 
 /* ── 권한 레벨 ── */
@@ -104,40 +107,69 @@ ORDER BY p.jibun ASC
 LIMIT 50;`,
 };
 
-/* ── 통계 카드 계산 ── */
-function getStats(source) {
-  if (source === 'building') {
-    const violationCount = BUILDING_ROWS.filter(r => r.status === '위반').length;
-    const avgArea = Math.round(BUILDING_ROWS.reduce((s, r) => s + r.area, 0) / BUILDING_ROWS.length);
-    return [
-      { label: '총 건수',   value: `${BUILDING_ROWS.length}건`,           icon: TableProperties, color: 'text-blue-600' },
-      { label: '위반건수',  value: `${violationCount}건`,                  icon: Filter,          color: 'text-red-500' },
-      { label: '평균면적',  value: `${avgArea.toLocaleString()}㎡`,        icon: TrendingUp,      color: 'text-teal-600' },
-      { label: '조회시간',  value: '0.31초',                               icon: Clock,           color: 'text-slate-500' },
-    ];
-  }
-  if (source === 'land') {
-    const avgArea = (LAND_ROWS.reduce((s, r) => s + r.area, 0) / LAND_ROWS.length).toFixed(1);
-    const avgPrice = Math.round(LAND_ROWS.reduce((s, r) => s + r.landPrice, 0) / LAND_ROWS.length);
-    return [
-      { label: '총 건수',    value: `${LAND_ROWS.length}건`,               icon: TableProperties, color: 'text-blue-600' },
-      { label: '법인 소유',  value: `${LAND_ROWS.filter(r => r.ownership === '법인').length}건`, icon: Shield, color: 'text-violet-600' },
-      { label: '평균면적',   value: `${avgArea}㎡`,                        icon: TrendingUp,      color: 'text-teal-600' },
-      { label: '조회시간',   value: '0.55초',                              icon: Clock,           color: 'text-slate-500' },
-    ];
-  }
-  // lup
-  const zoningSet = new Set(LUP_ROWS.map(r => r.zoning));
-  return [
-    { label: '총 필지수',   value: `${LUP_ROWS.length}건`,                icon: TableProperties, color: 'text-blue-600' },
-    { label: '용도지역 수', value: `${zoningSet.size}종`,                  icon: Filter,          color: 'text-amber-600' },
-    { label: '지구 지정',   value: `${LUP_ROWS.filter(r => r.district).length}건`, icon: TrendingUp, color: 'text-teal-600' },
-    { label: '조회시간',    value: '0.22초',                               icon: Clock,           color: 'text-slate-500' },
-  ];
-}
+/* ── 통계 카드 아이콘 (icon 키 고정: table | filter | trend | clock | shield) ── */
+const STAT_ICONS = { table: TableProperties, filter: Filter, trend: TrendingUp, clock: Clock, shield: Shield };
+
+/* ── 통계 카드 (소스별 4개) ── */
+const STATS_BY_SOURCE = {
+  building: [
+    { label: '총 건수',   value: '8건',       icon: 'table',  color: 'text-blue-600' },
+    { label: '위반건수',  value: '1건',       icon: 'filter', color: 'text-red-500' },
+    { label: '평균면적',  value: '44,304㎡',  icon: 'trend',  color: 'text-teal-600' },
+    { label: '조회시간',  value: '0.31초',    icon: 'clock',  color: 'text-slate-500' },
+  ],
+  land: [
+    { label: '총 건수',    value: '5건',      icon: 'table',  color: 'text-blue-600' },
+    { label: '법인 소유',  value: '3건',      icon: 'shield', color: 'text-violet-600' },
+    { label: '평균면적',   value: '2441.1㎡', icon: 'trend',  color: 'text-teal-600' },
+    { label: '조회시간',   value: '0.55초',   icon: 'clock',  color: 'text-slate-500' },
+  ],
+  lup: [
+    { label: '총 필지수',   value: '5건',     icon: 'table',  color: 'text-blue-600' },
+    { label: '용도지역 수', value: '3종',     icon: 'filter', color: 'text-amber-600' },
+    { label: '지구 지정',   value: '3건',     icon: 'trend',  color: 'text-teal-600' },
+    { label: '조회시간',    value: '0.22초',  icon: 'clock',  color: 'text-slate-500' },
+  ],
+};
+
+/* 도메인 이관: REB 기본 콘텐츠 — 도메인 팩 agentContent["agent-dbquery"]로 키 단위 오버라이드 */
+export const CONTENT_DEFAULTS = {
+  headerTitle: '부동산 대장 조회',
+  headerSubtitle: '건축물대장 · 토지대장 · 토지이용계획확인원 자연어 검색',
+  dbStatusLabel: '대장 DB 연결됨',
+  emptyTitle: '부동산 대장을 자연어로 조회하세요',
+  dbSources: DB_SOURCES,               // {key:'building'|'land'|'lup'(고정), label, desc}[3] — key별 결과 테이블 형태가 다름
+  permissionLevels: PERMISSION_LEVELS, // {id:'general'|'manager'|'evaluator'(고정), label, desc, badge(tailwind 클래스)}[3]
+  permissionNotices: {                 // 권한별 안내 문구 (id 3종 키 고정)
+    general:   '공개 정보(지번·건물명·용도·면적)에 한해 조회 가능합니다.',
+    manager:   '소유자 정보 및 거래 이력이 포함됩니다.',
+    evaluator: '전체 데이터(소유·거래·과세·감정가) 조회 가능 — 개인정보 처리방침 준수 필요.',
+  },
+  queryHistory: QUERY_HISTORY,         // {id, query, date, rows(number), ms}[4]
+  quickQueries: QUICK,                 // string[4] — 빈 화면 추천 질의
+  buildingRows: BUILDING_ROWS,         // {jibun, buildingName, structure, yongdo, area(number), floor, year(number), status}[8] — status '위반'이면 붉은 배지
+  landRows: LAND_ROWS,                 // {jibun, jimok, area(number), ownership, zoning, pnu, landPrice(number)}[5] — ownership '법인'이면 파란 배지, landPrice는 general 권한에서 가림
+  lupRows: LUP_ROWS,                   // {jibun, zoning, district(''=미지정), restrictions:string[], fireZone(''=없음)}[5]
+  sqlMap: SQL_MAP,                     // {building, land, lup} — 소스별 생성 SQL 문자열
+  statsBySource: STATS_BY_SOURCE,      // {building|land|lup: {label, value, icon:'table'|'filter'|'trend'|'clock'|'shield', color(tailwind)}[4]}
+  buildingColumns: [                   // {key: buildingRows 필드명, label}[8] — 건축물 결과 테이블 헤더
+    { key: 'jibun', label: '지번' },
+    { key: 'buildingName', label: '건물명' },
+    { key: 'structure', label: '구조' },
+    { key: 'yongdo', label: '주용도' },
+    { key: 'area', label: '연면적(㎡)' },
+    { key: 'floor', label: '층수' },
+    { key: 'year', label: '준공연도' },
+    { key: 'status', label: '상태' },
+  ],
+  landColumns: ['지번', '지목', '면적(㎡)', '소유구분', '용도지역', 'PNU', '공시지가(원/㎡)'], // string[7] — landRows 필드 순서와 일치
+  lupColumns: ['지번', '용도지역', '지구', '건축제한', '화재경계지구'],                        // string[5] — lupRows 필드 순서와 일치
+  restrictedNotice: '공시지가 정보는 관리자 이상 권한에서 조회 가능합니다.', // general 권한 안내 배너
+};
 
 /* ── 메인 컴포넌트 ── */
-export default function DBQueryAgent({ onBack }) {
+export default function DBQueryAgent({ onBack, domain }) {
+  const C = { ...CONTENT_DEFAULTS, ...(domain?.agentContent?.["agent-dbquery"] || {}) };
   const [step, setStep] = useState(1);
   const [query, setQuery] = useState('');
   const [source, setSource] = useState('building');
@@ -151,9 +183,9 @@ export default function DBQueryAgent({ onBack }) {
   const [sortDir, setSortDir] = useState('asc');
 
   const teamData = AGENT_TEAMS?.find(t => t.id === 'agent-dbquery') ?? null;
-  const permInfo = PERMISSION_LEVELS.find(p => p.id === permission);
-  const sourceInfo = DB_SOURCES.find(s => s.key === source);
-  const stats = getStats(source);
+  const permInfo = C.permissionLevels.find(p => p.id === permission);
+  const sourceInfo = C.dbSources.find(s => s.key === source);
+  const stats = (C.statsBySource[source] || []).map(s => ({ ...s, icon: STAT_ICONS[s.icon] || TableProperties }));
 
   /* ── 파이프라인 실행 ── */
   function runPipeline() {
@@ -182,8 +214,8 @@ export default function DBQueryAgent({ onBack }) {
   }
 
   function getSortedBuilding() {
-    if (!sortField) return BUILDING_ROWS;
-    return [...BUILDING_ROWS].sort((a, b) => {
+    if (!sortField) return C.buildingRows;
+    return [...C.buildingRows].sort((a, b) => {
       const av = a[sortField], bv = b[sortField];
       if (typeof av === 'number') return sortDir === 'asc' ? av - bv : bv - av;
       return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
@@ -192,7 +224,7 @@ export default function DBQueryAgent({ onBack }) {
 
   /* ── CSV 복사 ── */
   function handleCopy() {
-    const rows = source === 'building' ? BUILDING_ROWS : source === 'land' ? LAND_ROWS : LUP_ROWS;
+    const rows = source === 'building' ? C.buildingRows : source === 'land' ? C.landRows : C.lupRows;
     const text = rows.map(r => Object.values(r).join('\t')).join('\n');
     navigator.clipboard?.writeText(text).catch(() => {});
     setCopied(true);
@@ -223,12 +255,12 @@ export default function DBQueryAgent({ onBack }) {
           <Database className="w-3.5 h-3.5 text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-[14px] font-black text-slate-800">부동산 대장 조회</div>
-          <div className="text-[10px] text-slate-400">건축물대장 · 토지대장 · 토지이용계획확인원 자연어 검색</div>
+          <div className="text-[14px] font-black text-slate-800">{C.headerTitle}</div>
+          <div className="text-[10px] text-slate-400">{C.headerSubtitle}</div>
         </div>
         <div className="ml-auto flex items-center gap-1.5 text-[10px] text-slate-400 shrink-0">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"/>
-          대장 DB 연결됨
+          {C.dbStatusLabel}
         </div>
       </div>
 
@@ -237,13 +269,13 @@ export default function DBQueryAgent({ onBack }) {
         <div className="w-16 h-16 rounded-2xl bg-cyan-50 border-2 border-cyan-100 flex items-center justify-center mb-5">
           <Database className="w-8 h-8 text-cyan-400"/>
         </div>
-        <div className="text-[16px] font-black text-slate-600 mb-1.5">부동산 대장을 자연어로 조회하세요</div>
+        <div className="text-[16px] font-black text-slate-600 mb-1.5">{C.emptyTitle}</div>
         <div className="text-[12px] text-slate-400 mb-6 text-center leading-relaxed">
           Text-to-SQL 엔진이 자연어를 SQL로 변환하여 조회합니다
         </div>
         {/* 추천 질의 */}
         <div className="w-full max-w-lg space-y-2 mb-4">
-          {QUICK.map((q, i) => (
+          {C.quickQueries.map((q, i) => (
             <button key={i} onClick={() => setQuery(q)}
               className="w-full flex items-center gap-3 px-4 py-3 bg-white border border-slate-200 rounded-xl text-[13px] font-medium text-slate-600 hover:border-cyan-300 hover:text-cyan-700 hover:bg-cyan-50 transition-all shadow-sm text-left">
               <Search className="w-3.5 h-3.5 text-cyan-400 shrink-0"/>
@@ -262,7 +294,7 @@ export default function DBQueryAgent({ onBack }) {
           </button>
           {showHistory && (
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-              {QUERY_HISTORY.map(h => (
+              {C.queryHistory.map(h => (
                 <button key={h.id} onClick={() => { setQuery(h.query); setShowHistory(false); }}
                   className="w-full flex items-start gap-3 px-4 py-2.5 hover:bg-slate-50 text-left transition-colors border-b border-slate-100 last:border-0">
                   <Clock className="w-3 h-3 text-slate-400 mt-0.5 shrink-0"/>
@@ -284,8 +316,8 @@ export default function DBQueryAgent({ onBack }) {
           <div className="flex items-center gap-1.5">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider shrink-0">데이터 소스</span>
             <div className="flex gap-1">
-              {DB_SOURCES.map(s => {
-                const Icon = s.icon;
+              {C.dbSources.map(s => {
+                const Icon = SOURCE_ICONS[s.key] || Database;
                 const active = source === s.key;
                 return (
                   <button key={s.key} onClick={() => setSource(s.key)} title={s.desc}
@@ -301,7 +333,7 @@ export default function DBQueryAgent({ onBack }) {
             <Shield className="w-3.5 h-3.5 text-slate-400"/>
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">권한</span>
             <div className="flex gap-1">
-              {PERMISSION_LEVELS.map(pl => (
+              {C.permissionLevels.map(pl => (
                 <button key={pl.id} onClick={() => setPermission(pl.id)}
                   className={cn('px-2.5 py-1 rounded-full border text-[11px] font-bold transition-all',
                     permission===pl.id ? cn(pl.badge,'border-transparent') : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300')}>
@@ -316,9 +348,9 @@ export default function DBQueryAgent({ onBack }) {
           permission==='general'   ? 'bg-slate-50 text-slate-500 border border-slate-200' :
           permission==='manager'   ? 'bg-blue-50 text-blue-600 border border-blue-200' :
                                      'bg-violet-50 text-violet-600 border border-violet-200')}>
-          {permission==='general'   && '공개 정보(지번·건물명·용도·면적)에 한해 조회 가능합니다.'}
-          {permission==='manager'   && '소유자 정보 및 거래 이력이 포함됩니다.'}
-          {permission==='evaluator' && '전체 데이터(소유·거래·과세·감정가) 조회 가능 — 개인정보 처리방침 준수 필요.'}
+          {permission==='general'   && C.permissionNotices.general}
+          {permission==='manager'   && C.permissionNotices.manager}
+          {permission==='evaluator' && C.permissionNotices.evaluator}
         </div>
         {/* 질의 입력 */}
         <div className="flex gap-2 items-center">
@@ -433,7 +465,7 @@ export default function DBQueryAgent({ onBack }) {
 
   /* ════════════════ STEP 3 (결과) ════════════════ */
   const sortedBuilding = getSortedBuilding();
-  const perm = PERMISSION_LEVELS.find(p => p.id === permission);
+  const perm = C.permissionLevels.find(p => p.id === permission);
 
   return (
     <div className="h-full flex flex-col bg-slate-50 overflow-auto">
@@ -502,7 +534,7 @@ export default function DBQueryAgent({ onBack }) {
           {showSQL && (
             <div className="border-t border-slate-200">
               <pre className="bg-slate-900 text-green-300 text-xs p-4 overflow-x-auto font-mono leading-relaxed">
-                {SQL_MAP[source]}
+                {C.sqlMap[source]}
               </pre>
             </div>
           )}
@@ -513,7 +545,7 @@ export default function DBQueryAgent({ onBack }) {
           <div className="flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-500" />
             <span className="text-sm font-semibold text-slate-700">
-              {source === 'building' ? `${BUILDING_ROWS.length}건` : source === 'land' ? `${LAND_ROWS.length}건` : `${LUP_ROWS.length}건`} 조회됨
+              {source === 'building' ? `${C.buildingRows.length}건` : source === 'land' ? `${C.landRows.length}건` : `${C.lupRows.length}건`} 조회됨
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -549,16 +581,7 @@ export default function DBQueryAgent({ onBack }) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
-                    {[
-                      { key: 'jibun', label: '지번' },
-                      { key: 'buildingName', label: '건물명' },
-                      { key: 'structure', label: '구조' },
-                      { key: 'yongdo', label: '주용도' },
-                      { key: 'area', label: '연면적(㎡)' },
-                      { key: 'floor', label: '층수' },
-                      { key: 'year', label: '준공연도' },
-                      { key: 'status', label: '상태' },
-                    ].map(col => (
+                    {C.buildingColumns.map(col => (
                       <th
                         key={col.key}
                         onClick={() => handleSort(col.key)}
@@ -619,7 +642,7 @@ export default function DBQueryAgent({ onBack }) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
-                    {['지번', '지목', '면적(㎡)', '소유구분', '용도지역', 'PNU', '공시지가(원/㎡)'].map(h => (
+                    {C.landColumns.map(h => (
                       <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                         {h}
                       </th>
@@ -627,7 +650,7 @@ export default function DBQueryAgent({ onBack }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {LAND_ROWS.map((row, i) => (
+                  {C.landRows.map((row, i) => (
                     <tr key={i} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3 text-xs font-mono text-slate-600 whitespace-nowrap">{row.jibun}</td>
                       <td className="px-4 py-3 text-xs whitespace-nowrap">
@@ -660,7 +683,7 @@ export default function DBQueryAgent({ onBack }) {
             {permission === 'general' && (
               <div className="px-4 py-3 bg-amber-50 border-t border-amber-200 text-xs text-amber-700 flex items-center gap-2">
                 <Shield className="w-3.5 h-3.5 shrink-0" />
-                공시지가 정보는 관리자 이상 권한에서 조회 가능합니다.
+                {C.restrictedNotice}
               </div>
             )}
           </div>
@@ -673,7 +696,7 @@ export default function DBQueryAgent({ onBack }) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200">
-                    {['지번', '용도지역', '지구', '건축제한', '화재경계지구'].map(h => (
+                    {C.lupColumns.map(h => (
                       <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                         {h}
                       </th>
@@ -681,7 +704,7 @@ export default function DBQueryAgent({ onBack }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {LUP_ROWS.map((row, i) => (
+                  {C.lupRows.map((row, i) => (
                     <tr key={i} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-3 text-xs font-mono text-slate-600 whitespace-nowrap">{row.jibun}</td>
                       <td className="px-4 py-3 text-xs whitespace-nowrap">

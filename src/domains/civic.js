@@ -2125,6 +2125,11 @@ LIMIT 50;`,
 
     // ── 페이지 인라인 이관 상수 (ADMIN_ 접두 전부) ──
     ADMIN_MGMT_GROUPS: ['AI Engineer','QA','민원여권과','자치행정과'],
+    ADMIN_MCP_SERVERS: [
+      {id:1,n:'Local MCP Server',u:'http://localhost:8080',t:'Search, Web Crawler',s:'Running'},
+      {id:2,n:'External API Gateway',u:'https://api.hansung.go.kr/mcp',t:'새올 Connector, 온나라 Sync',s:'Running'},
+      {id:3,n:'Test Server',u:'http://192.168.10.50:3000',t:'CodeDev',s:'Stopped'},
+    ],
     ADMIN_REPORT_ROWS: [
       {id:'RPT-001',title:'2월 민원행정 현황 보고서',type:'요약',template:'민원행정',status:'완료',date:'2026-02-10',pages:12},
       {id:'RPT-002',title:'행정동별 민원 추이 분석 리포트',type:'분석',template:'현장점검',status:'완료',date:'2026-02-09',pages:24},

@@ -784,6 +784,13 @@ export let ADMIN_USER_GROUPS = [
 // AI기본법 텍스트·문서 표준 고지문 — string, 'ⓘ ' 접두는 페이지 소유 (compliance.jsx)
 export let AIACT_STD_PHRASE = '본 내용은 한국부동산원 생성형 AI 플랫폼(GenOS)을 활용하여 작성되었습니다. 중요한 의사결정에는 담당자의 검토·확인이 필요합니다.';
 
+// MCP 서버 목록 — {id,n:서버명,u:URL,t:연결 도구,s:상태}[3] (deployment MCPServerPage)
+export let ADMIN_MCP_SERVERS = [
+  {id:1,n:'Local MCP Server',u:'http://localhost:8080',t:'Search, Web Crawler',s:'Running'},
+  {id:2,n:'External API Gateway',u:'https://api.reb.or.kr/mcp',t:'ERP Connector, GW Sync',s:'Running'},
+  {id:3,n:'Test Server',u:'http://192.168.10.50:3000',t:'CodeDev',s:'Stopped'},
+];
+
 /* ════════════════════════════════════════════════════════════════
    도메인 리졸버 — 관리자 콘텐츠 이관 (2026-07-06)
    위 export let 상수들은 REB 기본값. App.jsx가 렌더 시작 시
@@ -794,6 +801,7 @@ export let AIACT_STD_PHRASE = '본 내용은 한국부동산원 생성형 AI 플
 // __RESOLVER_START__
 const __REB_DEFAULTS = {
   ADMIN_PERSONA,
+  ADMIN_MCP_SERVERS,
   MOCK_GPU_NODES,
   MOCK_EMBEDDING_JOBS,
   MOCK_MCP_TOOLS,
@@ -876,6 +884,7 @@ const __REB_DEFAULTS = {
 export function applyAdminDomain(domain) {
   const o = (domain && domain.adminContent) || {};
   ADMIN_PERSONA = o.ADMIN_PERSONA !== undefined ? o.ADMIN_PERSONA : __REB_DEFAULTS.ADMIN_PERSONA;
+  ADMIN_MCP_SERVERS = o.ADMIN_MCP_SERVERS !== undefined ? o.ADMIN_MCP_SERVERS : __REB_DEFAULTS.ADMIN_MCP_SERVERS;
   MOCK_GPU_NODES = o.MOCK_GPU_NODES !== undefined ? o.MOCK_GPU_NODES : __REB_DEFAULTS.MOCK_GPU_NODES;
   MOCK_EMBEDDING_JOBS = o.MOCK_EMBEDDING_JOBS !== undefined ? o.MOCK_EMBEDDING_JOBS : __REB_DEFAULTS.MOCK_EMBEDDING_JOBS;
   MOCK_MCP_TOOLS = o.MOCK_MCP_TOOLS !== undefined ? o.MOCK_MCP_TOOLS : __REB_DEFAULTS.MOCK_MCP_TOOLS;

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Database, Activity, HardDrive, Server, Plus, Search, ChevronRight, ChevronDown, Bot, Send, Layers, Zap, Users, Play, Save, Trash2, Clock, Eye, Filter, Power, RotateCcw, Bell, Monitor, Copy, BookOpen, GitBranch, ArrowRight, Unplug, AlertTriangle } from 'lucide-react';
-import { MOCK_MCP_TOOLS, MOCK_MODELS, MOCK_PROMPTS, MOCK_AGENTS, MOCK_AGENT_DEPLOYS, MOCK_WORKFLOWS, ADMIN_PERSONA, ADMIN_INTERNAL_TOOLS, ADMIN_AGENT_NAME_EXAMPLE, ADMIN_WORKFLOW_NAME_EXAMPLE } from '../mocks.js';
+import { MOCK_MCP_TOOLS, MOCK_MODELS, MOCK_PROMPTS, MOCK_AGENTS, MOCK_AGENT_DEPLOYS, MOCK_WORKFLOWS, ADMIN_PERSONA, ADMIN_INTERNAL_TOOLS, ADMIN_AGENT_NAME_EXAMPLE, ADMIN_WORKFLOW_NAME_EXAMPLE, ADMIN_MCP_SERVERS } from '../mocks.js';
 import { StatusBadge, Modal, PageShell, useToast, ConfirmDialog, ToggleSwitch } from '../common.jsx';
 
 export const MCPToolsPage = () => {
@@ -54,11 +54,7 @@ export const MCPToolsPage = () => {
 
 export const MCPServerPage = () => {
   const toast=useToast();
-  const [servers,setServers]=useState([
-    {id:1,n:'Local MCP Server',u:'http://localhost:8080',t:'Search, Web Crawler',s:'Running'},
-    {id:2,n:'External API Gateway',u:'https://api.reb.or.kr/mcp',t:'ERP Connector, GW Sync',s:'Running'},
-    {id:3,n:'Test Server',u:'http://192.168.10.50:3000',t:'CodeDev',s:'Stopped'},
-  ]);
+  const [servers,setServers]=useState(ADMIN_MCP_SERVERS.map(s=>({...s})));
   const [showAdd,setShowAdd]=useState(false);const [confirmAction,setConfirmAction]=useState(null);
   const [form,setForm]=useState({name:'',url:'',tools:''});
   return (

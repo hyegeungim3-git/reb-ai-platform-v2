@@ -2183,6 +2183,11 @@ LIMIT 50;`,
     ],
 
     ADMIN_MGMT_GROUPS: ['AI Engineer','QA','생산기술팀','품질관리부'],
+    ADMIN_MCP_SERVERS: [
+      {id:1,n:'Local MCP Server',u:'http://localhost:8080',t:'Search, Web Crawler',s:'Running'},
+      {id:2,n:'External API Gateway',u:'https://api.hbp.co.kr/mcp',t:'MES Connector, HBWorks Sync',s:'Running'},
+      {id:3,n:'Test Server',u:'http://192.168.10.50:3000',t:'CodeDev',s:'Stopped'},
+    ],
     ADMIN_REPORT_ROWS: [
       {id:'RPT-001',title:'2월 생산 실적 현황 보고서',type:'요약',template:'생산실적',status:'완료',date:'2026-02-10',pages:12},
       {id:'RPT-002',title:'프레스 불량률 변동 분석 리포트',type:'분석',template:'품질분석',status:'완료',date:'2026-02-09',pages:24},

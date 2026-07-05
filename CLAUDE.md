@@ -63,7 +63,7 @@ src/
 - ✅ 2단계 기반: 도메인 팩 아키텍처(3팩), 포털 스위처, Claude Fable 5 플래그십 모델(보안 게이트웨이 서사)
 - ✅ 2-A: App.jsx 5,935줄 → admin/(mocks.js + common.jsx + pages/12그룹) + 라우팅 223줄. 분해 중 잠복 버그 발견·수정(HrSyncPage Info 아이콘 미임포트 → HR 메뉴 클릭 시 관리자 전체 크래시였음)
 - ✅ 2-B: useAgentSimulation 훅(src/user/hooks/)으로 8개 에이전트 시뮬레이션 통합, cn() 14곳 → utils.jsx 단일화
-- ⚠️ 발견: TranslateAgent·DocReviewAgent·SafetyPlanAgent는 미사용(어디서도 임포트 안 됨, 번들 미포함) — 허브 재등록 또는 삭제 결정 필요
+- ✅ 허브 13종 확장: 미사용이던 Translate·DocReview·SafetyPlan을 재등록 (agent-translate·agent-review·agent-safety, 도메인 팩 3곳 오버라이드 완비)
 - ⬜ 2-C: UserApp 2,137줄 분해 (탭·패널·모달 단위 — 상태 얽힘이 커서 별도 세션 권장)
 - ⬜ 도메인화 잔여(팩으로 미이관): ①에이전트 10종 내부 mock ②관리자 45페이지 콘텐츠 ③REVIEW/TRANSLATE/REPORT 모드 응답·공문서 템플릿(responses.js) ④FILE_DATA 인용 문서 ⑤SECURE_SUGGESTIONS
 - ⬜ 3단계 신규: 지도 인텔리전스, 멀티에이전트 오케스트레이션 시나리오, AI 기본법 대시보드

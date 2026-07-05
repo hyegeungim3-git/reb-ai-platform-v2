@@ -19,7 +19,7 @@ const AgentBuilderModal = ({ selectedAgent, builderTab, setBuilderTab, selectedN
             <p className="text-[13px] font-medium text-slate-500 mt-0.5">관리자가 사전 구성한 에이전트 내부 동작 단계입니다.</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2.5 rounded-xl hover:bg-slate-100 text-slate-500 border border-slate-200 transition-colors"><X className="w-6 h-6" /></button>
+        <button onClick={onClose} aria-label="닫기" className="p-2.5 rounded-xl hover:bg-slate-100 text-slate-500 border border-slate-200 transition-colors"><X className="w-6 h-6" /></button>
       </div>
       {/* Body */}
       <div className="flex-1 flex overflow-hidden">

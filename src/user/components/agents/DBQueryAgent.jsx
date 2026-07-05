@@ -247,7 +247,7 @@ export default function DBQueryAgent({ onBack, domain }) {
       {/* 헤더 */}
       <div className="bg-white border-b border-slate-200 px-5 py-3 flex items-center gap-3 shrink-0">
         {onBack && (
-          <button onClick={onBack} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0">
+          <button onClick={onBack} aria-label="뒤로 가기" className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0">
             <ChevronRight className="w-4 h-4 rotate-180" />
           </button>
         )}
@@ -365,8 +365,8 @@ export default function DBQueryAgent({ onBack, domain }) {
               className="w-full pl-9 pr-4 py-3 text-[13px] border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-cyan-100 focus:border-cyan-400 transition-all placeholder-slate-300 text-slate-700"
             />
           </div>
-          <button onClick={runPipeline} disabled={!query.trim()}
-            className="w-[42px] h-[42px] bg-cyan-600 text-white rounded-xl flex items-center justify-center hover:bg-cyan-700 transition-colors shadow-md shadow-cyan-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+          <button onClick={runPipeline} disabled={!query.trim()} aria-label="질의 실행"
+            className="w-[42px] h-[42px] max-w-full bg-cyan-600 text-white rounded-xl flex items-center justify-center hover:bg-cyan-700 transition-colors shadow-md shadow-cyan-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
             <Play className="w-4 h-4 fill-white"/>
           </button>
         </div>
@@ -473,6 +473,7 @@ export default function DBQueryAgent({ onBack, domain }) {
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center gap-3 shrink-0">
         <button
           onClick={handleReset}
+          aria-label="새 조회로 돌아가기"
           className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded hover:bg-slate-100"
         >
           <ChevronRight className="w-5 h-5 rotate-180" />
@@ -501,7 +502,7 @@ export default function DBQueryAgent({ onBack, domain }) {
       <div className="flex-1 p-6 space-y-4 max-w-6xl mx-auto w-full">
 
         {/* 통계 카드 4개 */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {stats.map((s, i) => {
             const Icon = s.icon;
             return (

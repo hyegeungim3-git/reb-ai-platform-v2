@@ -172,7 +172,7 @@ const InternalRegAgent = ({ onBack, domain }) => {
   const Header = ({showActions=false}) => (
     <div className="shrink-0 bg-white border-b border-slate-100 px-4 py-3 flex items-center gap-2.5">
       {onBack && (
-        <button onClick={onBack} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0">
+        <button onClick={onBack} aria-label="뒤로 가기" className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0">
           <ArrowLeft className="w-4 h-4"/>
         </button>
       )}
@@ -252,7 +252,8 @@ const InternalRegAgent = ({ onBack, domain }) => {
         <button
           onClick={handleSend}
           disabled={disabled || !query.trim() || selectedCats.length===0}
-          className="w-[46px] h-[58px] bg-blue-600 text-white rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md shadow-blue-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
+          aria-label="질의 전송"
+          className="w-[46px] h-[58px] max-w-full bg-blue-600 text-white rounded-xl flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md shadow-blue-200 disabled:opacity-40 disabled:cursor-not-allowed shrink-0">
           <Send className="w-4 h-4"/>
         </button>
       </div>
@@ -362,7 +363,7 @@ const InternalRegAgent = ({ onBack, domain }) => {
           <InputBar disabled={true}/>
         </div>
         {/* 오른쪽: 워크플로우 패널 */}
-        <div className="w-72 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto flex flex-col">
+        <div className="hidden lg:flex w-72 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto flex-col">
           <AgentWorkflowPanel agentId="agent-internalreg" activeStep={agentIdx} doneSteps={doneIdx}/>
         </div>
       </div>

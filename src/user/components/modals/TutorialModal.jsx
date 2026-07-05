@@ -19,7 +19,7 @@ const TutorialModal = ({ onClose }) => (
             <p className="text-[13px] text-slate-500 font-medium">GeNOS AI 플랫폼 주요 기능 안내</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><X className="w-5 h-5" /></button>
+        <button onClick={onClose} aria-label="닫기" className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><X className="w-5 h-5" /></button>
       </div>
       {/* 기능 카드 2열 그리드 */}
       <div className="grid grid-cols-2 gap-4 mb-6">

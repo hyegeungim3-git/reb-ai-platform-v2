@@ -344,6 +344,7 @@ function SourcePreviewPanel({ sourceKey, previews, onClose }) {
             onClick={onClose}
             className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
             title="FAQ로 돌아가기"
+            aria-label="FAQ로 돌아가기"
           >
             <ChevronLeft size={16} />
           </button>
@@ -555,7 +556,7 @@ export default function ChatbotAgent({ onBack, domain }) {
             <p className="text-xs text-slate-500 truncate">{C.headerSubtitle}</p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button onClick={handleReset} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors" title="대화 초기화">
+            <button onClick={handleReset} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors" title="대화 초기화" aria-label="대화 초기화">
               <RotateCcw size={15} />
             </button>
             {onBack && (
@@ -629,7 +630,7 @@ export default function ChatbotAgent({ onBack, domain }) {
             "flex items-end gap-2 rounded-xl border bg-white px-3 py-2 transition-colors",
             showCorrectionBanner ? "border-amber-300" : "border-slate-200 focus-within:border-blue-400"
           )}>
-            <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors shrink-0"><Paperclip size={16} /></button>
+            <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors shrink-0" aria-label="파일 첨부"><Paperclip size={16} /></button>
             <textarea
               ref={inputRef}
               value={input}
@@ -642,10 +643,11 @@ export default function ChatbotAgent({ onBack, domain }) {
               onInput={e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 128) + 'px'; }}
               disabled={isProcessing}
             />
-            <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors shrink-0"><Mic size={16} /></button>
+            <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors shrink-0" aria-label="음성 입력"><Mic size={16} /></button>
             <button
               onClick={handleSend}
               disabled={!input.trim() || isProcessing}
+              aria-label="메시지 전송"
               className={cn(
                 "p-1.5 rounded-lg transition-colors shrink-0",
                 input.trim() && !isProcessing ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-slate-100 text-slate-400 cursor-not-allowed"
@@ -659,7 +661,7 @@ export default function ChatbotAgent({ onBack, domain }) {
       </div>
 
       {/* ── 우측 패널: 출처 미리보기 또는 FAQ ── */}
-      <div className="w-72 shrink-0 border-l border-slate-200 flex flex-col bg-white overflow-hidden">
+      <div className="hidden lg:flex w-72 shrink-0 border-l border-slate-200 flex-col bg-white overflow-hidden">
         {activeSource ? (
           <SourcePreviewPanel sourceKey={activeSource} previews={C.sourcePreviews} onClose={() => setActiveSource(null)} />
         ) : (
@@ -737,7 +739,7 @@ export default function ChatbotAgent({ onBack, domain }) {
 
       {/* ── 워크플로우 패널 (처리 중에만) ── */}
       {showWorkflow && (
-        <div className="absolute inset-y-0 right-72 w-72 shadow-xl z-20 border-l border-slate-200">
+        <div className="hidden lg:block absolute inset-y-0 right-72 w-72 shadow-xl z-20 border-l border-slate-200">
           <AgentWorkflowPanel steps={wfSteps} title="챗봇 파이프라인" agentTeams={AGENT_TEAMS} />
         </div>
       )}
@@ -885,6 +887,7 @@ function MessageBubble({ msg, previews, onFeedback, onCopy, copied, activeSource
             onClick={() => onFeedback(msg.id, 'up')}
             className={cn("p-1 rounded transition-colors", msg.feedback === 'up' ? "text-emerald-600 bg-emerald-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50")}
             title="도움됨"
+            aria-label="도움됨"
           >
             <ThumbsUp size={13} />
           </button>
@@ -892,6 +895,7 @@ function MessageBubble({ msg, previews, onFeedback, onCopy, copied, activeSource
             onClick={() => onFeedback(msg.id, 'down')}
             className={cn("p-1 rounded transition-colors", msg.feedback === 'down' ? "text-rose-600 bg-rose-50" : "text-slate-400 hover:text-rose-600 hover:bg-rose-50")}
             title="도움 안됨"
+            aria-label="도움 안됨"
           >
             <ThumbsDown size={13} />
           </button>
@@ -899,6 +903,7 @@ function MessageBubble({ msg, previews, onFeedback, onCopy, copied, activeSource
             onClick={() => onCopy(msg.id, msg.text)}
             className="p-1 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
             title="복사"
+            aria-label="복사"
           >
             {copied === msg.id ? <CheckCircle size={13} className="text-emerald-500" /> : <Copy size={13} />}
           </button>

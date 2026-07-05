@@ -74,7 +74,7 @@ src/
 - ✅ 4단계 UX 기본선(2026-07-06, 커밋 1effeff): **새로고침 대화 유지** — GENERAL 탭 대화를 localStorage(genos.convos.<도메인>)에 지속, 활성 대화 복원(SECURE는 무저장 서사 유지). **HISTORY 실동작** — 사이드바·빈화면 이력 클릭 시 저장 대화 복원 또는 팩 시드 재구성, 사용자 대화가 시드와 병합 표시. **반응형** — <768 사이드바·우측패널 오버레이+헤더 햄버거, <1280 우측패널 접힘 기본, 100dvh, 지도카드 @container 쿼리로 차트 접힘 해소. **접근성** — Esc 모달 닫기(중앙 핸들러), :focus-visible 링, 주요 아이콘 버튼 aria-label. 375/768/1280 뷰포트 검증 통과
 - ✅ 관리자 이관(2026-07-06, 커밋 2960e9e+33eb522+α): **관리자 45페이지+AI기본법 → 팩 adminContent** — mocks.js 61상수 export let + `applyAdminDomain(domain)` 리졸버(페이지 import 무수정, App 렌더 최상단 호출, RootApp key로 도메인별 remount). 페이지 인라인 REB 18상수 추출(ADMIN_ 접두), ADMIN_PERSONA 페르소나 단일화(11곳). 한빛 63키·한성 64키 팩 제공(shape 기계 대조 통과). ⚠️ mocks.js 새 상수는 export let·__REB_DEFAULTS·applyAdminDomain **3곳 등록 필수**. 검수: 3도메인 × 관리자 53리프 전수 DOM 스캔 0건(도중 발견한 MCP 서버 reb.or.kr 인라인 누수 → ADMIN_MCP_SERVERS 추출로 해소), REB 회귀 통과
 - ✅ 인쇄 HTML 데이터 구동화(2026-07-06): agent-report buildPressHtml/buildReportHtml이 화면 미리보기와 동일한 press·report 키 + 도메인 org(orgName·brandColor)를 소비 — **팩 추가 작업 0으로 전 도메인 인쇄물 완성** (시그니처 (args, C, org), 팩의 함수 통째 교체 계약은 유지). 브라우저 실경로 검증: REB 44KB·한빛 64KB 인쇄 HTML 캡처, 한빛 인쇄물 REB 금칙어 0·#0F766E 브랜딩. **도메인화 잔여 항목 전부 해소** — §4 한계표 이관 완료
-- ⬜ 4단계 잔여: 에이전트 내부 화면 반응형(고정 w-80 패널 등), aria 전수(현재 핵심 컨트롤만)
+- ✅ 4단계 잔여 완료(2026-07-06): **에이전트 내부 화면 반응형** — 16개 파일 ~44지점(step2 워크플로우 레일 8곳 `hidden lg:flex`, 그리드 축소 24, 표 overflow-x-auto 7, 2단 비교 세로 스택, w-[px] max-w-full). 375에서 13종 전수 가로 스크롤 0, 1280 시각 무변화 검증. **aria 전수** — 아이콘 전용 버튼 ~40개 aria-label(에이전트 28 + layout/modals 12). 부수 수정: DocPreviewModal 인쇄가 generateDocHTML을 org 없이 호출하던 브랜딩 누수 → org prop 주입. 알려진 한계(문서화): <1024에서 챗봇 우측 FAQ·출처 패널 숨김(출처 칩 클릭 무반응), 문서 사본(A4 레플리카) 내부 레이아웃은 의도적 보존
 
 ## 6. 다음 세션 표준 지시문 (사용자가 이 문구로 시작하면 그대로 수행)
 

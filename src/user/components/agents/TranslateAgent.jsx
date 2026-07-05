@@ -127,7 +127,7 @@ const TranslateAgent=({onBack,domain})=>{
     <div className="flex-1 overflow-y-auto px-6 py-8 bg-white">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-3 mb-2">
-          {onBack&&<button onClick={onBack} className="text-slate-400 hover:text-violet-600 transition-colors mr-1"><ChevronRight className="w-4 h-4 rotate-180"/></button>}
+          {onBack&&<button onClick={onBack} aria-label="뒤로 가기" className="text-slate-400 hover:text-violet-600 transition-colors mr-1"><ChevronRight className="w-4 h-4 rotate-180"/></button>}
           <div className="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center shadow-md"><Languages className="w-5 h-5 text-white"/></div>
           <div>
             <div className="text-[15px] font-black text-slate-800">다국어 번역·요약 에이전트</div>
@@ -244,6 +244,7 @@ const TranslateAgent=({onBack,domain})=>{
                       <span className="text-[11px] font-medium text-slate-700 truncate">{g.ko}</span>
                       <span className="text-[11px] text-slate-500 truncate">{g.en}</span>
                       <button onClick={()=>setGlossary(p=>p.filter((_,j)=>j!==i))}
+                        aria-label="용어 삭제"
                         className="text-slate-300 hover:text-red-400 transition-colors">
                         <Trash2 className="w-3.5 h-3.5"/>
                       </button>
@@ -338,7 +339,7 @@ const TranslateAgent=({onBack,domain})=>{
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-translate" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>
@@ -396,9 +397,9 @@ const TranslateAgent=({onBack,domain})=>{
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden flex flex-col px-6 py-4 gap-4">
+      <div className="flex-1 overflow-y-auto lg:overflow-hidden flex flex-col px-6 py-4 gap-4">
         {/* split pane */}
-        <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0">
           {/* left: source */}
           <div className="flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="shrink-0 px-4 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
@@ -444,7 +445,7 @@ const TranslateAgent=({onBack,domain})=>{
               <span className="text-[11px] font-black text-indigo-700">역번역 검증 — {lp.tgt} → {lp.src}</span>
               <span className="ml-auto text-[10px] text-indigo-400 bg-indigo-100 px-2 py-0.5 rounded-full font-bold">유사도 94.2%</span>
             </div>
-            <div className="px-5 py-4 grid grid-cols-2 gap-6">
+            <div className="px-5 py-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <div className="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-wider">원문 (한국어)</div>
                 <p className="text-[12px] text-slate-600 leading-relaxed line-clamp-6">{C.sourceText.split('\n\n')[0]}</p>
@@ -478,7 +479,7 @@ const TranslateAgent=({onBack,domain})=>{
               <span className="text-[11px] font-black text-purple-700">AI 요약 ({summaryLen}자 기준)</span>
               <span className="ml-auto text-[10px] text-purple-400">원문 요약 · 번역 요약</span>
             </div>
-            <div className="px-5 py-4 grid grid-cols-2 gap-4">
+            <div className="px-5 py-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <div className="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-wider">한국어 요약</div>
                 <p className="text-[12px] text-slate-600 leading-relaxed">{C.summaryKo}</p>

@@ -193,7 +193,7 @@ const OCRAgent = ({ onBack, domain }) => {
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-3 mb-2">
           {onBack && (
-            <button onClick={onBack} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0">
+            <button onClick={onBack} aria-label="뒤로 가기" className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0">
               <ArrowLeft className="w-4 h-4"/>
             </button>
           )}
@@ -237,7 +237,7 @@ const OCRAgent = ({ onBack, domain }) => {
                     <div className="text-[13px] font-bold text-slate-700 truncate">{f.name}</div>
                     <div className="text-[11px] text-slate-400">{f.size}{f.pages > 1 ? ` · ${f.pages}페이지` : ''}</div>
                   </div>
-                  <button onClick={e=>{e.stopPropagation();removeFile(i);}} className="text-slate-300 hover:text-red-400 transition-colors shrink-0">
+                  <button onClick={e=>{e.stopPropagation();removeFile(i);}} aria-label="파일 제거" className="text-slate-300 hover:text-red-400 transition-colors shrink-0">
                     <X className="w-3.5 h-3.5"/>
                   </button>
                 </div>
@@ -438,7 +438,7 @@ const OCRAgent = ({ onBack, domain }) => {
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-ocr" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>

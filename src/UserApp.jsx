@@ -544,6 +544,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
           docModalData={docModalData}
           onClose={() => setShowDocModal(false)}
           onDownload={handleDocDownload}
+          org={{ name: domain.orgName, short: domain.orgShort, color: domain.brandColor, en: domain.orgEn }}
         />
       )}
 

@@ -15,7 +15,7 @@ const QnaModal = ({ onClose }) => {
             <MessageCircle className="w-5 h-5 text-white" />
             <span className="font-black text-[16px] text-white">자주 묻는 질문 (FAQ)</span>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors">
+          <button onClick={onClose} aria-label="닫기" className="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>

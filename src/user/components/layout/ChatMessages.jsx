@@ -350,9 +350,9 @@ const ChatMessages = ({
                 {/* 액션 버튼 */}
                 {msg.role === "assistant" && (
                   <div className="flex items-center gap-1.5 mt-0.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")} onClick={() => { navigator.clipboard.writeText(msg.content); setToast({ message: "클립보드에 복사되었습니다." }); }}><Copy className="w-4 h-4" /></button>
-                    <button className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-green-600 hover:bg-green-50")}><ThumbsUp className="w-4 h-4" /></button>
-                    <button className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}><ThumbsDown className="w-4 h-4" /></button>
+                    <button aria-label="답변 복사" className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")} onClick={() => { navigator.clipboard.writeText(msg.content); setToast({ message: "클립보드에 복사되었습니다." }); }}><Copy className="w-4 h-4" /></button>
+                    <button aria-label="도움됨" className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-green-600 hover:bg-green-50")}><ThumbsUp className="w-4 h-4" /></button>
+                    <button aria-label="도움 안 됨" className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}><ThumbsDown className="w-4 h-4" /></button>
                     <button onClick={() => onErrReport(msg)} title="오류 신고" className={cn("p-1.5 rounded-lg transition-colors flex items-center gap-1 text-[11px] font-bold", isSecure ? "text-slate-500 hover:text-red-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}><AlertTriangle className="w-3.5 h-3.5" /><span className="hidden sm:inline">신고</span></button>
                     <span className={cn("text-[11px] ml-1", th.subtext)}>{msg.time}</span>
                   </div>

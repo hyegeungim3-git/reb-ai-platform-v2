@@ -171,7 +171,7 @@ const DataAnalysisAgent=({onBack,domain})=>{
         {/* 분석 유형 */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">2 · 분석 유형</label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               {id:'comprehensive', label:'종합 분석', desc:'기술통계 + 분포 + 이상치 + 시각화 전체'},
               {id:'stats',         label:'기술통계',  desc:'평균·분산·분위수·상관관계'},
@@ -252,7 +252,7 @@ const DataAnalysisAgent=({onBack,domain})=>{
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-dataanalysis" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>
@@ -279,7 +279,7 @@ const DataAnalysisAgent=({onBack,domain})=>{
 
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
         {/* 통계 요약 카드 */}
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
             {label:'총 데이터',value:`${file?.rows.toLocaleString()}행`,color:'text-orange-700',bg:'bg-orange-50 border-orange-200'},
             {label:'분석 열',  value:`${file?.cols}개`,                color:'text-blue-700',  bg:'bg-blue-50 border-blue-200'},
@@ -424,7 +424,7 @@ const DataAnalysisAgent=({onBack,domain})=>{
             <span className="ml-auto text-[10px] text-slate-400">{C.docStandard}</span>
           </div>
           <div className="p-5">
-            <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
               {[
                 {label:'요약 리포트',    desc:'1페이지 핵심 요약',    icon:'📄'},
                 {label:'상세 분석 보고서',desc:'통계+차트+인사이트', icon:'📊'},

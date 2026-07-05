@@ -108,7 +108,7 @@ const SafetyPlanAgent = ({ onBack, domain }) => {
     <div className="flex-1 overflow-y-auto px-6 py-8 bg-white">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-3 mb-2">
-          {onBack && <button onClick={onBack} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"><ChevronLeft className="w-5 h-5"/></button>}
+          {onBack && <button onClick={onBack} aria-label="뒤로 가기" className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0"><ChevronLeft className="w-5 h-5"/></button>}
           <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center shadow-md">
             <ClipboardList className="w-5 h-5 text-white"/>
           </div>
@@ -148,6 +148,7 @@ const SafetyPlanAgent = ({ onBack, domain }) => {
                     <span className="flex-1 truncate text-sm text-slate-700 font-medium">{f.name}</span>
                     <span className="text-[11px] text-slate-400 shrink-0 font-mono">{f.size>1024*1024?(f.size/1024/1024).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB'}</span>
                     <button onClick={e=>{e.stopPropagation();setUploadedFiles(p=>p.filter((_,j)=>j!==i));}}
+                      aria-label="업로드 파일 삭제"
                       className="text-slate-300 hover:text-red-400 transition-colors shrink-0 ml-1"><X className="w-3.5 h-3.5"/></button>
                   </div>
                 );
@@ -163,8 +164,8 @@ const SafetyPlanAgent = ({ onBack, domain }) => {
 
         <div className="space-y-1.5">
           <label className="text-[15px] font-black text-slate-600 uppercase tracking-wider">2 · 조사 기본 정보</label>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2"><input value={projName} onChange={e=>setProjName(e.target.value)} placeholder="조사명" className="w-full border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="sm:col-span-2"><input value={projName} onChange={e=>setProjName(e.target.value)} placeholder="조사명" className="w-full border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/></div>
             <input value={projType} onChange={e=>setProjType(e.target.value)} placeholder={C.projTypePlaceholder} className="border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/>
             <input value={projLoc} onChange={e=>setProjLoc(e.target.value)} placeholder="조사 위치" className="border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/>
             <input value={duration} onChange={e=>setDuration(e.target.value)} placeholder="조사 기간 (예: 3개월)" className="border rounded-xl px-4 py-2.5 text-sm bg-white outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-100"/>
@@ -268,7 +269,7 @@ const SafetyPlanAgent = ({ onBack, domain }) => {
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-safety" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>
@@ -455,7 +456,7 @@ const SafetyPlanAgent = ({ onBack, domain }) => {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {selectedRisks.map(r=>{
                 const d=C.riskData[r];
                 if(!d)return null;
@@ -542,6 +543,7 @@ const SafetyPlanAgent = ({ onBack, domain }) => {
                   <span className="w-6 h-6 rounded-md bg-[#7c2d12] flex items-center justify-center text-white text-[10px] font-black shrink-0">2</span>위험 요인 분석 (위험성 평가)
                 </h3>
                 <div className="ml-8">
+                  <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-[12px]" style={{borderTop:'2px solid #7c2d12'}}>
                     <thead>
                       <tr style={{background:'#7c2d12'}}>
@@ -567,6 +569,7 @@ const SafetyPlanAgent = ({ onBack, domain }) => {
                       })}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               </section>
               <section>

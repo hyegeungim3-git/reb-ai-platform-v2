@@ -16,7 +16,7 @@ const ErrorReportModal = ({ errReportText, setErrReportText, onClose, setToast }
             <p className="text-[12px] text-slate-500 font-medium">어떤 유형의 오류인지 선택해 주세요.</p>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><X className="w-5 h-5" /></button>
+        <button onClick={onClose} aria-label="닫기" className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"><X className="w-5 h-5" /></button>
       </div>
       {/* 오류 유형 라디오 */}
       <div className="space-y-3 mb-5">

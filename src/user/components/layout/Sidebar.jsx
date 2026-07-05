@@ -98,7 +98,7 @@ const Sidebar = ({
           <Plus className="w-3.5 h-3.5" /> 새 대화 시작
         </button>
       ) : (
-        <button onClick={onNewChat} className="w-10 h-10 rounded-xl bg-[#003087] text-white flex items-center justify-center hover:bg-[#002571] transition-colors shadow-md">
+        <button onClick={onNewChat} aria-label="새 대화 시작" className="w-10 h-10 rounded-xl bg-[#003087] text-white flex items-center justify-center hover:bg-[#002571] transition-colors shadow-md">
           <Plus className="w-5 h-5" />
         </button>
       )}
@@ -250,7 +250,7 @@ const Sidebar = ({
           <div className="px-2 space-y-0.5">
             <div className={cn("px-3 mb-2 flex items-center justify-between", th.sidebarLabel)}>
               <span className="text-[10px] font-black uppercase tracking-wider">최근 대화</span>
-              <button className="p-1 rounded-lg hover:bg-white/70 transition-colors"><History className="w-3.5 h-3.5" /></button>
+              <button aria-label="대화 이력" className="p-1 rounded-lg hover:bg-white/70 transition-colors"><History className="w-3.5 h-3.5" /></button>
             </div>
             <div className="px-3 py-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">오늘</div>
             {HISTORY.filter(h => h.isToday).map(h => {

@@ -631,7 +631,7 @@ ${special||'(해당 없음)'}
 
         <div className="space-y-1.5">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">1 · 보고서 유형 선택</label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {C.reportTypes.map(t=>(
               <button key={t.id} onClick={()=>setReportType(t.id)}
                 className={cn(
@@ -653,7 +653,7 @@ ${special||'(해당 없음)'}
 
         <div className="space-y-3">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">2 · 기본 정보</label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-[11px] text-slate-500 font-bold mb-1 block">보고 부서</label>
               <input value={dept} onChange={e=>setDept(e.target.value)}
@@ -694,7 +694,7 @@ ${special||'(해당 없음)'}
           <div className="text-[11px] font-black text-slate-500 uppercase tracking-wider">6 · 보고서 톤 &amp; 길이 설정</div>
           <div className="space-y-2">
             <p className="text-[11px] font-bold text-slate-500">문체 선택</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {TONES.map(t=>(
                 <button key={t.id} onClick={()=>setTone(t.id)}
                   className={cn(
@@ -709,7 +709,7 @@ ${special||'(해당 없음)'}
           </div>
           <div className="space-y-2">
             <p className="text-[11px] font-bold text-slate-500">분량 선택</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {LENGTHS_REPORT.map(l=>(
                 <button key={l.id} onClick={()=>setLength(l.id)}
                   className={cn(
@@ -786,7 +786,7 @@ ${special||'(해당 없음)'}
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-report" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>
@@ -984,7 +984,7 @@ ${special||'(해당 없음)'}
               </div>
 
               {/* ── 그래프 섹션 ── */}
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {/* 가격지수 월별 추이 꺾은선 */}
                 <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:'10px',padding:'14px 16px'}}>
                   <div style={{fontSize:'11px',fontWeight:800,color:'#003087',marginBottom:'12px',letterSpacing:'0.03em'}}>
@@ -1062,6 +1062,7 @@ ${special||'(해당 없음)'}
                   {C.pressIndexTitle}
                 </h3>
                 <div className="ml-8">
+                  <div className="overflow-x-auto">
                   <table className="w-full border-collapse text-[12px]" style={{border:'1px solid #e2e8f0'}}>
                     <thead>
                       <tr style={{background:'#003087',color:'#fff'}}>
@@ -1089,6 +1090,7 @@ ${special||'(해당 없음)'}
                       ))}
                     </tbody>
                   </table>
+                  </div>
                   <p style={{fontSize:'10px',color:'#9ca3af',marginTop:'5px'}}>{C.pressIndexNote}</p>
                 </div>
               </section>
@@ -1202,7 +1204,7 @@ ${special||'(해당 없음)'}
                     <div style={{fontSize:'11px',fontWeight:800,color:accentColor,marginBottom:'12px',letterSpacing:'0.03em'}}>
                       ▪ {label} 실적 현황 — 목표 대비 달성률
                     </div>
-                    <div className="grid grid-cols-2 gap-5 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-center">
                       <ResponsiveContainer width="100%" height={160}>
                         <BarChart data={chartData} layout="vertical" margin={{top:0,right:40,left:10,bottom:0}}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" horizontal={false}/>

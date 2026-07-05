@@ -92,7 +92,7 @@ const RightPanel = ({
       <div className={cn("border-b flex items-start justify-between px-5 pt-[17px] pb-3 shrink-0", isSecure ? "border-slate-800/60" : "border-slate-100")}>
         {panelView === "READER" && activeCitation ? (
           <div className="flex items-center gap-3 w-full pr-3 animate-in fade-in">
-            <button onClick={() => setPanelView("DOCS")} className={cn("p-2 rounded-xl transition-colors shrink-0", isSecure ? "hover:bg-[#1e293b] text-blue-400" : "hover:bg-slate-100 text-slate-500")}>
+            <button onClick={() => setPanelView("DOCS")} aria-label="문서 목록으로 돌아가기" className={cn("p-2 rounded-xl transition-colors shrink-0", isSecure ? "hover:bg-[#1e293b] text-blue-400" : "hover:bg-slate-100 text-slate-500")}>
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="min-w-0 flex-1">
@@ -146,9 +146,9 @@ const RightPanel = ({
           <div className="flex flex-col h-full">
             <div className={cn("h-11 border-b flex items-center justify-end px-4 gap-2 shrink-0", isSecure ? "bg-[#0a0f1c] border-slate-800" : "bg-white border-slate-100 shadow-sm")}>
               <div className={cn("flex items-center rounded-lg border p-0.5 shadow-sm", isSecure ? "bg-[#040814] border-slate-700" : "bg-white border-slate-200")}>
-                <button className={cn("p-1.5 rounded-md transition-colors", isSecure ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-100 text-slate-500")}><ZoomOut className="w-3.5 h-3.5" /></button>
+                <button aria-label="축소" className={cn("p-1.5 rounded-md transition-colors", isSecure ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-100 text-slate-500")}><ZoomOut className="w-3.5 h-3.5" /></button>
                 <span className={cn("text-[13px] font-bold px-2 w-10 text-center", isSecure ? "text-slate-300" : "text-slate-600")}>100%</span>
-                <button className={cn("p-1.5 rounded-md transition-colors", isSecure ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-100 text-slate-500")}><ZoomIn className="w-3.5 h-3.5" /></button>
+                <button aria-label="확대" className={cn("p-1.5 rounded-md transition-colors", isSecure ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-100 text-slate-500")}><ZoomIn className="w-3.5 h-3.5" /></button>
               </div>
               <span className={cn("text-[13px] px-2 py-0.5 rounded font-bold border", isSecure ? "bg-slate-800 text-blue-400 border-slate-700" : "bg-yellow-50 text-yellow-700 border-yellow-200")}>관련 구절 강조됨</span>
             </div>

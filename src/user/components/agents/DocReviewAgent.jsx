@@ -151,7 +151,7 @@ const DocReviewAgent=({onBack,domain})=>{
     <div className="flex-1 overflow-y-auto px-6 py-8 bg-white">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-3 mb-2">
-          {onBack&&<button onClick={onBack} className="text-slate-400 hover:text-indigo-600 transition-colors mr-1"><ChevronRight className="w-4 h-4 rotate-180"/></button>}
+          {onBack&&<button onClick={onBack} aria-label="뒤로 가기" className="text-slate-400 hover:text-indigo-600 transition-colors mr-1"><ChevronRight className="w-4 h-4 rotate-180"/></button>}
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md"><FileSearch className="w-5 h-5 text-white"/></div>
           <div>
             <div className="text-[15px] font-black text-slate-800">사규 기반 문서 사전 검토 에이전트</div>
@@ -184,7 +184,7 @@ const DocReviewAgent=({onBack,domain})=>{
                     <div className="text-[12px] font-bold text-slate-700 truncate">{f.name}</div>
                     <div className="text-[10px] text-slate-400">{(f.size/1024).toFixed(0)} KB</div>
                   </div>
-                  <button onClick={()=>removeFile(i)} className="text-slate-300 hover:text-red-400 transition-colors"><X className="w-3.5 h-3.5"/></button>
+                  <button onClick={()=>removeFile(i)} aria-label="파일 제거" className="text-slate-300 hover:text-red-400 transition-colors"><X className="w-3.5 h-3.5"/></button>
                 </div>
               ))}
             </div>
@@ -279,7 +279,7 @@ const DocReviewAgent=({onBack,domain})=>{
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-review" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>
@@ -478,7 +478,7 @@ const DocReviewAgent=({onBack,domain})=>{
                 <div className="text-[12px] font-black text-indigo-700 mb-3 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5"/>검토 완료 통계
                 </div>
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                   {[
                     {label:'총 검토 문서',val:`${files.length}개`,cls:'text-slate-700'},
                     {label:'위반 소지 건수',val:`${C.violations.length}건`,cls:'text-red-600'},
@@ -527,7 +527,7 @@ const DocReviewAgent=({onBack,domain})=>{
 
               {/* signature */}
               <div className="pt-4" style={{borderTop:'2px solid #091D58'}}>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {C.apvLine.map((p,i)=>(
                     <div key={i} className="border border-slate-300 rounded-lg overflow-hidden">
                       <div className="py-1.5 text-center text-[11px] font-bold text-white" style={{background:'#091D58'}}>{p.role}</div>

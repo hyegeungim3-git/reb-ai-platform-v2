@@ -16,7 +16,7 @@ const SatisfactionModal = ({ satRating, setSatRating, satComment, setSatComment,
       {/* 별점 */}
       <div className="flex justify-center gap-3 mb-6">
         {[1,2,3,4,5].map(s => (
-          <button key={s} onClick={() => setSatRating(s)} className="transition-transform hover:scale-125">
+          <button key={s} onClick={() => setSatRating(s)} aria-label={`별점 ${s}점`} className="transition-transform hover:scale-125">
             <Star className={cn("w-10 h-10", s <= satRating ? "text-yellow-400 fill-yellow-400" : "text-slate-300")} />
           </button>
         ))}

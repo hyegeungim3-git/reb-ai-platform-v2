@@ -400,7 +400,7 @@ const AddressAgent=({onBack,domain})=>{
         {/* 1 · 처리 유형 선택 */}
         <div className="space-y-2">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">1 · 처리 유형 선택</label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {MODE_TYPES.map(t=>{
               const tc=COLOR[t.color];
               const isActive=mode===t.m;
@@ -648,7 +648,7 @@ const AddressAgent=({onBack,domain})=>{
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto flex-col">
         <AgentWorkflowPanel agentId="agent-address" activeStep={mode==='ocr'?ocrAgentIdx:agentIdx} doneSteps={mode==='ocr'?ocrDoneIdx:doneIdx}/>
       </div>
     </div>
@@ -747,14 +747,14 @@ const AddressAgent=({onBack,domain})=>{
               <div className="text-[11px] font-black text-slate-500 uppercase tracking-wider flex items-center gap-2">
                 <Home className="w-3.5 h-3.5"/>호 목록 — {aptResult.buildings[selectedDong].dongName}
               </div>
-              <div className="border-2 border-slate-100 rounded-2xl overflow-hidden text-[12px]">
-                <div className="grid grid-cols-[0.5fr_0.6fr_1.8fr_0.7fr_0.7fr] bg-slate-50 border-b">
+              <div className="border-2 border-slate-100 rounded-2xl overflow-x-auto text-[12px]">
+                <div className="min-w-[480px] grid grid-cols-[0.5fr_0.6fr_1.8fr_0.7fr_0.7fr] bg-slate-50 border-b">
                   {['층','호명','호코드','면적','타입'].map(h=>(
                     <div key={h} className="px-3 py-2.5 font-black text-[10px] text-slate-500 uppercase border-r last:border-r-0">{h}</div>
                   ))}
                 </div>
                 {aptResult.units.map((u,i)=>(
-                  <div key={i} className="grid grid-cols-[0.5fr_0.6fr_1.8fr_0.7fr_0.7fr] border-b last:border-b-0 hover:bg-rose-50/40 transition-colors">
+                  <div key={i} className="min-w-[480px] grid grid-cols-[0.5fr_0.6fr_1.8fr_0.7fr_0.7fr] border-b last:border-b-0 hover:bg-rose-50/40 transition-colors">
                     <div className="px-3 py-2.5 text-slate-500 font-bold border-r">{u.floor}F</div>
                     <div className="px-3 py-2.5 text-slate-700 font-bold border-r">{u.hoName}</div>
                     <div className="px-3 py-2.5 font-mono text-[11px] text-slate-600 border-r">{u.hoCode}</div>
@@ -777,7 +777,7 @@ const AddressAgent=({onBack,domain})=>{
             <MatchStatusBadge status={C.singleResult.status}/>
 
             {/* 입력 → 결과 */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-slate-100 rounded-xl px-4 py-3">
                 <div className="text-[9px] font-black text-slate-400 uppercase mb-1">입력 주소</div>
                 <div className="text-[13px] text-slate-600 font-medium leading-snug">{address}</div>
@@ -913,14 +913,14 @@ const AddressAgent=({onBack,domain})=>{
                 </div>
               ))}
             </div>
-            <div className="border-2 border-slate-100 rounded-2xl overflow-hidden text-[12px]">
-              <div className="grid grid-cols-[1.2fr_1.8fr_2fr_0.8fr_0.9fr] bg-slate-50 border-b">
+            <div className="border-2 border-slate-100 rounded-2xl overflow-x-auto text-[12px]">
+              <div className="min-w-[560px] grid grid-cols-[1.2fr_1.8fr_2fr_0.8fr_0.9fr] bg-slate-50 border-b">
                 {['입력주소','도로명주소','지번주소','우편번호','상태'].map(h=>(
                   <div key={h} className="px-3 py-2 font-black text-[10px] text-slate-500 uppercase border-r last:border-r-0">{h}</div>
                 ))}
               </div>
               {C.batchResults.map((r,i)=>(
-                <div key={i} className="grid grid-cols-[1.2fr_1.8fr_2fr_0.8fr_0.9fr] border-b last:border-b-0 hover:bg-slate-50">
+                <div key={i} className="min-w-[560px] grid grid-cols-[1.2fr_1.8fr_2fr_0.8fr_0.9fr] border-b last:border-b-0 hover:bg-slate-50">
                   <div className="px-3 py-2.5 text-slate-600 truncate border-r">{r.input}</div>
                   <div className="px-3 py-2.5 text-slate-700 font-medium truncate border-r">{r.road}</div>
                   <div className="px-3 py-2.5 text-slate-500 truncate border-r">{r.jibun}</div>
@@ -964,7 +964,7 @@ const AddressAgent=({onBack,domain})=>{
                 <div className="text-[14px] font-bold text-slate-800 mb-0.5">{r.road}</div>
                 <div className="text-[11px] text-slate-400">원문: {r.raw}</div>
                 {ocrSelectedRow===i&&(
-                  <div className="mt-3 pt-3 border-t border-teal-200 grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="mt-3 pt-3 border-t border-teal-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
                     <div><span className="text-slate-400 font-bold">지번: </span><span className="text-slate-600">{r.jibun}</span></div>
                     <div><span className="text-slate-400 font-bold">우편번호: </span><span className="font-mono text-slate-600">{r.zip}</span></div>
                     <div><span className="text-slate-400 font-bold">좌표: </span><span className="text-slate-600">{r.lat}, {r.lng}</span></div>

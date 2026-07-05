@@ -172,7 +172,7 @@ const SummaryAgent=({onBack,domain})=>{
 
         {/* header */}
         <div className="flex items-center gap-3 mb-2">
-          <button onClick={onBack} className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors">
+          <button onClick={onBack} aria-label="뒤로 가기" className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors">
             <ChevronRight className="w-4 h-4 text-slate-500 rotate-180"/>
           </button>
           <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center shadow-md">
@@ -277,7 +277,7 @@ const SummaryAgent=({onBack,domain})=>{
         {/* summary type selector */}
         <div className="space-y-2">
           <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">요약 유형</div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
             {SUMMARY_TYPES.map(t=>(
               <button key={t.id} onClick={()=>setSummaryType(t.id)}
                 className={cn('border-2 rounded-xl p-3 text-left transition-all',
@@ -403,7 +403,7 @@ const SummaryAgent=({onBack,domain})=>{
           <div className="text-center text-xs text-slate-400">{doneIdx.length}/{AGENTS.length} 에이전트 완료</div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-summary" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>
@@ -454,7 +454,7 @@ const SummaryAgent=({onBack,domain})=>{
           </div>
 
           {/* stats */}
-          <div className="grid grid-cols-4 gap-2 mt-4 pt-4 border-t border-slate-100">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-4 pt-4 border-t border-slate-100">
           {(compareMode?C.compareStats:C.summaryStats).map(s=>(
             <div key={s.label} className={cn('border rounded-xl p-2.5 text-center', compareMode?'bg-indigo-50 border-indigo-100':'bg-amber-50 border-amber-100')}>
               <div className={cn('text-xs font-black', compareMode?'text-indigo-700':'text-amber-700')}>{s.val}</div>
@@ -515,6 +515,7 @@ const SummaryAgent=({onBack,domain})=>{
               <TableProperties className="w-3.5 h-3.5 text-teal-200"/>
               <span className="text-[12px] font-black text-white">표 형식 요약</span>
             </div>
+            <div className="overflow-x-auto">
             <table className="w-full text-[12px] border-collapse">
               <thead>
                 <tr className="bg-teal-50">
@@ -533,6 +534,7 @@ const SummaryAgent=({onBack,domain})=>{
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 

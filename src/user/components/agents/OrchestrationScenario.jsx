@@ -67,7 +67,7 @@ const OrchestrationScenario = ({ scenario, agents, user, onBack }) => {
 
         {/* ── 헤더 ─────────────────────────────────────────── */}
         <div className="flex items-center gap-3 mb-5">
-          <button onClick={onBack}
+          <button onClick={onBack} aria-label="허브로 돌아가기"
             className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors shadow-sm shrink-0">
             <ArrowLeft className="w-4 h-4" />
           </button>

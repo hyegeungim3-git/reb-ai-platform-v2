@@ -196,7 +196,7 @@ const KnowledgeAgent=({onBack,domain})=>{
         {/* 검색 방식 토글 */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">2 · 검색 방식</label>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             {[
               {val:'semantic', label:'시맨틱 검색', desc:'의미 유사도 기반', icon:Zap},
               {val:'fulltext', label:'전문 검색 (Full-Text)', desc:'키워드 정확 매칭 + 위치 표시', icon:Hash},
@@ -220,7 +220,7 @@ const KnowledgeAgent=({onBack,domain})=>{
         {/* 보안 등급 필터 */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-black text-slate-500 uppercase tracking-wider">3 · 보안 등급 필터</label>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {[
               {val:'all', label:'전체', color:'bg-slate-600'},
               {val:'O',   label:'일반 (공개)', color:'bg-slate-500'},
@@ -345,7 +345,7 @@ const KnowledgeAgent=({onBack,domain})=>{
           </div>
         </div>
       </div>
-      <div className="w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex flex-col">
+      <div className="hidden lg:flex w-80 shrink-0 border-l border-slate-100 bg-gradient-to-b from-slate-50 to-white p-4 overflow-y-auto custom-scrollbar flex-col">
         <AgentWorkflowPanel agentId="agent-knowledge" activeStep={agentIdx} doneSteps={doneIdx} />
       </div>
     </div>

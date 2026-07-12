@@ -104,6 +104,17 @@ async function scanDomain(browser, d) {
   for (const m of d.hubMarkers) if (!hub.text.includes(m)) fails.push(`허브 마커 누락: "${m}"`);
   if (hub.cards !== d.orchCards) fails.push(`시나리오 카드 ${hub.cards}장 (기대 ${d.orchCards})`);
 
+  // 모바일(375) 회귀 — 신규 로드 기준: 가로 스크롤 금지 + 포털 진입 가능
+  await page.setViewport({ width: 375, height: 812 });
+  await page.goto(BASE, { waitUntil: "networkidle2" });
+  await sleep(500);
+  if (!(await clickByText(page, "사용자 포털"))) fails.push("375: '사용자 포털' 버튼 없음");
+  await sleep(1000);
+  const mob = await page.evaluate(() => ({
+    hScroll: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  }));
+  if (mob.hScroll) fails.push("375: 가로 스크롤 발생");
+
   await page.close();
   return { fails, consoleErrors };
 }

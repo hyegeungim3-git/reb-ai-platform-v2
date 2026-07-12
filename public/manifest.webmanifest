@@ -1,0 +1,16 @@
+{
+  "name": "GenOS — 멀티 도메인 생성형 AI 플랫폼",
+  "short_name": "GenOS",
+  "description": "생성형 AI 플랫폼 데모 — 한국부동산원 · 한빛정밀 · 한성시청 도메인 팩",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#003087",
+  "lang": "ko",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

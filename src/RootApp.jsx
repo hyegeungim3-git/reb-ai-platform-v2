@@ -61,7 +61,7 @@ const PortalSelector = ({ domain, onChangeDomain, onSelectUser, onSelectAdmin })
         <DomainSwitcher domain={domain} onChange={onChangeDomain} />
       </div>
 
-      <div className="relative z-10 w-full max-w-3xl px-6 flex flex-col items-center">
+      <main className="relative z-10 w-full max-w-3xl px-6 flex flex-col items-center">
         {/* Logo & Title */}
         <div className="flex flex-col items-center mb-16 text-center">
           <div className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl mb-6 border-4" style={{ backgroundColor: domain.brandColor, borderColor: `${domain.brandColor}33` }}>
@@ -196,7 +196,7 @@ const PortalSelector = ({ domain, onChangeDomain, onSelectUser, onSelectAdmin })
             모든 데이터는 내부망에서만 처리되며 외부로 전송되지 않습니다.
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

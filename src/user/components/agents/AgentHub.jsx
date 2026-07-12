@@ -132,6 +132,7 @@ const AgentHub = ({ onLaunch, agents = AGENT_TEAMS, orgName = "한국부동산�
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className="text-[9px] px-2 py-0.5 bg-white/15 border border-white/25 text-indigo-100 rounded-full font-black uppercase tracking-wider">복합 업무 오케스트레이션</span>
+                        {orch._custom && <span className="text-[9px] px-2 py-0.5 bg-amber-300/90 text-amber-900 rounded-full font-black">커스텀</span>}
                         <span className="text-[9px] text-indigo-200 font-bold">요청 1건 → 에이전트 {orch.stages.length}개 자동 릴레이</span>
                       </div>
                       <div className="text-[16px] font-black text-white leading-tight truncate">{orch.title}</div>

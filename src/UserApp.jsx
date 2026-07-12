@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import { cn, orchList } from "./user/utils.jsx";
 import { initLive, stepLive, liveAlertOf } from "./user/liveEngine.js";
 import { logAudit } from "./user/auditLog.js";
+import { allScenarios } from "./user/scenarios.js";
 import Toast from "./user/components/Toast.jsx";
 import {
   MODES as BASE_MODES, HISTORY as BASE_HISTORY, DOCS as BASE_DOCS,
@@ -334,7 +335,7 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
         const hit = domain.agentRouting.find(r => r.keywords.some(k => q.includes(k)));
         if (hit) {
           const name = hit.agentId.startsWith("orchestration")
-            ? (orchList(domain.orchestration)[Number(hit.agentId.split(":")[1]) || 0]?.title ?? "복합 업무 시나리오")
+            ? (allScenarios(domain)[Number(hit.agentId.split(":")[1]) || 0]?.title ?? "복합 업무 시나리오")
             : (AGENT_TEAMS.find(a => a.id === hit.agentId)?.name ?? "AI 에이전트");
           handoff = { agentId: hit.agentId, name, reason: hit.reason };
         }
@@ -562,9 +563,9 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
           {/* ── AGENT 탭: 허브 & 개별 에이전트 (lazy loading) ── */}
           {chatTab === "AGENT" && (
             <Suspense fallback={<AgentLoadingFallback />}>
-              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} /> :
-               activeAgentId.startsWith("orchestration") && orchList(domain.orchestration).length > 0
-                                                      ? <OrchestrationScenario key={activeAgentId} scenario={orchList(domain.orchestration)[Number(activeAgentId.split(":")[1]) || 0] ?? orchList(domain.orchestration)[0]} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
+              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={allScenarios(domain)} /> :
+               activeAgentId.startsWith("orchestration") && allScenarios(domain).length > 0
+                                                      ? <OrchestrationScenario key={activeAgentId} scenario={allScenarios(domain)[Number(activeAgentId.split(":")[1]) || 0] ?? allScenarios(domain)[0]} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-chatbot"      ? <ChatbotAgent      domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-report"       ? <ReportAgent       domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent domain={domain} onBack={() => setActiveAgentId(null)} /> :
@@ -578,7 +579,7 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
                activeAgentId === "agent-translate"    ? <TranslateAgent    domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-review"       ? <DocReviewAgent    domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-safety"       ? <SafetyPlanAgent   domain={domain} onBack={() => setActiveAgentId(null)} /> :
-               <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} />}
+               <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={allScenarios(domain)} />}
             </Suspense>
           )}
 

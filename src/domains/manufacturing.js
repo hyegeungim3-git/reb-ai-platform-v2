@@ -165,6 +165,16 @@ const manufacturing = {
       { id: "changwon1",name: "창원본사공장",keywords: ["창원", "본사"],   x: 2, y: 4, value: 93.1, series: [90.2, 91.5, 92.0, 91.1, 92.4, 93.1], insight: "3월 예지보전 시스템 도입 후 비계획 정지가 42% 감소해 전 사업장 최고 가동률을 유지하고 있습니다." },
     ],
   },
+  // 라이브 지표 — GENERAL 첫 화면 실시간 카드 + 임계 돌파 시 알림 생성 (예지보전 세계관과 동일 수치대)
+  liveMetric: {
+    label: "PRS-C03 크랭크축 진동 RMS", unit: "mm/s", decimals: 2,
+    initial: 3.12, min: 2.4, max: 5.2, window: 48,
+    threshold: 3.5, thresholdLabel: "관리 기준 3.5mm/s",
+    drift: 0.006, noise: 0.05,
+    recovery: { at: 4.4, to: 2.85 },
+    alert: { severity: "alert", title: "실시간 진동 알람 — PRS-C03", body: "진동 RMS {value}mm/s — 관리 기준(3.5) 상향 돌파. 자동 대응 시나리오 실행을 권장합니다.", link: { agentId: "orchestration:0" } },
+    source: "PdM 통합 모니터링 · 1초 주기(시뮬레이션)",
+  },
   // 채팅→에이전트 핸드오프 — GENERAL 답변 아래 이동 카드 (선행 규칙 우선, 소문자 키워드)
   agentRouting: [
     { keywords: ["진동", "알람", "예지보전"], agentId: "orchestration:0", reason: "센서 조회부터 정비 지시서·위험성평가까지 자동 릴레이로 처리할 수 있습니다." },

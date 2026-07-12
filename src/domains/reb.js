@@ -101,6 +101,16 @@ const reb = {
       { id: "jeju",    name: "제주", keywords: ["제주"],           x: 0, y: 5, value: 0.65, series: [9.32, -7.14, 0.28, 0.45, 0.65], insight: "관광 회복 지연으로 전국 최저 상승률이나, 하락세는 멈추고 소폭 반등했습니다." },
     ],
   },
+  // 라이브 지표 — GENERAL 첫 화면 실시간 카드 + 임계 돌파 시 알림 생성 (실거래 검증 세계관과 동일 수치대)
+  liveMetric: {
+    label: "실거래 신고 최고 괴리율 (주간 롤링)", unit: "%", decimals: 1,
+    initial: 24.5, min: 18, max: 38, window: 48,
+    threshold: 30, thresholdLabel: "조사 기준 +30%",
+    drift: 0.045, noise: 0.5,
+    recovery: { at: 35, to: 22 },
+    alert: { severity: "alert", title: "실시간 이상거래 의심 감지", body: "시세 괴리율 {value}% 신고 접수 — 정밀조사 선별 검토가 필요합니다.", link: { agentId: "orchestration:1" } },
+    source: "RTMS 신고 실시간 검증(시뮬레이션)",
+  },
   // 채팅→에이전트 핸드오프 — GENERAL 답변 아래 이동 카드 (선행 규칙 우선, 소문자 키워드)
   agentRouting: [
     { keywords: ["실거래", "이상거래", "괴리"], agentId: "orchestration:1", reason: "주간 신고분 전건 검증과 정밀조사 선별 보고서까지 자동 릴레이로 처리합니다." },

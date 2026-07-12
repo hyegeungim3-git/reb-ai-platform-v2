@@ -150,6 +150,12 @@ const civic = {
       { id: "gongdan",  name: "공단동",   keywords: ["공단동"],   x: 3, y: 2, value: 398, series: [372, 368, 384, 391, 389, 398], insight: "산업단지 특성상 소음·환경 민원 비중이 높으며, 야간 조업 관련 신고가 여름철에 증가하는 경향이 있습니다." },
     ],
   },
+  // 알림 센터 — 헤더 벨 드롭다운. link.agentId로 에이전트/시나리오 딥링크 (orchestration:<idx> 허용)
+  notifications: [
+    { id: "n1", severity: "alert", title: "호우경보 발령", body: "06:00 발령 — 피해 신고 47건 · 강변동 주의수위 초과. 상황보고서 자동 작성을 실행할 수 있습니다.", time: "06:02", link: { agentId: "orchestration:1" } },
+    { id: "n2", severity: "warn", title: "옥외광고물 허가 신청 8건", body: "주간 접수분 스캔 서류 검토 대기 중입니다.", time: "08:30", link: { agentId: "orchestration:0" } },
+    { id: "n3", severity: "info", title: "정례회의 녹음 미처리", body: "3/17 민원여권과 정례회의 녹음이 회의록 작성 대기 상태입니다.", time: "어제", link: { agentId: "agent-meeting" } },
+  ],
   // 복합 업무 오케스트레이션 — 배열이면 허브에 카드가 시나리오별로 1장씩 노출 (시뮬레이션)
   orchestration: [
   // 시나리오 1 — 민원: 접수 서류 1묶음이 OCR→주소정제→행정DB조회→검토 보고서를 릴레이

@@ -447,6 +447,8 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
             setShowQnaModal={setShowQnaModal} setShowTutorial={setShowTutorial}
             showNoticeBanner={showNoticeBanner} setShowNoticeBanner={setShowNoticeBanner}
             onExitPortal={onExitPortal}
+            notifications={domain.notifications || []}
+            onNotifNavigate={(agentId) => { setChatTab("AGENT"); setActiveAgentId(agentId); }}
           />
 
           {/* ── AGENT 탭: 허브 & 개별 에이전트 (lazy loading) ── */}

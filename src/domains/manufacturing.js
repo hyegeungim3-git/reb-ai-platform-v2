@@ -165,6 +165,12 @@ const manufacturing = {
       { id: "changwon1",name: "창원본사공장",keywords: ["창원", "본사"],   x: 2, y: 4, value: 93.1, series: [90.2, 91.5, 92.0, 91.1, 92.4, 93.1], insight: "3월 예지보전 시스템 도입 후 비계획 정지가 42% 감소해 전 사업장 최고 가동률을 유지하고 있습니다." },
     ],
   },
+  // 알림 센터 — 헤더 벨 드롭다운. link.agentId로 에이전트/시나리오 딥링크 (orchestration:<idx> 허용)
+  notifications: [
+    { id: "n1", severity: "alert", title: "진동 알람 — PRS-C03", body: "창원본사 3번 프레스 진동 RMS 4.2mm/s — 관리 기준 연속 초과, 자동 대응 시나리오 실행을 권장합니다.", time: "07:12", link: { agentId: "orchestration:0" } },
+    { id: "n2", severity: "warn", title: "협력사 검사성적서 입고", body: "수입검사 성적서 스캔본 9건(24면) 판정 처리 대기 중입니다.", time: "08:40", link: { agentId: "orchestration:1" } },
+    { id: "n3", severity: "info", title: "공정회의 녹음 미처리", body: "3/17 생산기술팀 공정회의 녹음이 회의록 작성 대기 상태입니다.", time: "어제", link: { agentId: "agent-meeting" } },
+  ],
   // 복합 업무 오케스트레이션 — 배열이면 허브에 카드가 시나리오별로 1장씩 노출 (시뮬레이션)
   orchestration: [
   // 시나리오 1 — 예지보전: 진동 알람 1건이 센서조회→이상진단→정비지시서→위험성평가를 릴레이

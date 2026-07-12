@@ -1,7 +1,14 @@
-import React from "react";
-import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X, Menu, LayoutGrid } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X, Menu, LayoutGrid, ChevronRight, AlertTriangle, Info, Siren } from "lucide-react";
 import { cn, orchList } from "../../utils.jsx";
 import { MOCK_NOTICES_USER } from "../../data/constants.js";
+
+/* 알림 심각도별 아이콘·색 (팩 notifications[].severity: 'alert'|'warn'|'info') */
+const NOTIF_TONE = {
+  alert: { icon: Siren,         dot: "bg-rose-500",  chip: "bg-rose-50 text-rose-600 border-rose-200" },
+  warn:  { icon: AlertTriangle, dot: "bg-amber-500", chip: "bg-amber-50 text-amber-600 border-amber-200" },
+  info:  { icon: Info,          dot: "bg-blue-500",  chip: "bg-blue-50 text-blue-600 border-blue-200" },
+};
 
 /* ================================================================== */
 /* 중앙 헤더 + 공지 배너 — 현재 탭/모드 타이틀·상태 배지·퀵 버튼        */
@@ -12,12 +19,30 @@ const ChatHeader = ({
   activeAgentId, AGENT_TEAMS,
   setShowQnaModal, setShowTutorial,
   showNoticeBanner, setShowNoticeBanner,
-  onExitPortal,
+  onExitPortal, notifications = [], onNotifNavigate,
 }) => {
   const ModeIcon = mc.icon;
   // 오케스트레이션 활성 시나리오 — activeAgentId "orchestration:<idx>" (구형 "orchestration"은 0번)
   const isOrch = typeof activeAgentId === "string" && activeAgentId.startsWith("orchestration");
   const orchActive = isOrch ? (orchList(domain.orchestration)[Number(activeAgentId.split(":")[1]) || 0] ?? orchList(domain.orchestration)[0]) : null;
+
+  // 알림 센터 — 팩 notifications 공급 시에만 벨 노출, 읽음 상태는 세션 한정
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [readIds, setReadIds] = useState(() => new Set());
+  const notifRef = useRef(null);
+  const unread = notifications.filter(n => !readIds.has(n.id)).length;
+  useEffect(() => {
+    if (!notifOpen) return;
+    const close = (e) => { if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false); };
+    const esc = (e) => { if (e.key === "Escape") setNotifOpen(false); };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
+  }, [notifOpen]);
+  const handleNotifClick = (n) => {
+    setReadIds(prev => new Set(prev).add(n.id));
+    if (n.link?.agentId && onNotifNavigate) { onNotifNavigate(n.link.agentId); setNotifOpen(false); }
+  };
   return (
     <>
       {/* Header */}
@@ -52,6 +77,60 @@ const ChatHeader = ({
             <div className={cn("w-2 h-2 rounded-full animate-pulse", isSecure ? "bg-blue-500" : "bg-green-500")}></div>
             <span>{isSecure ? "보안 모드" : "내부망 전용"}</span>
           </div>
+          {/* 알림 센터 — 팩 notifications 공급 시에만 노출 */}
+          {notifications.length > 0 && (
+            <div className="relative" ref={notifRef}>
+              <button onClick={() => setNotifOpen(o => !o)} title="알림" aria-label={`알림 ${unread}건`} aria-expanded={notifOpen}
+                className={cn("relative h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
+                <Bell className="w-5 h-5" />
+                {unread > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center ring-2 ring-white">
+                    {unread}
+                  </span>
+                )}
+              </button>
+              {notifOpen && (
+                <div className={cn("absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl border shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150",
+                  isSecure ? "bg-[#0a0f1c] border-slate-700" : "bg-white border-slate-200")}>
+                  <div className={cn("px-4 py-2.5 border-b flex items-center gap-2", isSecure ? "border-slate-800" : "border-slate-100")}>
+                    <Bell className={cn("w-3.5 h-3.5", isSecure ? "text-blue-400" : "text-indigo-600")} />
+                    <span className={cn("text-[12px] font-black", isSecure ? "text-slate-200" : "text-slate-800")}>알림 센터</span>
+                    <span className={cn("ml-auto text-[10px] font-bold", isSecure ? "text-slate-500" : "text-slate-400")}>미확인 {unread}건</span>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto custom-scrollbar">
+                    {notifications.map(n => {
+                      const tone = NOTIF_TONE[n.severity] || NOTIF_TONE.info;
+                      const NIcon = tone.icon;
+                      const isRead = readIds.has(n.id);
+                      return (
+                        <button key={n.id} onClick={() => handleNotifClick(n)}
+                          className={cn("w-full flex items-start gap-2.5 px-4 py-3 text-left border-b last:border-b-0 transition-colors",
+                            isSecure ? "border-slate-800 hover:bg-slate-800/60" : "border-slate-50 hover:bg-slate-50",
+                            isRead && "opacity-55")}>
+                          <span className={cn("w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5", tone.chip)}>
+                            <NIcon className="w-3.5 h-3.5" />
+                          </span>
+                          <span className="flex-1 min-w-0">
+                            <span className="flex items-center gap-1.5">
+                              {!isRead && <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", tone.dot)} />}
+                              <span className={cn("text-[12px] font-black truncate", isSecure ? "text-slate-200" : "text-slate-800")}>{n.title}</span>
+                              <span className={cn("ml-auto text-[10px] font-bold shrink-0", isSecure ? "text-slate-500" : "text-slate-400")}>{n.time}</span>
+                            </span>
+                            <span className={cn("block text-[11px] font-medium leading-snug mt-0.5", isSecure ? "text-slate-400" : "text-slate-500")}>{n.body}</span>
+                            {n.link?.agentId && (
+                              <span className={cn("inline-flex items-center gap-0.5 text-[10px] font-black mt-1", isSecure ? "text-blue-400" : "text-indigo-600")}>
+                                바로 처리하기 <ChevronRight className="w-3 h-3" />
+                              </span>
+                            )}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           {onExitPortal && (
             <button onClick={onExitPortal} title="포털 선택 화면으로" aria-label="포털 선택 화면으로" className={cn("h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
               <LayoutGrid className="w-5 h-5" />

@@ -101,6 +101,12 @@ const reb = {
       { id: "jeju",    name: "제주", keywords: ["제주"],           x: 0, y: 5, value: 0.65, series: [9.32, -7.14, 0.28, 0.45, 0.65], insight: "관광 회복 지연으로 전국 최저 상승률이나, 하락세는 멈추고 소폭 반등했습니다." },
     ],
   },
+  // 알림 센터 — 헤더 벨 드롭다운. link.agentId로 에이전트/시나리오 딥링크 (orchestration:<idx> 허용)
+  notifications: [
+    { id: "n1", severity: "alert", title: "실거래 이상거래 의심 8건", body: "주간 자동 검증 결과 고가 3·저가 4·반복 거래 1건 — 정밀조사 선별 검토가 필요합니다.", time: "09:00", link: { agentId: "orchestration:1" } },
+    { id: "n2", severity: "warn", title: "공시지가 이의신청 12건 접수", body: "스캔 서류 일괄 처리 대기 — OCR·검토 보고서 자동화를 실행할 수 있습니다.", time: "08:15", link: { agentId: "orchestration:0" } },
+    { id: "n3", severity: "info", title: "주간 보고서 마감 D-1", body: "부동산공시처 주간 업무 보고 초안 작성을 지원할 수 있습니다.", time: "어제", link: { agentId: "agent-report" } },
+  ],
   // 복합 업무 오케스트레이션 — 배열이면 허브에 카드가 시나리오별로 1장씩 노출 (시뮬레이션)
   orchestration: [
   // 시나리오 1 — 공시: 스캔 서류 1묶음이 OCR→주소 표준화→DB조회→검토 보고서를 릴레이

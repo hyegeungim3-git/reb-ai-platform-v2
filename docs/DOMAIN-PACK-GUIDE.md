@@ -63,8 +63,16 @@ suggestions: [ /* 4개 */ { icon: Search, iconBg: "bg-teal-50", iconColor: "text
 
 sampleAnswers: [ /* suggestions와 짝. 최소 2개 */
   { keywords: ["절삭유", "sop"],   // 소문자로 작성 (질의가 toLowerCase()로 비교됨)
-    answer: { content: "마크다운 답변…", citations: [], steps: null } } ],
-  // citations는 반드시 빈 배열 — 인용 뷰어(FILE_DATA)는 아직 REB 전용이다
+    answer: { content: "마크다운 답변…", citations: [], steps: null,
+      // XAI 푸터(선택 — XaiPanel.jsx가 소비): confidence 없고 citations도 없으면 "일반 지식 · 담당자 확인 권장" 배지로 폴백
+      confidence: 91,               // 0~100. 75 미만이면 '담당자 검토 권장'(HITL) 배지
+      xai: {                        // 전부 선택 — sources 없으면 citations 유사도로 근거 구성 합성
+        queryRewrite: "검색 질의 변환문", base: { rag: 88, model: 12 },
+        sources: [{ name: "근거 문서명", similarity: 94 }],          // 표시 전용(클릭 안 됨)
+        rejected: [{ name: "기각 문서명", similarity: 58, reason: "기각 사유" }],
+        reasoning: "판단 근거 1~2문장 (불확실성 언급 권장)",
+      } } } ],
+  // citations는 반드시 빈 배열 — 인용 뷰어(FILE_DATA)는 아직 REB 전용이다. 근거 표시는 xai.sources로
 
 modeDesc: { GENERAL: "…에 대해 자유롭게 질문하세요" },  // REVIEW/TRANSLATE/REPORT도 교체 가능
 
@@ -129,8 +137,9 @@ orchestration: {
   brief: "허브 카드·헤더에 표시될 1문장 설명",
   request: "사용자가 입력할 법한 자연어 요청 1문장",
   attachment: { name: "스캔파일.pdf", pages: 18, size: "12.4 MB" },  // 선택 — 알람·이벤트 트리거형 시나리오는 생략 가능
-  stages: [ // { agentId, ms(연출 시간), task(1문장), logs(3~5줄 — 시스템명·수치 포함), output:{label, items[]}, handoff }
+  stages: [ // { agentId, ms(연출 시간), task(1문장), logs(3~5줄 — 시스템명·수치 포함), output:{label, items[], factors?}, review?, handoff }
     { agentId: "agent-ocr", ms: 3200, task: "…", logs: ["…"], output: { label: "OCR 추출 결과", items: ["…"] }, handoff: "추출 지번 12건을 …로 전달" },
+    // XAI(선택): output.factors = [{label, pct}] 판정 기여도 바 / review = "…" 사람 확인 지점(HITL) 배지 — 분석·판정 스테이지에 권장
   ],
   result: { docNo: "KREA-…-2026-NNN", docTitle: "…검토 보고서", summary: ["…3줄"], metrics: [{ label: "처리 건수", value: "12건" } /* 4개 */] },
 },

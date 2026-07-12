@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import {
   ArrowLeft, Workflow, Play, RotateCcw, CheckCircle2, Loader2,
-  Paperclip, ChevronRight, ArrowDown, FileText, Sparkles, Download,
+  Paperclip, ChevronRight, ArrowDown, FileText, Sparkles, Download, UserCheck,
 } from "lucide-react";
 import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
 import { cn } from "../../utils.jsx";
@@ -202,6 +202,30 @@ const OrchestrationScenario = ({ scenario, agents, user, onBack }) => {
                             </div>
                           ))}
                         </div>
+                        {/* XAI — 판정 기여도 (팩 output.factors 공급 시에만 노출) */}
+                        {st.output.factors?.length > 0 && (
+                          <div className="mt-2.5 pt-2 border-t border-white/60">
+                            <div className={cn("text-[9px] font-black uppercase tracking-widest mb-1.5", c.text)}>판정 기여도</div>
+                            <div className="space-y-1">
+                              {st.output.factors.map((f, fi) => (
+                                <div key={fi} className="flex items-center gap-2">
+                                  <span className="text-[10px] font-bold text-slate-600 w-36 truncate shrink-0">{f.label}</span>
+                                  <span className="flex-1 h-1.5 rounded-full bg-white/70 overflow-hidden">
+                                    <span className={cn("block h-full rounded-full", c.bg)} style={{ width: `${f.pct}%` }} />
+                                  </span>
+                                  <span className="text-[10px] font-black font-mono tabular-nums text-slate-500 w-8 text-right shrink-0">{f.pct}%</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {/* XAI — 사람 확인 지점 (팩 stage.review 공급 시에만 노출) */}
+                    {isDone && st.review && (
+                      <div className="mx-4 mb-3.5 flex items-start gap-1.5 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200">
+                        <UserCheck className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-px" />
+                        <span className="text-[11px] font-bold text-amber-700 leading-snug">사람 확인 지점 — {st.review}</span>
                       </div>
                     )}
                   </div>

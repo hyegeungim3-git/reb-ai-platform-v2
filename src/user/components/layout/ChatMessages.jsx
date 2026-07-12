@@ -10,6 +10,7 @@ import { SECURE_SUGGESTIONS as BASE_SECURE_SUGGESTIONS } from "../../data/consta
 
 // 지도 인텔리전스 카드: recharts 포함 — 지역 질의 응답 시점에만 로드 (초기 번들 분리)
 const MapIntelCard = lazy(() => import("../MapIntelCard.jsx"));
+import XaiPanel from "../XaiPanel.jsx";
 
 /* ================================================================== */
 /* 중앙 채팅 영역 — 빈 상태(탭별) · 메시지 목록 · 타이핑 인디케이터     */
@@ -337,6 +338,8 @@ const ChatMessages = ({
                     : cn("px-5 py-4", th.chatBg))}>
                   {msg.content}
                 </div>
+                {/* ── XAI 푸터: 신뢰도·근거 구성·판단 근거 (answer 객체 confidence·citations·xai) ── */}
+                {msg.role === "assistant" && <XaiPanel msg={msg} isSecure={isSecure} />}
                 {/* ── 지도 인텔리전스 카드 (히트맵 + 시계열, 시뮬레이션) ── */}
                 {msg.role === "assistant" && msg.mapIntel && (
                   <Suspense fallback={

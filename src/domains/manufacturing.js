@@ -3,7 +3,7 @@
  * 동일 플랫폼을 제조 도메인에 맞춰 재구성한 데모 프로파일.
  */
 import {
-  Factory, ClipboardCheck, Wrench, Search, Gauge, BookOpen, Map,
+  Factory, ClipboardCheck, Wrench, Search, BookOpen, Map, Flame, Activity,
   FileText, ShieldCheck, Lock, Database, CheckSquare, ClipboardList, BookMarked,
 } from "lucide-react";
 
@@ -37,8 +37,8 @@ const manufacturing = {
   ],
   suggestions: [
     { icon: Search,   iconBg: "bg-teal-50",   iconColor: "text-teal-600",   title: "작업표준 검색",     query: "CNC 3라인 가공 공정의 작업표준(SOP) 개정본에서 절삭유 교체 주기를 알려줘" },
-    { icon: Gauge,    iconBg: "bg-blue-50",   iconColor: "text-blue-600",   title: "불량률 조회",       query: "이번 주 2공장 프레스 라인 불량률과 전주 대비 변동을 알려줘" },
-    { icon: BookOpen, iconBg: "bg-violet-50", iconColor: "text-violet-600", title: "안전규정 확인",     query: "지게차 운행 구역의 산업안전 규정과 보호구 착용 기준을 요약해줘" },
+    { icon: Flame,    iconBg: "bg-rose-50",   iconColor: "text-rose-600",   title: "열처리 로 진단",     query: "침탄로 3호기 온도 편차와 경도 하한 이탈 원인을 분석해줘" },
+    { icon: Activity, iconBg: "bg-amber-50",  iconColor: "text-amber-600",  title: "예지보전 알람 확인", query: "창원본사 3번 프레스 진동 알람 상태와 조치 방안을 알려줘" },
     { icon: Map,      iconBg: "bg-emerald-50", iconColor: "text-emerald-600", title: "사업장 가동률 지도", query: "전국 사업장별 설비 가동률 현황을 지도로 분석해줘" },
   ],
   modeDesc: {
@@ -48,7 +48,7 @@ const manufacturing = {
     recent: [
       { agentId: "agent-meeting",      agentName: "공정회의록",  time: "오늘 14:32", result: "HBP-회의록-0312.hwp 생성" },
       { agentId: "agent-knowledge",    agentName: "기술 검색",   time: "오늘 10:15", result: "가공 조건 표준 5건 검색" },
-      { agentId: "agent-dataanalysis", agentName: "공정 분석",   time: "어제 16:44", result: "프레스 불량률 추이 분석 완료" },
+      { agentId: "agent-dataanalysis", agentName: "공정 분석",   time: "어제 16:44", result: "침탄로 3호기 온도 편차 진단 완료" },
     ],
     recommendTitle: "2공장 설비 정기 PM 5일 전",
     recommendBody: "지난 점검 보고서와 현행 작업표준을 대조 검토하여 변경사항을 확인하시겠습니까?",
@@ -59,7 +59,7 @@ const manufacturing = {
     { id: "h2", title: "수출 사양서 영문 번역", mode: "TRANSLATE", time: "10:15", isToday: true, starred: false },
     { id: "h3", title: "설비 점검 기안문 검토", mode: "REVIEW", time: "어제", isToday: false, starred: false },
     { id: "h4", title: "주간 생산 보고서 초안", mode: "REPORT", time: "02.20", isToday: false, starred: true },
-    { id: "h5", title: "안전규정 보호구 조항 문의", mode: "GENERAL", time: "02.18", isToday: false, starred: false },
+    { id: "h5", title: "침탄로 3호기 온도 편차 진단", mode: "GENERAL", time: "02.18", isToday: false, starred: false },
   ],
   docs: [
     { id: "d1", name: "CNC_가공_작업표준서_SOP-003.pdf", size: "2.8 MB", date: "2026.01.12", tags: ["대외비", "DRM 자동해제"], secLevel: "C" },
@@ -71,6 +71,20 @@ const manufacturing = {
       keywords: ["절삭유", "작업표준", "sop", "cnc"],
       answer: {
         content: "**CNC 3라인 절삭유 교체 주기** (작업표준 SOP-CNC-003 v4.2 기준)\n\n- **수용성 절삭유**: 농도 8±1% 유지, **3개월 주기** 전량 교체\n- **일일 점검**: 매 교대 시 농도·pH 측정 (pH 8.5~9.3 유지)\n- **즉시 교체 조건**: 부패취 발생, pH 8.0 미만, 부유 슬러지 과다\n\n교체 작업은 설비보전팀 입회 하에 실시하며, 폐액은 지정 폐기물 절차(ENV-07)를 따릅니다.\n\n※ 출처: 작업표준서 SOP-CNC-003 (2026.01 개정), 4페이지",
+        citations: [], steps: null,
+      },
+    },
+    {
+      keywords: ["침탄", "열처리", "경도"],
+      answer: {
+        content: "**침탄로 3호기 온도 편차 진단** (열처리 MES · 로 제어 이력, 최근 90일)\n\n| 구분 | 전단존 | 중앙존 | 후단존 |\n|---|---|---|---|\n| 설정온도 대비 편차 | -1.1℃ | +0.8℃ | **-7.8℃** |\n| 관리 한계(±5℃) | 정상 | 정상 | **초과** |\n\n**경도 영향**: 3월 처리 로트 평균 경도 **58.6 HRC**로 규격 하한(58.0)에 근접 — 후단존 유지 구간 온도 부족이 유력 원인입니다.\n\n**원인 후보 (가능성순)**\n1. **후단존 히터 뱅크 열화** — 편차가 6개월간 단조 확대(-1.2 → -7.8℃), 히터 저항값 점검 권고\n2. 열전대(TC) 드리프트 — 교정 주기 도래 (전회 교정 2025.09)\n3. 장입 패턴 변경 영향 — 2월부터 대형 브래킷 로트가 후단에 집중 배치\n\n**권고 조치**: 후단존 히터 저항 측정과 TC 교정을 차주 계획정지에 편성하고, 조치 완료 전까지 3호기 처리 로트는 경도 전수 검사로 전환하세요. 상세 추이는 에이전트 탭의 **공정 데이터 분석 에이전트**에서 확인할 수 있습니다.\n\n※ 출처: 열처리 공정관리기준 HT-STD-02, 침탄로 제어 이력(FUR-03), 경도검사 성적 DB",
+        citations: [], steps: null,
+      },
+    },
+    {
+      keywords: ["진동", "예지보전", "베어링"],
+      answer: {
+        content: "**PRS-C03 (창원본사 3번 프레스) 진동 알람 현황** (PdM 통합 모니터링, 03.21 07:00 기준)\n\n- **진동 RMS**: 4.2mm/s — 관리 기준 **3.5mm/s 연속 초과** (상승 기울기 +0.11mm/s/일)\n- **동반 신호**: 베어링 하우징 온도 +8.2℃, 모터 전류 리플 증가 → 기계적 이상 가능성 높음 (오탐 배제)\n- **추정 고장 모드**: 크랭크축 베어링 외륜 결함 (진동 스펙트럼 BPFO 성분 탁월)\n- **잔여 유효 수명**: 약 **18일** (신뢰구간 12~25일)\n\n**권고**: 3/22(일) 계획정지에 베어링 교체를 편성하면 비계획 정지 없이 조치할 수 있습니다. 에이전트 탭의 **'프레스 진동 알람 자동 대응'** 시나리오를 실행하면 센서 조회 → 이상 진단 → 정비 지시서 → 위험성평가까지 자동으로 처리됩니다.\n\n※ 3/20 적용된 진동 임계치 하향(4.5 → 3.5mm/s)으로 조기 감지된 첫 사례입니다. 출처: PdM 통합 모니터링, MES 설비 이력",
         citations: [], steps: null,
       },
     },
@@ -109,8 +123,103 @@ const manufacturing = {
       { id: "changwon1",name: "창원본사공장",keywords: ["창원", "본사"],   x: 2, y: 4, value: 93.1, series: [90.2, 91.5, 92.0, 91.1, 92.4, 93.1], insight: "3월 예지보전 시스템 도입 후 비계획 정지가 42% 감소해 전 사업장 최고 가동률을 유지하고 있습니다." },
     ],
   },
-  // 복합 업무 오케스트레이션 — 요청 1건이 OCR→자재코드→MES조회→보고서 4개 에이전트를 릴레이 (시뮬레이션)
-  orchestration: {
+  // 복합 업무 오케스트레이션 — 배열이면 허브에 카드가 시나리오별로 1장씩 노출 (시뮬레이션)
+  orchestration: [
+  // 시나리오 1 — 예지보전: 진동 알람 1건이 센서조회→이상진단→정비지시서→위험성평가를 릴레이
+  // (공정회의록의 임계치 하향(4.5→3.5mm/s, 3/20 적용)·sampleAnswers 진동 알람 답변과 같은 세계관)
+  {
+    title: "프레스 진동 알람 자동 대응",
+    brief: "예지보전 알람 1건이 센서 조회 → 이상 진단 → 정비 지시서 → 작업 위험성평가로 자동 릴레이됩니다.",
+    request: "창원본사공장 3번 프레스(PRS-C03) 진동 알람이 떴어. 최근 센서 데이터 확인해서 이상 원인 진단하고, 정비 지시서 발행하고 교체 작업 위험성평가까지 준비해줘.",
+    stages: [
+      {
+        agentId: "agent-dbquery", ms: 2600,
+        task: "PdM 서버·MES에서 진동 트렌드와 운전 데이터를 조회합니다.",
+        logs: [
+          "Text2SQL 변환 — 진동·온도·부하 30일 트렌드 쿼리 생성",
+          "PdM 센서 DB 조회 — PRS-C03 크랭크축 진동 RMS 4.2mm/s",
+          "관리 기준(3.5mm/s) 연속 초과 — 상승 기울기 +0.11mm/s/일",
+          "베어링 하우징 온도 +8.2℃ 동반 상승 · 모터 전류 리플 증가",
+        ],
+        output: {
+          label: "센서 데이터 조회 결과",
+          items: [
+            "진동 RMS 4.2mm/s — 임계치 3.5mm/s 대비 120% 수준",
+            "온도·전류 동반 상승으로 기계적 이상 가능성 높음 (오탐 배제)",
+          ],
+        },
+        handoff: "30일 트렌드·스펙트럼 원시데이터를 공정 데이터 분석 에이전트로 전달",
+      },
+      {
+        agentId: "agent-dataanalysis", ms: 3200,
+        task: "주파수 스펙트럼을 분석해 고장 모드와 잔여 수명을 추정합니다.",
+        logs: [
+          "FFT 스펙트럼 분석 — 회전 주파수 배수 성분 분해",
+          "베어링 외륜 결함 주파수(BPFO) 성분 탁월 — 고장 모드 식별",
+          "열화 추세 회귀 — 잔여 유효 수명 약 18일 (신뢰구간 12~25일)",
+          "유사 고장 이력 2건 대조 (2024 울산 PRS-2 · 2025 아산 PRS-201)",
+        ],
+        output: {
+          label: "이상 진단 결과",
+          items: [
+            "고장 모드: 크랭크축 베어링 외륜 결함 (확신도 87%)",
+            "잔여 수명 약 18일 — 차주 계획정지 내 교체 권고",
+          ],
+        },
+        handoff: "진단 결과·권장 조치를 생산일보 작성 에이전트로 전달",
+      },
+      {
+        agentId: "agent-report", ms: 2800,
+        task: "진단 근거로 정비 지시서(정비 오더)를 표준 양식으로 발행합니다.",
+        logs: [
+          "정비 지시서 템플릿 로드 (PM-04 양식)",
+          "교체 부품 재고 확인 — 크랭크축 베어링 2EA (창원 자재창고)",
+          "작업 계획 — 3/22(일) 계획정지 · 보전 2명 × 4시간",
+          "문서번호 채번 — HBP-보전-2026-102 · 설비보전팀 결재선 지정",
+        ],
+        output: {
+          label: "정비 지시서 발행",
+          items: ["정비 오더 1건 (부품·공수·일정 확정 · 진단 리포트 첨부)"],
+        },
+        handoff: "작업 내용·설비 정보를 작업 위험성평가 에이전트로 전달",
+      },
+      {
+        agentId: "agent-safety", ms: 2600,
+        task: "베어링 교체 작업의 위험 요소를 평가하고 안전 조치를 첨부합니다.",
+        logs: [
+          "작업 분해 — 금형 하강 방지 · 베어링 인출 · 중량물 취급 3단계",
+          "위험 요인 6건 식별 — 협착 2 · 중량물 2 · 감전 1 · 유압 잔압 1",
+          "필수 조치 — LOTO 절차 · 안전블록 설치 · 2인 1조 작업",
+          "위험성평가표·작업허가서 초안 생성 (산업안전보건법 제36조)",
+        ],
+        output: {
+          label: "위험성평가 완료",
+          items: [
+            "위험 요인 6건 전건 감소 대책 수립 — 허용 위험 수준 확인",
+            "작업허가서 초안을 정비 지시서에 첨부",
+          ],
+        },
+        handoff: null,
+      },
+    ],
+    result: {
+      docNo: "HBP-보전-2026-102",
+      docTitle: "PRS-C03 크랭크축 베어링 교체 정비 지시서 (위험성평가 첨부)",
+      summary: [
+        "돌발 고장 전 조기 감지 — 3/22 계획정지 교체로 비계획 정지 예방 (예상 회피 손실 약 3,200만원)",
+        "고장 모드 베어링 외륜 결함 · 잔여 수명 18일 — 부품·공수·일정 확정",
+        "3/20 진동 임계치 하향(4.5→3.5mm/s) 이후 첫 조기 감지 사례 — 임계치 조정 유효성 입증",
+      ],
+      metrics: [
+        { label: "조기 감지 리드타임", value: "18일" },
+        { label: "회피 손실(추정)", value: "3,200만원" },
+        { label: "릴레이 에이전트", value: "4개" },
+        { label: "총 소요", value: "약 11초" },
+      ],
+    },
+  },
+  // 시나리오 2 — 품질: 입고 서류 1묶음이 OCR→자재코드 표준화→MES조회→판정 보고서를 릴레이
+  {
     title: "협력사 검사성적서 일괄 처리",
     brief: "입고 서류 1묶음이 OCR → 자재코드 표준화 → MES 조회 → 수입검사 판정 보고서로 자동 릴레이됩니다.",
     request: "오늘 입고된 협력사 검사성적서 스캔본을 처리해줘. 자재코드 표준화하고 MES에서 로트별 입고 이력과 불량률 확인해서 수입검사 판정 보고서까지 만들어줘.",
@@ -202,6 +311,7 @@ const manufacturing = {
       ],
     },
   },
+  ],
   agentCatalog: {
     "agent-chatbot":      { name: "현장 Q&A 챗봇", shortName: "현장 Q&A", desc: "작업표준(SOP), 품질 기준, 안전 수칙 등 현장 궁금증을 RAG 기반으로 근거와 함께 즉시 답변합니다." },
     "agent-report":       { name: "생산일보 작성 에이전트", shortName: "생산일보", desc: "MES 실적 데이터를 집계해 생산일보·주간 생산 보고서를 표준 양식으로 자동 작성합니다." },
@@ -211,7 +321,7 @@ const manufacturing = {
     "agent-ocr":          { name: "도면·성적서 OCR 에이전트", shortName: "도면 OCR", desc: "스캔 도면, 검사성적서, 수입검사 서류를 인식해 편집 가능한 데이터로 변환합니다." },
     "agent-dbquery":      { name: "MES 데이터 조회 에이전트", shortName: "MES 조회", desc: "자연어로 질문하면 MES·ERP의 생산 실적, 설비 가동률, 재고를 SQL로 변환해 조회합니다." },
     "agent-address":      { name: "자재코드 표준화 에이전트", shortName: "자재코드", desc: "비정형 자재 명칭을 표준 품목코드로 매핑하고 중복·오기 코드를 정비합니다." },
-    "agent-dataanalysis": { name: "공정 데이터 분석 에이전트", shortName: "공정 분석", desc: "공정 센서·품질 데이터를 업로드하면 통계 분석과 이상 원인 후보를 시각화합니다." },
+    "agent-dataanalysis": { name: "공정 데이터 분석 에이전트", shortName: "공정 분석", desc: "열처리 로 온도·진동 등 공정 센서와 품질 데이터를 업로드하면 통계 분석과 이상 원인 후보를 시각화합니다." },
     "agent-summary":      { name: "기술문서 요약 에이전트", shortName: "문서 요약", desc: "사양서, 감사 보고서, 고객 클레임 문서를 유형·길이별로 요약하고 개정본을 비교합니다." },
     "agent-translate":    { name: "수출문서 번역 에이전트", shortName: "수출 번역", desc: "수출 사양서, 계약서, 기술 매뉴얼을 용어집 기반으로 번역하고 역번역으로 검증합니다." },
     "agent-review":       { name: "기안문 사전 검토 에이전트", shortName: "기안 검토", desc: "기안문·품의서를 사규 및 품질·안전 규정과 자동 대조하여 위반 소지를 검토합니다." },
@@ -751,7 +861,7 @@ Delivery is due on the 25th of each month on a shipment basis, and nonconforming
       queryHistory: [
         { id: 1, query: '화성공장 CNC 라인 2018년 이후 도입 설비 현황',   date: '2026-03-31 16:42', rows: 12, ms: '0.31초' },
         { id: 2, query: 'SUS304 계열 자재 현재고 및 협력사 단가',          date: '2026-03-30 11:18', rows: 8,  ms: '0.55초' },
-        { id: 3, query: '2공장 프레스 라인 배치 및 작업 제한사항',         date: '2026-03-28 09:05', rows: 23, ms: '0.22초' },
+        { id: 3, query: '창원본사 PRS-C03 베어링 교체 후 진동 트렌드 확인', date: '2026-03-28 09:05', rows: 720, ms: '0.42초' },
         { id: 4, query: '법정 안전검사 기한 초과 설비 현황',               date: '2026-03-25 14:30', rows: 5,  ms: '0.18초' },
       ],
       quickQueries: [
@@ -762,7 +872,7 @@ Delivery is due on the 25th of each month on a shipment basis, and nonconforming
       ],
       buildingRows: [
         { jibun: 'PRS-108', buildingName: '프레스 100t #8',       structure: '크랭크 프레스', yongdo: '프레스 성형', area: 61050, floor: '군산 프레스동',  year: 2009, status: '위반' },
-        { jibun: 'PRS-201', buildingName: '프레스 200t #1',       structure: '크랭크 프레스', yongdo: '프레스 성형', area: 52180, floor: '아산 프레스동',  year: 2014, status: '정상' },
+        { jibun: 'PRS-C03', buildingName: '프레스 250t #3',       structure: '크랭크 프레스', yongdo: '프레스 성형', area: 52180, floor: '창원본사 프레스동', year: 2015, status: '정상' },
         { jibun: 'INJ-105', buildingName: '사출성형기 350t #5',   structure: '전동식',        yongdo: '사출 성형',   area: 44510, floor: '창원2 사출동',   year: 2016, status: '정상' },
         { jibun: 'CNC-M09', buildingName: 'CNC 머시닝센터 #9',    structure: '수직형 3축',    yongdo: '정밀 가공',   area: 38420, floor: '화성 A베이',     year: 2018, status: '정상' },
         { jibun: 'WLD-310', buildingName: '로봇 용접기 #10',      structure: '6축 다관절',    yongdo: '용접',        area: 33260, floor: '울산 조립동',    year: 2020, status: '정상' },
@@ -1148,57 +1258,55 @@ LIMIT 50;`,
       apvDocTitle: '내규 조회 결과 — 설비 점검 중 산업재해 처리 절차',
       apvDocNum: 'HBP-생산기술팀-2026-019',
     },
-    /* ── 공정 데이터 분석 에이전트 ── */
+    /* ── 공정 데이터 분석 에이전트 — 열공정(침탄 열처리)·예지보전 진단 (sampleAnswers·오케스트레이션과 같은 세계관) ── */
     "agent-dataanalysis": {
       sampleFiles: [
-        { id: 'f1', name: '프레스_불량률_2026Q1.xlsx', rows: 1248, cols: 12, size: '2.4MB' },
-        { id: 'f2', name: '설비_가동실적_2025.csv',    rows: 8760, cols: 9,  size: '1.6MB' },
-        { id: 'f3', name: '수입검사_측정치_2026.xlsx', rows: 312,  cols: 15, size: '0.5MB' },
+        { id: 'f1', name: '침탄로3호기_온도프로파일_2026Q1.csv', rows: 12960, cols: 8,  size: '3.1MB' },
+        { id: 'f2', name: '경도검사_HRC_로트별_2026.xlsx',       rows: 486,   cols: 11, size: '0.9MB' },
+        { id: 'f3', name: 'PdM_진동트렌드_프레스라인.csv',       rows: 4320,  cols: 6,  size: '1.2MB' },
       ],
-      trendCaption: '설비종합효율(OEE) 구성 지표 추이 (2025.7 ~ 2026.3) · 단위: %',
+      trendCaption: '침탄로 3호기 존별 온도 편차 추이 (설정온도 대비, 2025.7 ~ 2026.3) · 단위: ℃',
       trendData: [
-        { month: '2025.7',  가동률: 84.2, 성능: 90.1, 양품률: 99.42 },
-        { month: '2025.8',  가동률: 83.8, 성능: 90.4, 양품률: 99.45 },
-        { month: '2025.9',  가동률: 84.6, 성능: 90.8, 양품률: 99.48 },
-        { month: '2025.10', 가동률: 85.1, 성능: 91.2, 양품률: 99.51 },
-        { month: '2025.11', 가동률: 84.7, 성능: 91.0, 양품률: 99.49 },
-        { month: '2025.12', 가동률: 85.4, 성능: 91.5, 양품률: 99.53 },
-        { month: '2026.1',  가동률: 85.8, 성능: 91.8, 양품률: 99.55 },
-        { month: '2026.2',  가동률: 86.2, 성능: 92.1, 양품률: 99.56 },
-        { month: '2026.3',  가동률: 86.6, 성능: 92.4, 양품률: 99.58 },
+        { month: '2025.7',  전단존: -0.8, 중앙존: 0.6, 후단존: -1.2 },
+        { month: '2025.8',  전단존: -1.0, 중앙존: 0.4, 후단존: -1.8 },
+        { month: '2025.9',  전단존: -0.9, 중앙존: 0.7, 후단존: -2.4 },
+        { month: '2025.10', 전단존: -1.2, 중앙존: 0.5, 후단존: -3.1 },
+        { month: '2025.11', 전단존: -1.1, 중앙존: 0.8, 후단존: -3.9 },
+        { month: '2025.12', 전단존: -1.3, 중앙존: 0.6, 후단존: -4.6 },
+        { month: '2026.1',  전단존: -1.0, 중앙존: 0.9, 후단존: -5.8 },
+        { month: '2026.2',  전단존: -1.2, 중앙존: 0.7, 후단존: -6.9 },
+        { month: '2026.3',  전단존: -1.1, 중앙존: 0.8, 후단존: -7.8 },
       ],
-      trendSeries: [{ key: '가동률', color: '#f97316' }, { key: '성능', color: '#3b82f6' }, { key: '양품률', color: '#10b981' }],
-      trendDomain: [80, 102], trendRef: 85, trendRefLabel: '목표(85)',
-      barTabLabel: '사업장별',
-      barCaption: '사업장별 공정 불량률 (2026.3 기준) · 단위: %',
+      trendSeries: [{ key: '전단존', color: '#f97316' }, { key: '중앙존', color: '#3b82f6' }, { key: '후단존', color: '#ef4444' }],
+      trendDomain: [-10, 4], trendRef: -5, trendRefLabel: '관리 한계(-5℃)',
+      barTabLabel: '로별 경도',
+      barCaption: '열처리 로별 경도 규격 여유 (하한 58.0 HRC 대비, 2026.3 처리 로트) · 단위: HRC',
       barData: [
-        { region: '화성',     불량률: 0.31 },
-        { region: '아산',     불량률: 0.44 },
-        { region: '구미',     불량률: 0.35 },
-        { region: '군산',     불량률: 0.71 },
-        { region: '울산',     불량률: 0.47 },
-        { region: '창원본사', 불량률: 0.28 },
-        { region: '창원2',    불량률: 0.52 },
-        { region: '전사',     불량률: 0.42 },
+        { region: '1호기', 규격여유: 2.4 },
+        { region: '2호기', 규격여유: 2.1 },
+        { region: '3호기', 규격여유: 0.6 },
+        { region: '4호기', 규격여유: 2.3 },
+        { region: '5호기', 규격여유: 1.8 },
+        { region: '6호기', 규격여유: 2.2 },
       ],
-      barXKey: 'region', barValueKey: '불량률', barUnit: '%',
-      stackTabLabel: '클레임',
-      stackCaption: '고객 클레임 접수·처리·미결 현황 (2026년 분기) · 단위: 건',
+      barXKey: 'region', barValueKey: '규격여유', barUnit: 'HRC',
+      stackTabLabel: '예지보전',
+      stackCaption: '예지보전 알람 발생·조치 완료·오탐 현황 (2026년 분기) · 단위: 건',
       stackData: [
-        { month: '1월', 접수: 9,  처리: 8, 미결: 1 },
-        { month: '2월', 접수: 7,  처리: 6, 미결: 2 },
-        { month: '3월', 접수: 11, 처리: 9, 미결: 4 },
+        { month: '1월', 발생: 9,  조치: 8,  오탐: 1 },
+        { month: '2월', 발생: 8,  조치: 7,  오탐: 1 },
+        { month: '3월', 발생: 15, 조치: 12, 오탐: 3 },
       ],
-      stackSeries: [{ key: '접수', color: '#f97316' }, { key: '처리', color: '#10b981' }, { key: '미결', color: '#ef4444' }],
+      stackSeries: [{ key: '발생', color: '#f97316' }, { key: '조치', color: '#10b981' }, { key: '오탐', color: '#ef4444' }],
       statsTable: [
-        { metric: '평균 불량률',         value: '0.42%',        change: '-0.06%p', status: 'normal' },
-        { metric: '공정능력지수(Cpk)',   value: '1.38',         change: '+0.05',   status: 'normal' },
-        { metric: '최대 불량률(사업장)', value: '0.71% (군산)', change: '+0.09%p', status: 'high' },
-        { metric: '평균 사이클타임',     value: '42.3초',       change: '-1.2초',  status: 'normal' },
-        { metric: '이상치 건수',         value: '17건',         change: '+2건',    status: 'warning' },
-        { metric: '결측치',              value: '0건',          change: '유지',    status: 'normal' },
+        { metric: '평균 경도(전 로)',        value: '60.0 HRC',     change: '-0.2',    status: 'normal' },
+        { metric: '3호기 평균 경도',         value: '58.6 HRC',     change: '-1.1',    status: 'high' },
+        { metric: '후단존 온도 편차(3호기)', value: '-7.8℃',        change: '-2.0℃',  status: 'high' },
+        { metric: '유효 침탄깊이',           value: '0.84mm',       change: '-0.03mm', status: 'warning' },
+        { metric: '공정능력지수 Cpk(경도)',  value: '1.12',         change: '-0.19',   status: 'warning' },
+        { metric: '센서 결측 구간',          value: '0건',          change: '유지',    status: 'normal' },
       ],
-      outlierSummary: '17건 (1.4%)',
+      outlierSummary: '31건 (3호기 야간 로트 집중)',
       docStandard: 'HBP 표준 형식',
       docStandardNote: '리포트 형식을 선택하면 HBP 표준 양식으로 자동 생성됩니다',
     },

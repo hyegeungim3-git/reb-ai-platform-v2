@@ -11,6 +11,7 @@ import { DatasetPage, VectorDbPage, AutoLoadPage, CodespacePage, SharedVolumePag
 import { KnowledgeManagementPage, RagPipelinePage } from './admin/pages/knowledge.jsx';
 import { LlmManagePage, GuardrailFilterPage, GuardrailLogPage, TrustManagePage, QualityManagementPage } from './admin/pages/llmops.jsx';
 import { AiActCompliancePage } from './admin/pages/compliance.jsx';
+import { PackStudioPage } from './admin/pages/packstudio.jsx';
 import { SystemMonitorPage, AdminPage, UserPage, ConnectedMonitorPage } from './admin/pages/system.jsx';
 import { LlmTraining, VlmTraining, EmbeddingPage, RerankingPage, LeaderboardPage, EvalMetricsPage } from './admin/pages/training.jsx';
 import { ApprovalPage, QuotaPage, UserManagementPage, AccessLogPage, AccessSecurityPage, WorkLogPage, UsageMonitorPage, HrSyncPage } from './admin/pages/users.jsx';
@@ -67,6 +68,7 @@ const App = ({ onSwitchToUser, onExitPortal, domain }) => {
       {id:'guardrail.log',    label:'탐지 로그'},
     ]},
     {id:'aiact', label:'AI 기본법 대응', icon:Scale},
+    {id:'packstudio', label:'도메인 팩 스튜디오', icon:LayoutGrid},
     {id:'deploy', label:'도구 · 배포', icon:Wrench, children:[
       {id:'deploy.tools.mcp',    label:'MCP 도구'},
       {id:'deploy.tools.server', label:'MCP 서버'},
@@ -143,6 +145,7 @@ const App = ({ onSwitchToUser, onExitPortal, domain }) => {
     'eval.leaderboard':<LeaderboardPage/>,'eval.metrics':<EvalMetricsPage/>,
     'guardrail.filter':<GuardrailFilterPage/>,'guardrail.log':<GuardrailLogPage/>,
     'aiact':<AiActCompliancePage/>,
+    'packstudio':<PackStudioPage/>,
     'deploy.tools.mcp':<MCPToolsPage/>,'deploy.tools.server':<MCPServerPage/>,'deploy.tools.prompt':<PromptLibraryPage/>,
     'deploy.serving':<ServingPage/>,
     'agent.taskflow.builder':<TaskflowBuilderPage/>,'agent.taskflow.deploy':<TaskflowDeployPage/>,'agent.workflow':<WorkflowPage/>,

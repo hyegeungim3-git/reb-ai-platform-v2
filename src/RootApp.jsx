@@ -5,7 +5,7 @@
  */
 import React, { useState, useEffect, Suspense, lazy } from "react";
 import { Shield, User, ArrowRight, Lock, CheckCircle2, Layers } from "lucide-react";
-import { DOMAINS, DOMAIN_LIST, getActiveDomainId, setActiveDomainId } from "./domains/index.js";
+import { DOMAINS, getDomain, getDomainList, getActiveDomainId, setActiveDomainId } from "./domains/index.js";
 
 // 코드 스플리팅: 초기 로드 사이즈 축소
 const UserApp = lazy(() => import("./UserApp"));
@@ -21,7 +21,7 @@ const DomainSwitcher = ({ domain, onChange }) => (
     <Layers className="w-4 h-4 text-slate-400 shrink-0" />
     <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider shrink-0">데모 도메인</span>
     <div className="flex items-center gap-1">
-      {DOMAIN_LIST.map(d => (
+      {getDomainList().map(d => (
         <button
           key={d.id}
           onClick={() => onChange(d.id)}
@@ -217,7 +217,8 @@ const RootApp = () => {
   // "SELECTOR" | "USER" | "ADMIN"
   const [view, setView] = useState("SELECTOR");
   const [domainId, setDomainId] = useState(getActiveDomainId());
-  const domain = DOMAINS[domainId];
+  // 커스텀 팩(스튜디오)이 삭제된 직후에도 안전하도록 REB 폴백
+  const domain = getDomain(domainId) || DOMAINS.reb;
 
   useEffect(() => {
     document.title = `${domain.platformTitle} · ${domain.orgShort} GenOS`;

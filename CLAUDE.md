@@ -10,14 +10,16 @@
 - **스택**: React 19 + Vite 7 + Tailwind CSS v4. 백엔드 없음 — 모든 AI 응답은 mock 시뮬레이션.
 - **구성**: 포털 선택(RootApp) → 사용자 포털(UserApp: 일반/에이전트/보안 3탭, 10개 에이전트) + 관리자 시스템(App: 45개 페이지).
 
-## 2. 배포 (역할을 혼동하지 말 것)
+## 2. 배포·버전 (역할을 혼동하지 말 것)
 
-| 역할 | 주소 | 저장소 |
+| 역할 | 주소 | 저장소/참조 |
 |---|---|---|
-| **개발 진행본 (push 대상)** | https://hyegeungim3-git.github.io/reb-ai-platform-v2/ | origin = reb-ai-platform-v2 |
-| v2.0 스냅샷 (동결, push 금지) | https://hyegeungim3-git.github.io/reb-ai-platform/ | remote명 snapshot |
+| **v3 개발 라인 (push 대상)** | https://hyegeungim3-git.github.io/reb-ai-platform-v2/ | origin = reb-ai-platform-v2 의 `main` |
+| **v2 최종 동결 (2026-07-12)** | 같은 저장소의 태그 `v2.0` · 브랜치 `v2` | 수정 금지 — 복원: `git checkout v2.0` |
+| v2.0 초기 스냅샷 (7/5 동결) | https://hyegeungim3-git.github.io/reb-ai-platform/ | remote명 snapshot |
 | v1.0 안정 버전 | https://hyegeungim3-git.github.io/genos-app/ | genos-app |
 
+- v3을 별도 저장소(reb-ai-platform-v3)로 분리하려면 사용자가 GitHub에서 저장소를 만들어야 함(자동 생성은 권한 정책상 불가) — 만들어지면 remote 추가·base 변경·Pages 활성화를 진행할 것.
 - `main` push 시 GitHub Actions로 자동 배포. 배포 확인: `gh run watch <id> --exit-status`
 - 실패한 런은 `rerun --failed` 금지(아티팩트 중복) — 새 런을 실행할 것.
 
@@ -80,7 +82,19 @@ src/
 - ✅ 포털 복귀 버튼 + SFR 표기 제거(2026-07-12, 사용자 지시): RootApp onExitPortal → 사용자 포털은 ChatHeader 우측 LayoutGrid 아이콘 버튼(aria '포털 선택 화면으로'), 관리자는 상단바 '포털 선택' 버튼으로 포털 선택 화면 복귀. RFP 흔적 SFR-### 표기 전수 삭제(reb footerNote·ChatHeader 허브 부제→'멀티 에이전트 허브'·RightPanel·deployment 응답 모드·OCR/요약/규정 에이전트 부제·responses SECURE_AIRGAP·주석 RFP SFR-13) — src 내 잔존 0 (logos.js base64 우연 일치만 허용)
 - ✅ XAI·알림·피드백·마감 4종(2026-07-12, 사용자 승인 A→C→B→D): ① **XAI 패키지** — XaiPanel.jsx(답변 신뢰도 게이지·근거 구성 바·'왜 이 답변인가' 접이식: 질의 변환·채택/기각 문서·판단 근거·AI 기본법 제31조 고지, 75 미만·근거 없음 시 담당자 검토 권장 HITL), 오케스트레이션 output.factors 기여도 바 + stage.review 사람 확인 지점, 팩 answer에 confidence·xai 필드(플래그십 4건 rich). ② **알림 센터** — ChatHeader 벨+드롭다운, 팩 notifications 3건×3도메인, link.agentId 딥링크(orchestration:<idx>), 읽음 배지. ③ **피드백 루프** — 답변 👍👎(무동작이던 버튼 연결)+사유 칩 → localStorage genos.feedback.<도메인> → 관리자 'AI 답변 품질 관리'가 상단 병합(SECURE는 무저장). ④ **마감** — mdLite.jsx 채팅 경량 마크다운(볼드·표, React 엘리먼트 방식 XSS 안전), 사이드바 환경설정(토스트)/도움말(튜토리얼) 연결, 액션 버튼 max-md:p-2.5, 뷰포트 전환 시 오버레이 자동 닫기(resize 병행 리스너), 챗봇 <1024 출처 칩 → 모바일 오버레이. 전 항목 3도메인 DOM 검증·ASCII 빌드 EXIT 0
 - ✅ 핸드오프·브리핑(2026-07-12): **채팅→에이전트 핸드오프** — 팩 agentRouting `[{keywords,agentId,reason}]` 키워드 매칭 시 GENERAL 답변 아래 '다음 단계' 이동 카드(에이전트 id 또는 orchestration:<idx>, 지도 응답 제외, UserApp이 msg.handoff 부착). **오늘의 업무 브리핑** — GENERAL 빈 화면에 팩 notifications 재사용 카드(처리 대기 N건, 클릭 딥링크). 3팩 라우팅 규칙 4~5개씩. 검증: 한빛 침탄→공정 분석 에이전트 이동, REB 실거래→시나리오 카드(오케스트레이션 제목 해석), 브리핑 클릭→예지보전 시나리오, ASCII 빌드 EXIT 0
+- ✅ v2 동결 + v3 개설 + 하네스(2026-07-12): **v2 최종본을 태그 v2.0·브랜치 v2로 동결**(과정=git 이력, 결과물=태그 체크아웃으로 복원), main은 v3 개발 라인 전환(허브 배지 v3.0). **하네스 구축** — .claude/agents/(pack-author·genos-verifier) + .claude/skills/(genos-work 오케스트레이터+pitfalls 전집 / genos-pack / genos-verify+verify.mjs). verify.mjs는 puppeteer-core 헤드리스로 3도메인 금칙어·마커·카드 수·콘솔을 자동 판정(첫 실행 3도메인 PASS·EXIT 0, 실패 경로 EXIT 1 확인). docs/V3-ROADMAP.md P1~P5(라이브 엔진/팩 스튜디오/감사 추적/시나리오 빌더/접근성) 수용 기준 포함. v3 별도 저장소 분리는 사용자 저장소 생성 대기(§2)
 - ✅ 4단계 잔여 완료(2026-07-06): **에이전트 내부 화면 반응형** — 16개 파일 ~44지점(step2 워크플로우 레일 8곳 `hidden lg:flex`, 그리드 축소 24, 표 overflow-x-auto 7, 2단 비교 세로 스택, w-[px] max-w-full). 375에서 13종 전수 가로 스크롤 0, 1280 시각 무변화 검증. **aria 전수** — 아이콘 전용 버튼 ~40개 aria-label(에이전트 28 + layout/modals 12). 부수 수정: DocPreviewModal 인쇄가 generateDocHTML을 org 없이 호출하던 브랜딩 누수 → org prop 주입. 알려진 한계(문서화): <1024에서 챗봇 우측 FAQ·출처 패널 숨김(출처 칩 클릭 무반응), 문서 사본(A4 레플리카) 내부 레이아웃은 의도적 보존
+
+## 하네스: GenOS 품질 유지 체계 (모델 무관 Fable 5 수준 재현)
+
+**목표:** 어떤 모델이 세션을 이어받아도 같은 과정(표준 루프)·같은 결과물 품질(세계관 일관 콘텐츠 + 실행 증거 완료)을 재현한다.
+
+**트리거:** 이 저장소의 모든 변경 작업(기능·콘텐츠·검수·배포·v3 로드맵 실행)은 `genos-work` 스킬을 사용하라. 팩 콘텐츠 작업은 `pack-author` 에이전트 + `genos-pack` 스킬, 검증은 `genos-verifier` 에이전트 + `genos-verify` 스킬(자동 스캔: `node .claude/skills/genos-verify/scripts/verify.mjs`). 단순 질문·코드 읽기만은 직접 응답 가능.
+
+**변경 이력:**
+| 날짜 | 변경 내용 | 대상 | 사유 |
+|------|----------|------|------|
+| 2026-07-12 | 초기 구성 (에이전트 2 · 스킬 3 · verify.mjs) | 전체 | v2 동결·v3 개설과 함께 모델 무관 품질 체계 구축 |
 
 ## 6. 다음 세션 표준 지시문 (사용자가 이 문구로 시작하면 그대로 수행)
 
@@ -90,6 +104,7 @@ src/
 - **3단계-AI기본법**: "genos-app/CLAUDE.md 읽고 관리자에 'AI 기본법 대응' 대시보드 추가해줘 — 고영향 AI 관리, AI 생성물 표시 의무, 영향평가 현황. admin/pages/ 구조와 기존 가드레일·신뢰성 페이지 스타일에 맞춰서."
 - **도메인 이관**: "genos-app/CLAUDE.md 읽고 에이전트 내부 mock 콘텐츠를 도메인 팩으로 이관해줘 — DOMAIN-PACK-GUIDE.md §4 한계표의 항목들. 코어에 팩 필드+REB fallback 추가 커밋과 팩 콘텐츠 커밋을 분리."
 - **4단계 P2**: "genos-app/CLAUDE.md 읽고 4단계 UX 기본선 작업해줘 — 반응형(고정폭 사이드바·패널), 접근성(aria·Esc·포커스), 새로고침 시 대화 유지, HISTORY 탭 실동작. 375/768/1280 뷰포트 검증 포함."
+- **v3 로드맵 실행**: "genos-app/CLAUDE.md 읽고 docs/V3-ROADMAP.md의 P<N> 실행해줘 — genos-work 스킬 표준 루프(착수→구현→genos-verify 검증→배포→기록)를 따르고, 수용 기준(DoD) 전 항목의 실행 증거를 보고에 포함."
 
 공통 규칙: 완료 전 docs/QUALITY-CHECKLIST.md 실행, CLAUDE.md '현재 상태' 갱신, 한국어 커밋 후 push(자동 배포).
 

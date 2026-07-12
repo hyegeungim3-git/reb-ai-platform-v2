@@ -19,7 +19,7 @@ const Sidebar = ({
   HISTORY, onLoadHistory, USER_INFO,
   showUserMenu, setShowUserMenu, userMenuRef,
   setShowNoticeBanner, setShowQnaModal,
-  onSwitchToAdmin,
+  onSwitchToAdmin, onOpenTutorial, onOpenSettings,
 }) => (
   <aside
     aria-label="사이드바 내비게이션"
@@ -328,8 +328,12 @@ const Sidebar = ({
               <div className={cn("text-[11px] mt-0.5", th.subtext)}>{USER_INFO.dept} · 일반 사용자</div>
             </div>
             <div className="py-1">
-              {[{ icon: Settings, label: "환경설정" }, { icon: HelpCircle, label: "도움말 & 사용 가이드" }].map((item, i) => (
-                <button key={i} className={cn("w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium transition-colors", isSecure ? "text-slate-300 hover:bg-slate-800" : "text-slate-700 hover:bg-slate-50")}>
+              {[
+                { icon: Settings, label: "환경설정", onClick: onOpenSettings },
+                { icon: HelpCircle, label: "도움말 & 사용 가이드", onClick: onOpenTutorial },
+              ].map((item, i) => (
+                <button key={i} onClick={() => { setShowUserMenu(false); item.onClick?.(); }}
+                  className={cn("w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium transition-colors", isSecure ? "text-slate-300 hover:bg-slate-800" : "text-slate-700 hover:bg-slate-50")}>
                   <item.icon className="w-4 h-4 text-slate-400" /> {item.label}
                 </button>
               ))}

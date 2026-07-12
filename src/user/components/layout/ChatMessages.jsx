@@ -11,6 +11,7 @@ import { SECURE_SUGGESTIONS as BASE_SECURE_SUGGESTIONS } from "../../data/consta
 // 지도 인텔리전스 카드: recharts 포함 — 지역 질의 응답 시점에만 로드 (초기 번들 분리)
 const MapIntelCard = lazy(() => import("../MapIntelCard.jsx"));
 import XaiPanel from "../XaiPanel.jsx";
+import { renderMdLite } from "../../mdLite.jsx";
 
 /* ================================================================== */
 /* 중앙 채팅 영역 — 빈 상태(탭별) · 메시지 목록 · 타이핑 인디케이터     */
@@ -345,7 +346,7 @@ const ChatMessages = ({
                   msg.role === "user"
                     ? cn("px-5 py-3.5", isSecure ? "bg-slate-800 text-slate-100 rounded-tr-sm border border-slate-700" : "bg-slate-100 text-slate-900 rounded-tr-sm border border-slate-200")
                     : cn("px-5 py-4", th.chatBg))}>
-                  {msg.content}
+                  {msg.role === "assistant" ? renderMdLite(msg.content, isSecure) : msg.content}
                 </div>
                 {/* ── XAI 푸터: 신뢰도·근거 구성·판단 근거 (answer 객체 confidence·citations·xai) ── */}
                 {msg.role === "assistant" && <XaiPanel msg={msg} isSecure={isSecure} />}
@@ -363,18 +364,18 @@ const ChatMessages = ({
                 {msg.role === "assistant" && (
                   <div className={cn("flex items-center gap-1.5 mt-0.5 px-1 transition-opacity",
                     fb[msg.id] || reasonFor === msg.id ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
-                    <button aria-label="답변 복사" className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")} onClick={() => { navigator.clipboard.writeText(msg.content); setToast({ message: "클립보드에 복사되었습니다." }); }}><Copy className="w-4 h-4" /></button>
+                    <button aria-label="답변 복사" className={cn("p-1.5 max-md:p-2.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")} onClick={() => { navigator.clipboard.writeText(msg.content); setToast({ message: "클립보드에 복사되었습니다." }); }}><Copy className="w-4 h-4" /></button>
                     <button aria-label="도움됨" aria-pressed={fb[msg.id]?.rating === "good"} onClick={() => giveFeedback(msg, "good")}
-                      className={cn("p-1.5 rounded-lg transition-colors",
+                      className={cn("p-1.5 max-md:p-2.5 rounded-lg transition-colors",
                         fb[msg.id]?.rating === "good" ? "text-green-600 bg-green-50" :
                         isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-green-600 hover:bg-green-50")}>
                       <ThumbsUp className={cn("w-4 h-4", fb[msg.id]?.rating === "good" && "fill-green-200")} /></button>
                     <button aria-label="도움 안 됨" aria-pressed={fb[msg.id]?.rating === "bad"} onClick={() => setReasonFor(reasonFor === msg.id ? null : msg.id)}
-                      className={cn("p-1.5 rounded-lg transition-colors",
+                      className={cn("p-1.5 max-md:p-2.5 rounded-lg transition-colors",
                         fb[msg.id]?.rating === "bad" ? "text-red-500 bg-red-50" :
                         isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}>
                       <ThumbsDown className={cn("w-4 h-4", fb[msg.id]?.rating === "bad" && "fill-red-200")} /></button>
-                    <button onClick={() => onErrReport(msg)} title="오류 신고" className={cn("p-1.5 rounded-lg transition-colors flex items-center gap-1 text-[11px] font-bold", isSecure ? "text-slate-500 hover:text-red-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}><AlertTriangle className="w-3.5 h-3.5" /><span className="hidden sm:inline">신고</span></button>
+                    <button onClick={() => onErrReport(msg)} title="오류 신고" className={cn("p-1.5 max-md:p-2.5 rounded-lg transition-colors flex items-center gap-1 text-[11px] font-bold", isSecure ? "text-slate-500 hover:text-red-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}><AlertTriangle className="w-3.5 h-3.5" /><span className="hidden sm:inline">신고</span></button>
                     <span className={cn("text-[11px] ml-1", th.subtext)}>{msg.time}</span>
                     {fb[msg.id] && (
                       <span className={cn("text-[10px] font-bold ml-1", isSecure ? "text-slate-500" : "text-slate-400")}>

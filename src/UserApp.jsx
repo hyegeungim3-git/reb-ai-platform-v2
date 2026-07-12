@@ -362,6 +362,20 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
     });
   };
 
+  // 데스크톱→모바일 뷰포트 전환 시 열려 있던 사이드바·우측 패널이 오버레이로 겹쳐 뜨는 것 방지
+  // (matchMedia change와 resize를 병행 — 에뮬레이션 환경에서 change 미발화 대비)
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    let wasMobile = mq.matches;
+    const sync = () => {
+      if (mq.matches && !wasMobile) { setSidebarOpen(false); setRightOpen(false); }
+      wasMobile = mq.matches;
+    };
+    mq.addEventListener("change", sync);
+    window.addEventListener("resize", sync);
+    return () => { mq.removeEventListener("change", sync); window.removeEventListener("resize", sync); };
+  }, []);
+
   const handleWorkspaceSwitch = (wsId) => {
     setActiveWorkspace(wsId);
     newConversation();
@@ -452,6 +466,8 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
           showUserMenu={showUserMenu} setShowUserMenu={setShowUserMenu} userMenuRef={userMenuRef}
           setShowNoticeBanner={setShowNoticeBanner} setShowQnaModal={setShowQnaModal}
           onSwitchToAdmin={onSwitchToAdmin}
+          onOpenTutorial={() => setShowTutorial(true)}
+          onOpenSettings={() => setToast({ message: "환경설정은 데모 범위에서 제공되지 않습니다 — 관리자 시스템에서 정책을 관리합니다." })}
         />
 
         {/* ======================== CENTER ========================== */}

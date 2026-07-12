@@ -660,6 +660,16 @@ export default function ChatbotAgent({ onBack, domain }) {
         </div>
       </div>
 
+      {/* ── <1024: 출처 미리보기 오버레이 (우측 패널 숨김 뷰포트에서 출처 칩 무반응 해소) ── */}
+      {activeSource && (
+        <div className="lg:hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setActiveSource(null)} aria-hidden="true" />
+          <div className="relative w-full sm:w-[420px] sm:mx-4 max-h-[80dvh] bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 fade-in duration-200">
+            <SourcePreviewPanel sourceKey={activeSource} previews={C.sourcePreviews} onClose={() => setActiveSource(null)} />
+          </div>
+        </div>
+      )}
+
       {/* ── 우측 패널: 출처 미리보기 또는 FAQ ── */}
       <div className="hidden lg:flex w-72 shrink-0 border-l border-slate-200 flex-col bg-white overflow-hidden">
         {activeSource ? (

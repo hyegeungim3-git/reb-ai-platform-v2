@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, Suspense, lazy } from "rea
 import { ShieldCheck } from "lucide-react";
 
 import { cn, orchList } from "./user/utils.jsx";
+import { initLive, stepLive, liveAlertOf } from "./user/liveEngine.js";
 import Toast from "./user/components/Toast.jsx";
 import {
   MODES as BASE_MODES, HISTORY as BASE_HISTORY, DOCS as BASE_DOCS,
@@ -374,6 +375,49 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
     });
   };
 
+  // ── 라이브 데이터 엔진 (팩 liveMetric 공급 시에만 구동) ──
+  // 엔진은 UserApp 수준에서 1초 틱 — 탭 전환·카드 언마운트와 무관하게 상태 유지
+  const liveCfg = domain.liveMetric || null;
+  const [liveState, setLiveState] = useState(() => (liveCfg ? initLive(liveCfg) : null));
+  const [liveSpeed, setLiveSpeed] = useState(1);
+  const liveSpeedRef = useRef(1);
+  liveSpeedRef.current = liveSpeed;
+  const [liveNotifs, setLiveNotifs] = useState([]);
+  // 엔진 상태는 ref가 정본 — setState 업데이터 안에서 부수효과를 내면 StrictMode 이중 호출로 알림이 중복된다
+  // 진행량은 벽시계 경과 기반 — 브라우저가 백그라운드 탭 타이머를 스로틀해도 다음 발화 때 따라잡는다
+  const liveRef = useRef(liveState);
+  const liveLastRef = useRef(Date.now());
+  useEffect(() => {
+    if (!liveCfg) return;
+    liveLastRef.current = Date.now();
+    const t = setInterval(() => {
+      const now = Date.now();
+      let remain = Math.min(((now - liveLastRef.current) / 1000) * liveSpeedRef.current, 600); // 장시간 스로틀 후 과도 점프 상한(10 시뮬레이션분)
+      liveLastRef.current = now;
+      let st = liveRef.current, crossedAny = false, crossVal = null;
+      while (remain > 0) {
+        const dt = Math.min(remain, 60); // 큰 경과는 60초 단위로 분할 (임계·회복 거동 보존)
+        const r = stepLive(st, liveCfg, dt);
+        st = r.next;
+        if (r.crossed) { crossedAny = true; crossVal = st.value; }
+        remain -= dt;
+      }
+      liveRef.current = st;
+      setLiveState(st);
+      if (crossedAny) {
+        const notif = liveAlertOf(liveCfg, crossVal, `live-${Date.now()}`);
+        setLiveNotifs(p => [notif, ...p].slice(0, 5)); // 최근 5건만 유지
+        setToast({ message: `[실시간 알림] ${notif.title}` });
+      }
+    }, 1000);
+    return () => clearInterval(t);
+  }, [liveCfg]);
+  // 알림 센터·브리핑에 실시간 알림을 정적 알림 앞에 병합
+  const NOTIFS = useMemo(
+    () => [...liveNotifs, ...(domain.notifications || [])],
+    [liveNotifs, domain.notifications]
+  );
+
   // 데스크톱→모바일 뷰포트 전환 시 열려 있던 사이드바·우측 패널이 오버레이로 겹쳐 뜨는 것 방지
   // (matchMedia change와 resize를 병행 — 에뮬레이션 환경에서 change 미발화 대비)
   useEffect(() => {
@@ -500,7 +544,7 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
             setShowQnaModal={setShowQnaModal} setShowTutorial={setShowTutorial}
             showNoticeBanner={showNoticeBanner} setShowNoticeBanner={setShowNoticeBanner}
             onExitPortal={onExitPortal}
-            notifications={domain.notifications || []}
+            notifications={NOTIFS}
             onNotifNavigate={(agentId) => { setChatTab("AGENT"); setActiveAgentId(agentId); }}
           />
 
@@ -543,8 +587,9 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
               onErrReport={(msg) => { setErrReportMsgId(msg.id); setErrReportText(''); setShowErrReport(true); }}
               onDocPreview={(doc) => { setDocModalData(doc); setShowDocModal(true); }}
               onFeedback={handleFeedback}
-              briefingItems={domain.notifications || []}
+              briefingItems={NOTIFS}
               onNavigateAgent={(agentId) => { setChatTab("AGENT"); setActiveAgentId(agentId); }}
+              liveCfg={liveCfg} liveState={liveState} liveSpeed={liveSpeed} setLiveSpeed={setLiveSpeed}
             />
           )}
 

@@ -83,6 +83,7 @@ src/
 - ✅ XAI·알림·피드백·마감 4종(2026-07-12, 사용자 승인 A→C→B→D): ① **XAI 패키지** — XaiPanel.jsx(답변 신뢰도 게이지·근거 구성 바·'왜 이 답변인가' 접이식: 질의 변환·채택/기각 문서·판단 근거·AI 기본법 제31조 고지, 75 미만·근거 없음 시 담당자 검토 권장 HITL), 오케스트레이션 output.factors 기여도 바 + stage.review 사람 확인 지점, 팩 answer에 confidence·xai 필드(플래그십 4건 rich). ② **알림 센터** — ChatHeader 벨+드롭다운, 팩 notifications 3건×3도메인, link.agentId 딥링크(orchestration:<idx>), 읽음 배지. ③ **피드백 루프** — 답변 👍👎(무동작이던 버튼 연결)+사유 칩 → localStorage genos.feedback.<도메인> → 관리자 'AI 답변 품질 관리'가 상단 병합(SECURE는 무저장). ④ **마감** — mdLite.jsx 채팅 경량 마크다운(볼드·표, React 엘리먼트 방식 XSS 안전), 사이드바 환경설정(토스트)/도움말(튜토리얼) 연결, 액션 버튼 max-md:p-2.5, 뷰포트 전환 시 오버레이 자동 닫기(resize 병행 리스너), 챗봇 <1024 출처 칩 → 모바일 오버레이. 전 항목 3도메인 DOM 검증·ASCII 빌드 EXIT 0
 - ✅ 핸드오프·브리핑(2026-07-12): **채팅→에이전트 핸드오프** — 팩 agentRouting `[{keywords,agentId,reason}]` 키워드 매칭 시 GENERAL 답변 아래 '다음 단계' 이동 카드(에이전트 id 또는 orchestration:<idx>, 지도 응답 제외, UserApp이 msg.handoff 부착). **오늘의 업무 브리핑** — GENERAL 빈 화면에 팩 notifications 재사용 카드(처리 대기 N건, 클릭 딥링크). 3팩 라우팅 규칙 4~5개씩. 검증: 한빛 침탄→공정 분석 에이전트 이동, REB 실거래→시나리오 카드(오케스트레이션 제목 해석), 브리핑 클릭→예지보전 시나리오, ASCII 빌드 EXIT 0
 - ✅ v2 동결 + v3 개설 + 하네스(2026-07-12): **v2 최종본을 태그 v2.0·브랜치 v2로 동결**(과정=git 이력, 결과물=태그 체크아웃으로 복원), main은 v3 개발 라인 전환(허브 배지 v3.0). **하네스 구축** — .claude/agents/(pack-author·genos-verifier) + .claude/skills/(genos-work 오케스트레이터+pitfalls 전집 / genos-pack / genos-verify+verify.mjs). verify.mjs는 puppeteer-core 헤드리스로 3도메인 금칙어·마커·카드 수·콘솔을 자동 판정(첫 실행 3도메인 PASS·EXIT 0, 실패 경로 EXIT 1 확인). docs/V3-ROADMAP.md P1~P5(라이브 엔진/팩 스튜디오/감사 추적/시나리오 빌더/접근성) 수용 기준 포함. v3 별도 저장소 분리는 사용자 저장소 생성 대기(§2)
+- ✅ v3-P1 라이브 데이터 엔진(2026-07-12): 팩 liveMetric로 구동되는 1초 틱 엔진(user/liveEngine.js 순수 step — 스키마는 파일 상단 주석이 정본) + GENERAL 빈 화면 LiveMetricCard(SVG 스파크라인·임계선·배속 1×/10×/60×·'지금 대응하기'). 임계 상향 돌파 시 실시간 알림이 벨·브리핑에 도착(+토스트), recovery로 고착 방지. **진행량은 벽시계 경과×배속**(탭 스로틀 대응, 60초 분할 스텝·600초 상한). 팩 3종: 한빛 진동 RMS(3.5 임계) / REB 괴리율(30%) / 한성 수위(2.5m) — 기존 세계관 수치대와 정합. DoD 5항목 실행 증거 통과(60× 23시뮬분·범위 내·돌파4=배지+4·탭 전환 43→48분·3도메인 카드). 잡은 버그 2: setState 업데이터 내 부수효과(StrictMode 중복 알림)·백그라운드 탭 스로틀 — pitfalls §3 반영
 - ✅ 4단계 잔여 완료(2026-07-06): **에이전트 내부 화면 반응형** — 16개 파일 ~44지점(step2 워크플로우 레일 8곳 `hidden lg:flex`, 그리드 축소 24, 표 overflow-x-auto 7, 2단 비교 세로 스택, w-[px] max-w-full). 375에서 13종 전수 가로 스크롤 0, 1280 시각 무변화 검증. **aria 전수** — 아이콘 전용 버튼 ~40개 aria-label(에이전트 28 + layout/modals 12). 부수 수정: DocPreviewModal 인쇄가 generateDocHTML을 org 없이 호출하던 브랜딩 누수 → org prop 주입. 알려진 한계(문서화): <1024에서 챗봇 우측 FAQ·출처 패널 숨김(출처 칩 클릭 무반응), 문서 사본(A4 레플리카) 내부 레이아웃은 의도적 보존
 
 ## 하네스: GenOS 품질 유지 체계 (모델 무관 Fable 5 수준 재현)
@@ -95,6 +96,7 @@ src/
 | 날짜 | 변경 내용 | 대상 | 사유 |
 |------|----------|------|------|
 | 2026-07-12 | 초기 구성 (에이전트 2 · 스킬 3 · verify.mjs) | 전체 | v2 동결·v3 개설과 함께 모델 무관 품질 체계 구축 |
+| 2026-07-12 | pitfalls §3에 탭 스로틀·업데이터 부수효과 항목 추가 | genos-work/references/pitfalls.md | P1 구현 중 실발견 2건 반영 |
 
 ## 6. 다음 세션 표준 지시문 (사용자가 이 문구로 시작하면 그대로 수행)
 

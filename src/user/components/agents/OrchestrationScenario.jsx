@@ -97,11 +97,14 @@ const OrchestrationScenario = ({ scenario, agents, user, onBack }) => {
           </div>
           <div className="px-4 py-3.5">
             <p className="text-[13px] text-slate-700 font-medium leading-relaxed">&ldquo;{scenario.request}&rdquo;</p>
-            <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200">
-              <Paperclip className="w-3 h-3 text-slate-400 shrink-0" />
-              <span className="text-[11px] font-bold text-slate-600">{scenario.attachment.name}</span>
-              <span className="text-[10px] text-slate-400 font-medium">{scenario.attachment.pages}면 · {scenario.attachment.size}</span>
-            </div>
+            {/* attachment는 선택 필드 — 알람·이벤트 트리거형 시나리오는 첨부 없이 시작 */}
+            {scenario.attachment && (
+              <div className="mt-2.5 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200">
+                <Paperclip className="w-3 h-3 text-slate-400 shrink-0" />
+                <span className="text-[11px] font-bold text-slate-600">{scenario.attachment.name}</span>
+                <span className="text-[10px] text-slate-400 font-medium">{scenario.attachment.pages}면 · {scenario.attachment.size}</span>
+              </div>
+            )}
           </div>
 
           {/* 릴레이 미리보기 + 실행 버튼 */}

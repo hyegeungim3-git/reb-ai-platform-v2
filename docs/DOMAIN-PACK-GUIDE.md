@@ -121,13 +121,14 @@ mapIntel: {
 
 ```js
 // 복합 업무 오케스트레이션 (3단계) — 허브 상단 시나리오 카드 + "요청 1건 → 에이전트 4개 릴레이" 실행 데모. 생략하면 카드 자체가 숨겨짐.
+// 객체 1개(카드 1장) 또는 배열(시나리오별 카드 1장씩)을 모두 허용 — 예: manufacturing.js의 [예지보전, 검사성적서] 2장.
 // stages[].agentId는 아래 고정 목록에서. 4단계(OCR→표준화→DB조회→보고서)가 관례이나 개수·순서는 자유.
 // 각 스테이지의 output은 "다음 에이전트의 입력"이 되도록 쓰고, handoff에 무엇을 넘기는지 명시(마지막은 null).
 orchestration: {
   title: "공시지가 이의신청 서류 일괄 처리",   // 그 도메인의 실제 반복 업무명
   brief: "허브 카드·헤더에 표시될 1문장 설명",
   request: "사용자가 입력할 법한 자연어 요청 1문장",
-  attachment: { name: "스캔파일.pdf", pages: 18, size: "12.4 MB" },
+  attachment: { name: "스캔파일.pdf", pages: 18, size: "12.4 MB" },  // 선택 — 알람·이벤트 트리거형 시나리오는 생략 가능
   stages: [ // { agentId, ms(연출 시간), task(1문장), logs(3~5줄 — 시스템명·수치 포함), output:{label, items[]}, handoff }
     { agentId: "agent-ocr", ms: 3200, task: "…", logs: ["…"], output: { label: "OCR 추출 결과", items: ["…"] }, handoff: "추출 지번 12건을 …로 전달" },
   ],

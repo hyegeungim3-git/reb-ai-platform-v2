@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, Suspense, lazy } from "react";
 import { ShieldCheck } from "lucide-react";
 
-import { cn } from "./user/utils.jsx";
+import { cn, orchList } from "./user/utils.jsx";
 import Toast from "./user/components/Toast.jsx";
 import {
   MODES as BASE_MODES, HISTORY as BASE_HISTORY, DOCS as BASE_DOCS,
@@ -452,8 +452,8 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
           {chatTab === "AGENT" && (
             <Suspense fallback={<AgentLoadingFallback />}>
               {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} /> :
-               activeAgentId === "orchestration" && domain.orchestration
-                                                      ? <OrchestrationScenario scenario={domain.orchestration} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
+               activeAgentId.startsWith("orchestration") && orchList(domain.orchestration).length > 0
+                                                      ? <OrchestrationScenario key={activeAgentId} scenario={orchList(domain.orchestration)[Number(activeAgentId.split(":")[1]) || 0] ?? orchList(domain.orchestration)[0]} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-chatbot"      ? <ChatbotAgent      domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-report"       ? <ReportAgent       domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent domain={domain} onBack={() => setActiveAgentId(null)} /> :

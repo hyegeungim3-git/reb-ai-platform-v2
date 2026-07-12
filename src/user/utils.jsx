@@ -1,5 +1,8 @@
 export function cn(...classes) { return classes.filter(Boolean).join(" "); }
 
+/* 도메인 팩 orchestration 필드 정규화 — 객체 1개(기존 팩 하위호환) 또는 배열(시나리오 여러 개) 모두 허용 */
+export const orchList = (o) => (Array.isArray(o) ? o : o ? [o] : []);
+
 /* 데이터 보안 등급 체계 (정보공개법 제9조 기반) */
 export const SECURITY_LEVELS = {
   C: { label:"기밀", code:"C", bg:"bg-red-600",    text:"text-red-700",    border:"border-red-200",    light:"bg-red-50",    dot:"bg-red-500",    desc:"법률상 비밀 / 안보·국방·외교·국민 생명·안전",       fullDesc:"법률상 비밀·비공개 / 안보·국방·외교·국민 생명·안전과 직결" },

@@ -1,6 +1,6 @@
 import React from "react";
 import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X, Menu } from "lucide-react";
-import { cn } from "../../utils.jsx";
+import { cn, orchList } from "../../utils.jsx";
 import { MOCK_NOTICES_USER } from "../../data/constants.js";
 
 /* ================================================================== */
@@ -14,6 +14,9 @@ const ChatHeader = ({
   showNoticeBanner, setShowNoticeBanner,
 }) => {
   const ModeIcon = mc.icon;
+  // 오케스트레이션 활성 시나리오 — activeAgentId "orchestration:<idx>" (구형 "orchestration"은 0번)
+  const isOrch = typeof activeAgentId === "string" && activeAgentId.startsWith("orchestration");
+  const orchActive = isOrch ? (orchList(domain.orchestration)[Number(activeAgentId.split(":")[1]) || 0] ?? orchList(domain.orchestration)[0]) : null;
   return (
     <>
       {/* Header */}
@@ -32,14 +35,14 @@ const ChatHeader = ({
           </div>
           <div className="min-w-0">
             <h2 className={cn("text-[15px] font-black flex items-center gap-2 leading-tight", th.text)}>
-              <span className="truncate">{isSecure ? "보안 채팅" : isAgent ? (activeAgentId === "orchestration" ? (domain.orchestration?.title ?? "복합 업무 오케스트레이션") : activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.name ?? "AI 에이전트") : "AI 에이전트 허브") : mc.label}</span>
+              <span className="truncate">{isSecure ? "보안 채팅" : isAgent ? (isOrch ? (orchActive?.title ?? "복합 업무 오케스트레이션") : activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.name ?? "AI 에이전트") : "AI 에이전트 허브") : mc.label}</span>
               <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-black shrink-0",
                 isSecure ? "bg-blue-900/60 text-blue-300 border border-blue-800/50" : isAgent ? "bg-indigo-600 text-white" : mc.colors.badge + " text-white")}>
                 {isSecure ? "보안 강화" : isAgent ? "에이전트" : "활성"}
               </span>
             </h2>
             <p className={cn("text-[12px] font-medium leading-tight truncate", th.subtext)}>
-              {isSecure ? "무저장 · 로컬 LLM · 망분리 — 강화된 보안 환경에서 처리됩니다" : isAgent ? (activeAgentId === "orchestration" ? (domain.orchestration?.brief ?? "요청 1건이 여러 에이전트를 자동 릴레이합니다") : activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.desc ?? "") : `${domain.orgName} 멀티 에이전트 — SFR-006/011/013`) : mc.desc}
+              {isSecure ? "무저장 · 로컬 LLM · 망분리 — 강화된 보안 환경에서 처리됩니다" : isAgent ? (isOrch ? (orchActive?.brief ?? "요청 1건이 여러 에이전트를 자동 릴레이합니다") : activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.desc ?? "") : `${domain.orgName} 멀티 에이전트 — SFR-006/011/013`) : mc.desc}
             </p>
           </div>
         </div>

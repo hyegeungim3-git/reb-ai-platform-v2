@@ -165,6 +165,13 @@ const manufacturing = {
       { id: "changwon1",name: "창원본사공장",keywords: ["창원", "본사"],   x: 2, y: 4, value: 93.1, series: [90.2, 91.5, 92.0, 91.1, 92.4, 93.1], insight: "3월 예지보전 시스템 도입 후 비계획 정지가 42% 감소해 전 사업장 최고 가동률을 유지하고 있습니다." },
     ],
   },
+  // 채팅→에이전트 핸드오프 — GENERAL 답변 아래 이동 카드 (선행 규칙 우선, 소문자 키워드)
+  agentRouting: [
+    { keywords: ["진동", "알람", "예지보전"], agentId: "orchestration:0", reason: "센서 조회부터 정비 지시서·위험성평가까지 자동 릴레이로 처리할 수 있습니다." },
+    { keywords: ["번역", "영문", "수출"], agentId: "agent-translate", reason: "수출 문서 번역 에이전트가 용어집 매칭과 역번역 검증까지 수행합니다." },
+    { keywords: ["회의록", "녹음"], agentId: "agent-meeting", reason: "회의 녹음을 발언자 구분 회의록으로 자동 정리합니다." },
+    { keywords: ["분석", "추이", "데이터"], agentId: "agent-dataanalysis", reason: "공정 데이터 분석 에이전트가 차트·통계로 심층 분석합니다." },
+  ],
   // 알림 센터 — 헤더 벨 드롭다운. link.agentId로 에이전트/시나리오 딥링크 (orchestration:<idx> 허용)
   notifications: [
     { id: "n1", severity: "alert", title: "진동 알람 — PRS-C03", body: "창원본사 3번 프레스 진동 RMS 4.2mm/s — 관리 기준 연속 초과, 자동 대응 시나리오 실행을 권장합니다.", time: "07:12", link: { agentId: "orchestration:0" } },

@@ -25,7 +25,8 @@
 | suggestions, sampleAnswers, docs, history, modeDesc, agentFeed, agentCatalog (선택 — 생략 시 REB 기본값) | UserApp.jsx 주입부 및 getAIResponse | 사용자 포털 전체 |
 | mapIntel (선택 — 생략 시 지도 기능 비활성) | UserApp getAIResponse → user/mapIntel.js → MapIntelCard.jsx | GENERAL 채팅 지역 질의 응답 (히트맵+시계열) |
 | orchestration (선택 — 생략 시 시나리오 카드 비노출) | AgentHub.jsx(허브 상단 카드) → OrchestrationScenario.jsx | 에이전트 허브 오케스트레이션 시나리오 (4개 에이전트 릴레이 데모) |
-| notifications (선택 — 생략 시 헤더 벨 비노출) | ChatHeader.jsx 알림 센터 드롭다운 | `[{id, severity:'alert'\|'warn'\|'info', title, body, time, link:{agentId}}]` — link.agentId는 에이전트 id 또는 `orchestration:<idx>` 딥링크 |
+| notifications (선택 — 생략 시 헤더 벨 비노출) | ChatHeader.jsx 알림 센터 드롭다운 + ChatMessages 빈 화면 '오늘의 업무 브리핑' | `[{id, severity:'alert'\|'warn'\|'info', title, body, time, link:{agentId}}]` — link.agentId는 에이전트 id 또는 `orchestration:<idx>` 딥링크 |
+| agentRouting (선택 — 생략 시 핸드오프 카드 비노출) | UserApp handleSend → ChatMessages 답변 하단 카드 | `[{keywords:[소문자], agentId, reason}]` — GENERAL 탭 답변에 '다음 단계' 이동 카드. 선행 규칙 우선, 지도 응답에는 미부착 |
 
 ## 2. 스키마 레퍼런스
 

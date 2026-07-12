@@ -325,9 +325,21 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
     setIsTyping(true);
     setTimeout(() => {
       const resp = applyOutputGuardrails(getAIResponse(msgText));
+      // 채팅→에이전트 핸드오프: 팩 agentRouting 키워드 매칭 (GENERAL 탭 한정, 지도 응답 제외)
+      let handoff = null;
+      if (chatTab === "GENERAL" && !resp.mapIntel && domain.agentRouting) {
+        const q = msgText.toLowerCase();
+        const hit = domain.agentRouting.find(r => r.keywords.some(k => q.includes(k)));
+        if (hit) {
+          const name = hit.agentId.startsWith("orchestration")
+            ? (orchList(domain.orchestration)[Number(hit.agentId.split(":")[1]) || 0]?.title ?? "복합 업무 시나리오")
+            : (AGENT_TEAMS.find(a => a.id === hit.agentId)?.name ?? "AI 에이전트");
+          handoff = { agentId: hit.agentId, name, reason: hit.reason };
+        }
+      }
       setIsTyping(false);
       setMessages(prev => {
-        const newMsgs = [...prev, { id: Date.now() + 1, role: "assistant", time: now, ...resp }];
+        const newMsgs = [...prev, { id: Date.now() + 1, role: "assistant", time: now, ...resp, ...(handoff ? { handoff } : {}) }];
         const aiCount = newMsgs.filter(m => m.role === "assistant").length;
         if (aiCount === 3) setTimeout(() => setShowSatisfaction(true), 1200);
         return newMsgs;
@@ -531,6 +543,8 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
               onErrReport={(msg) => { setErrReportMsgId(msg.id); setErrReportText(''); setShowErrReport(true); }}
               onDocPreview={(doc) => { setDocModalData(doc); setShowDocModal(true); }}
               onFeedback={handleFeedback}
+              briefingItems={domain.notifications || []}
+              onNavigateAgent={(agentId) => { setChatTab("AGENT"); setActiveAgentId(agentId); }}
             />
           )}
 

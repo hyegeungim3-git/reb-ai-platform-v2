@@ -150,6 +150,13 @@ const civic = {
       { id: "gongdan",  name: "공단동",   keywords: ["공단동"],   x: 3, y: 2, value: 398, series: [372, 368, 384, 391, 389, 398], insight: "산업단지 특성상 소음·환경 민원 비중이 높으며, 야간 조업 관련 신고가 여름철에 증가하는 경향이 있습니다." },
     ],
   },
+  // 채팅→에이전트 핸드오프 — GENERAL 답변 아래 이동 카드 (선행 규칙 우선, 소문자 키워드)
+  agentRouting: [
+    { keywords: ["호우", "재난", "침수"], agentId: "orchestration:1", reason: "재난 데이터 조회부터 대책본부 상황보고서 1보까지 자동 릴레이로 처리합니다." },
+    { keywords: ["옥외광고"], agentId: "orchestration:0", reason: "허가 신청 스캔 서류를 OCR부터 검토 보고서까지 자동 처리합니다." },
+    { keywords: ["번역", "외국인"], agentId: "agent-translate", reason: "다국어 민원 번역 에이전트가 공문 어투로 번역합니다." },
+    { keywords: ["회의록", "녹음"], agentId: "agent-meeting", reason: "회의 녹음을 발언자 구분 회의록으로 자동 정리합니다." },
+  ],
   // 알림 센터 — 헤더 벨 드롭다운. link.agentId로 에이전트/시나리오 딥링크 (orchestration:<idx> 허용)
   notifications: [
     { id: "n1", severity: "alert", title: "호우경보 발령", body: "06:00 발령 — 피해 신고 47건 · 강변동 주의수위 초과. 상황보고서 자동 작성을 실행할 수 있습니다.", time: "06:02", link: { agentId: "orchestration:1" } },

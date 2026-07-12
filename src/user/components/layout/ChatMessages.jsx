@@ -4,6 +4,7 @@ import {
   FileCheck, Languages, FileText, Search, Sparkles, Clock, Star,
   Shield, User, CheckCircle2, AlertTriangle, Copy, ThumbsUp, ThumbsDown,
   BookOpen, ExternalLink, Paperclip, Eye, FileDown, Loader2, Briefcase,
+  Bell, ChevronRight,
 } from "lucide-react";
 import { cn, SecurityBadge } from "../../utils.jsx";
 import { SECURE_SUGGESTIONS as BASE_SECURE_SUGGESTIONS } from "../../data/constants.js";
@@ -26,6 +27,7 @@ const ChatMessages = ({
   handleSend, handleCitationClick, handleDocDownload,
   setShowBuilderModal, setToast,
   onErrReport, onDocPreview, onFeedback,
+  briefingItems = [], onNavigateAgent,
 }) => {
   const ModeIcon = mc.icon;
   // 답변 피드백 — 세션 내 표시 상태 (기록 저장은 UserApp onFeedback가 담당)
@@ -166,6 +168,32 @@ const ChatMessages = ({
                     </div>
                   </div>
                 </div>
+                {/* ── 오늘의 업무 브리핑 — 팩 notifications 재사용, 클릭 시 에이전트/시나리오 딥링크 ── */}
+                {mode === "GENERAL" && briefingItems.length > 0 && (
+                  <div className="w-full max-w-2xl mb-4">
+                    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                      <div className="px-4 py-2.5 bg-slate-50/80 border-b border-slate-100 flex items-center gap-2">
+                        <Bell className="w-3.5 h-3.5 text-indigo-600" />
+                        <span className="text-[12px] font-black text-slate-800">오늘의 업무 브리핑</span>
+                        <span className="ml-auto text-[10px] font-bold text-slate-400">처리 대기 {briefingItems.length}건</span>
+                      </div>
+                      {briefingItems.map(n => (
+                        <button key={n.id} onClick={() => n.link?.agentId && onNavigateAgent?.(n.link.agentId)}
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 border-b border-slate-50 last:border-b-0 text-left hover:bg-slate-50 transition-colors">
+                          <span className={cn("w-1.5 h-1.5 rounded-full shrink-0",
+                            n.severity === "alert" ? "bg-rose-500" : n.severity === "warn" ? "bg-amber-500" : "bg-blue-500")} />
+                          <span className="text-[12px] font-bold text-slate-700 shrink-0 max-w-[45%] truncate">{n.title}</span>
+                          <span className="text-[11px] text-slate-400 font-medium truncate flex-1 min-w-0 hidden sm:block">{n.body}</span>
+                          {n.link?.agentId && (
+                            <span className="flex items-center gap-0.5 text-[10px] font-black text-indigo-600 shrink-0">
+                              처리 <ChevronRight className="w-3 h-3" />
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {/* TRANSLATE 모드 전용: 언어 선택 + 요약 길이 */}
                 {mode === "TRANSLATE" && (
                   <div className="flex flex-col items-center gap-3 mb-4 w-full max-w-2xl">
@@ -350,6 +378,20 @@ const ChatMessages = ({
                 </div>
                 {/* ── XAI 푸터: 신뢰도·근거 구성·판단 근거 (answer 객체 confidence·citations·xai) ── */}
                 {msg.role === "assistant" && <XaiPanel msg={msg} isSecure={isSecure} />}
+                {/* ── 에이전트 핸드오프 카드 (팩 agentRouting 매칭 시 UserApp이 msg.handoff 부착) ── */}
+                {msg.role === "assistant" && msg.handoff && (
+                  <button onClick={() => onNavigateAgent?.(msg.handoff.agentId)}
+                    className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border-2 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 hover:border-indigo-300 transition-colors text-left">
+                    <span className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shrink-0">
+                      <Bot className="w-4 h-4 text-white" />
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-[12px] font-black text-indigo-800 truncate">다음 단계 — {msg.handoff.name}</span>
+                      <span className="block text-[11px] font-medium text-indigo-600/80 leading-snug">{msg.handoff.reason}</span>
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-indigo-400 shrink-0" />
+                  </button>
+                )}
                 {/* ── 지도 인텔리전스 카드 (히트맵 + 시계열, 시뮬레이션) ── */}
                 {msg.role === "assistant" && msg.mapIntel && (
                   <Suspense fallback={

@@ -101,6 +101,14 @@ const reb = {
       { id: "jeju",    name: "제주", keywords: ["제주"],           x: 0, y: 5, value: 0.65, series: [9.32, -7.14, 0.28, 0.45, 0.65], insight: "관광 회복 지연으로 전국 최저 상승률이나, 하락세는 멈추고 소폭 반등했습니다." },
     ],
   },
+  // 채팅→에이전트 핸드오프 — GENERAL 답변 아래 이동 카드 (선행 규칙 우선, 소문자 키워드)
+  agentRouting: [
+    { keywords: ["실거래", "이상거래", "괴리"], agentId: "orchestration:1", reason: "주간 신고분 전건 검증과 정밀조사 선별 보고서까지 자동 릴레이로 처리합니다." },
+    { keywords: ["이의신청"], agentId: "orchestration:0", reason: "스캔 서류 OCR부터 검토 보고서까지 자동 릴레이로 처리합니다." },
+    { keywords: ["번역", "영문"], agentId: "agent-translate", reason: "번역 에이전트가 용어집 매칭과 역번역 검증까지 수행합니다." },
+    { keywords: ["보고서", "주간 보고"], agentId: "agent-report", reason: "표준 양식 보고서를 자동 작성하고 결재선까지 지정합니다." },
+    { keywords: ["분석", "추이"], agentId: "agent-dataanalysis", reason: "데이터 분석 에이전트가 차트·통계로 심층 분석합니다." },
+  ],
   // 알림 센터 — 헤더 벨 드롭다운. link.agentId로 에이전트/시나리오 딥링크 (orchestration:<idx> 허용)
   notifications: [
     { id: "n1", severity: "alert", title: "실거래 이상거래 의심 8건", body: "주간 자동 검증 결과 고가 3·저가 4·반복 거래 1건 — 정밀조사 선별 검토가 필요합니다.", time: "09:00", link: { agentId: "orchestration:1" } },

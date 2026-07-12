@@ -180,7 +180,7 @@ const MeetingMinutesAgent = ({ onBack, domain }) => {
           </div>
         </div>
 
-        {/* 2. 회의 자료 첨부 (선택) — RFP SFR-13: 회의 자료(PPT, 문서) 분석 후 관련 맥락 반영 */}
+        {/* 2. 회의 자료 첨부 (선택) — 회의 자료(PPT, 문서) 분석 후 관련 맥락 반영 */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <label className="text-[15px] font-black text-slate-600 uppercase tracking-wider">2 · 회의 자료 첨부</label>

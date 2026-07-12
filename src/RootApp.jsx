@@ -231,7 +231,7 @@ const RootApp = () => {
   if (view === "USER") {
     return (
       <Suspense fallback={<LoadingFallback domain={domain} />}>
-        <UserApp key={domainId} domain={domain} onSwitchToAdmin={() => setView("ADMIN")} />
+        <UserApp key={domainId} domain={domain} onSwitchToAdmin={() => setView("ADMIN")} onExitPortal={() => setView("SELECTOR")} />
       </Suspense>
     );
   }
@@ -239,7 +239,7 @@ const RootApp = () => {
   if (view === "ADMIN") {
     return (
       <Suspense fallback={<LoadingFallback domain={domain} />}>
-        <GenOSAdmin key={domainId} domain={domain} onSwitchToUser={() => setView("USER")} />
+        <GenOSAdmin key={domainId} domain={domain} onSwitchToUser={() => setView("USER")} onExitPortal={() => setView("SELECTOR")} />
       </Suspense>
     );
   }

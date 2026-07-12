@@ -202,7 +202,7 @@ const OCRAgent = ({ onBack, domain }) => {
           </div>
           <div>
             <div className="text-[15px] font-black text-slate-800">OCR 문서 인식 에이전트</div>
-            <div className="text-xs text-slate-400">SFR-006 · 문서 업로드 → Vision OCR 인식 → 구조화 텍스트 출력</div>
+            <div className="text-xs text-slate-400">문서 업로드 → Vision OCR 인식 → 구조화 텍스트 출력</div>
           </div>
         </div>
 
@@ -274,7 +274,7 @@ const OCRAgent = ({ onBack, domain }) => {
                 <input type="checkbox" checked={numericPrecision} onChange={e=>setNumericPrecision(e.target.checked)} className="accent-teal-600 w-4 h-4"/>
                 <span className={cn('text-[13px] font-bold', numericPrecision?'text-slate-700':'text-slate-400')}>수식/숫자 정밀 인식</span>
               </label>
-              {/* RFP SFR-13: 개인정보 자동 마스킹 */}
+              {/* 개인정보 자동 마스킹 */}
               <label className={cn('flex items-center gap-2 cursor-pointer select-none px-3 py-1.5 rounded-xl border transition-all', maskPII?'border-rose-300 bg-rose-50':'border-slate-200 hover:border-rose-200')}>
                 <input type="checkbox" checked={maskPII} onChange={e=>setMaskPII(e.target.checked)} className="accent-rose-600 w-4 h-4"/>
                 <ShieldCheck className={cn('w-3.5 h-3.5', maskPII?'text-rose-600':'text-slate-400')}/>
@@ -282,7 +282,7 @@ const OCRAgent = ({ onBack, domain }) => {
               </label>
             </div>
 
-            {/* RFP SFR-13: 특화 문서 처리 모드 — 도메인 팩 docModeOptions로 공급 */}
+            {/* 특화 문서 처리 모드 — 도메인 팩 docModeOptions로 공급 */}
             <div>
               <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2">문서 처리 모드</div>
               <div className="flex items-center gap-3 flex-wrap">

@@ -79,7 +79,7 @@ const AgentLoadingFallback = () => (
 /* ================================================================== */
 /* MAIN USER APP COMPONENT — 상태·핸들러·조립만 담당 (2-C 분해 후)      */
 /* ================================================================== */
-const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
+const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
   // ── 도메인 팩 주입: 조직·사용자·워크스페이스·LLM·에이전트 카탈로그는 팩에서 공급 ──
   const USER_INFO = domain.user;
   const WORKSPACES = domain.workspaces;
@@ -446,6 +446,7 @@ const UserApp = ({ onSwitchToAdmin, domain = rebDomain }) => {
             activeAgentId={activeAgentId} AGENT_TEAMS={AGENT_TEAMS}
             setShowQnaModal={setShowQnaModal} setShowTutorial={setShowTutorial}
             showNoticeBanner={showNoticeBanner} setShowNoticeBanner={setShowNoticeBanner}
+            onExitPortal={onExitPortal}
           />
 
           {/* ── AGENT 탭: 허브 & 개별 에이전트 (lazy loading) ── */}

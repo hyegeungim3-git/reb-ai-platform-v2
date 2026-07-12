@@ -263,7 +263,7 @@ export const TaskflowBuilderPage = () => {
             </div>
           </div>
           <div className="bg-white rounded-xl border p-6 shadow-sm space-y-4">
-            <h3 className="font-bold text-sm text-gray-800">응답 모드 (SFR-011)</h3>
+            <h3 className="font-bold text-sm text-gray-800">응답 모드</h3>
             <div className="grid grid-cols-2 gap-3">
               <div onClick={()=>setEditForm(p=>({...p,responseMode:'knowledge'}))} className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${editForm.responseMode==='knowledge'?'border-blue-500 bg-blue-50/50':'border-gray-200 hover:border-gray-300'}`}>
                 <div className="flex items-center space-x-2 mb-2"><BookOpen size={18} className={editForm.responseMode==='knowledge'?'text-blue-600':'text-gray-400'}/><span className="font-bold text-sm">지식 참조 모드</span></div>

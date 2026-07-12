@@ -1,5 +1,5 @@
 import React from "react";
-import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X, Menu } from "lucide-react";
+import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X, Menu, LayoutGrid } from "lucide-react";
 import { cn, orchList } from "../../utils.jsx";
 import { MOCK_NOTICES_USER } from "../../data/constants.js";
 
@@ -12,6 +12,7 @@ const ChatHeader = ({
   activeAgentId, AGENT_TEAMS,
   setShowQnaModal, setShowTutorial,
   showNoticeBanner, setShowNoticeBanner,
+  onExitPortal,
 }) => {
   const ModeIcon = mc.icon;
   // 오케스트레이션 활성 시나리오 — activeAgentId "orchestration:<idx>" (구형 "orchestration"은 0번)
@@ -42,7 +43,7 @@ const ChatHeader = ({
               </span>
             </h2>
             <p className={cn("text-[12px] font-medium leading-tight truncate", th.subtext)}>
-              {isSecure ? "무저장 · 로컬 LLM · 망분리 — 강화된 보안 환경에서 처리됩니다" : isAgent ? (isOrch ? (orchActive?.brief ?? "요청 1건이 여러 에이전트를 자동 릴레이합니다") : activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.desc ?? "") : `${domain.orgName} 멀티 에이전트 — SFR-006/011/013`) : mc.desc}
+              {isSecure ? "무저장 · 로컬 LLM · 망분리 — 강화된 보안 환경에서 처리됩니다" : isAgent ? (isOrch ? (orchActive?.brief ?? "요청 1건이 여러 에이전트를 자동 릴레이합니다") : activeAgentId ? (AGENT_TEAMS.find(a=>a.id===activeAgentId)?.desc ?? "") : `${domain.orgName} 멀티 에이전트 허브`) : mc.desc}
             </p>
           </div>
         </div>
@@ -51,6 +52,11 @@ const ChatHeader = ({
             <div className={cn("w-2 h-2 rounded-full animate-pulse", isSecure ? "bg-blue-500" : "bg-green-500")}></div>
             <span>{isSecure ? "보안 모드" : "내부망 전용"}</span>
           </div>
+          {onExitPortal && (
+            <button onClick={onExitPortal} title="포털 선택 화면으로" aria-label="포털 선택 화면으로" className={cn("h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
+              <LayoutGrid className="w-5 h-5" />
+            </button>
+          )}
           <button onClick={() => setShowQnaModal(true)} title="자주 묻는 질문" aria-label="자주 묻는 질문" className={cn("h-10 w-10 rounded-xl border-2 flex items-center justify-center transition-colors", isSecure ? "border-slate-700 bg-[#040814] text-slate-400 hover:bg-[#1e293b]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-100 shadow-sm")}>
             <MessageCircle className="w-5 h-5" />
           </button>

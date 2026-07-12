@@ -181,7 +181,7 @@ const InternalRegAgent = ({ onBack, domain }) => {
       </div>
       <div className="flex-1 min-w-0">
         <div className="text-[14px] font-black text-slate-800 leading-tight">내규·규정 조회</div>
-        <div className="text-[10px] text-slate-400">SFR-011 · RAG 검색 + EXAONE 3.0</div>
+        <div className="text-[10px] text-slate-400">RAG 검색 + EXAONE 3.0</div>
       </div>
       {showActions && (
         <div className="flex items-center gap-1.5 shrink-0">

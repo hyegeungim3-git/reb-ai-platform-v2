@@ -12,7 +12,7 @@ const reb = {
   brandColor: "#003087",
   welcome: "한국부동산원 생성형 AI 플랫폼에 오신 것을 환영합니다.",
   statusBadge: "시스템 정상 가동 중 · 로컬 LLM · 내부망 전용 · 망분리 적용",
-  footerNote: "한국부동산원 생성형 AI 플랫폼 구축 사업 (SFR-006, SFR-011, SFR-013 반영)",
+  footerNote: "한국부동산원 생성형 AI 플랫폼 구축 사업",
   userFeatures: [
     "일반 질의 (RAG 기반 지식 검색)",
     "문서 사전 검토 (사규 자동 대조)",

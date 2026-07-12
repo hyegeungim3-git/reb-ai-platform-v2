@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Database, Settings, Cpu, ChevronDown, Bot, Box, Layers, Code, BarChart2, Shield, Briefcase, Users, Grid, List, PieChart, Wrench, Bell, Columns, Monitor, FolderOpen, UserCog, Unplug, Megaphone, Scale } from 'lucide-react';
+import { LayoutDashboard, Database, Settings, Cpu, ChevronDown, Bot, Box, Layers, Code, BarChart2, Shield, Briefcase, Users, Grid, List, PieChart, Wrench, Bell, Columns, Monitor, FolderOpen, UserCog, Unplug, Megaphone, Scale, LayoutGrid } from 'lucide-react';
 import { ToastProvider, SidebarItem } from './admin/common.jsx';
 import { applyAdminDomain, ADMIN_PERSONA } from './admin/mocks.js';
 import { UsageHistoryPage, SatisfactionMgmtPage, UsageStatsPage, InfoServiceStatsPage } from './admin/pages/analytics.jsx';
@@ -15,7 +15,7 @@ import { SystemMonitorPage, AdminPage, UserPage, ConnectedMonitorPage } from './
 import { LlmTraining, VlmTraining, EmbeddingPage, RerankingPage, LeaderboardPage, EvalMetricsPage } from './admin/pages/training.jsx';
 import { ApprovalPage, QuotaPage, UserManagementPage, AccessLogPage, AccessSecurityPage, WorkLogPage, UsageMonitorPage, HrSyncPage } from './admin/pages/users.jsx';
 
-const App = ({ onSwitchToUser, domain }) => {
+const App = ({ onSwitchToUser, onExitPortal, domain }) => {
   // 도메인 리졸버: 하위 페이지들이 import하는 mocks.js 상수를 팩 adminContent로 교체 (렌더 최상단에서 호출 — 페이지 렌더보다 먼저)
   applyAdminDomain(domain);
   const orgName = domain?.orgName || '한국부동산원';
@@ -200,6 +200,11 @@ const App = ({ onSwitchToUser, domain }) => {
       <main className="flex-1 overflow-hidden flex flex-col">
         {/* Top bar */}
         <div className="h-14 bg-white border-b shadow-sm flex items-center justify-end px-6 shrink-0 space-x-2">
+          {onExitPortal && (
+            <button onClick={onExitPortal} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition-colors border border-gray-200">
+              <LayoutGrid size={15}/> 포털 선택
+            </button>
+          )}
           {onSwitchToUser && (
             <button onClick={onSwitchToUser} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-100 transition-colors border border-blue-200 mr-1">
               <Monitor size={15}/> 사용자 포털 전환

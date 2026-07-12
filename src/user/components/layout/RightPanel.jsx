@@ -485,7 +485,7 @@ const RightPanel = ({
                 <div>
                   <div className={cn("text-[13px] font-black mb-1", isSecure ? "text-blue-300" : "text-blue-800")}>망분리 보안 환경 적용</div>
                   <div className={cn("text-[13px] font-medium leading-relaxed", isSecure ? "text-blue-400" : "text-blue-700")}>
-                    입력하신 정보는 외부로 절대 전송되지 않으며, 사내 로컬 서버에서만 처리됩니다. (SFR-002 적용)
+                    입력하신 정보는 외부로 절대 전송되지 않으며, 사내 로컬 서버에서만 처리됩니다.
                   </div>
                 </div>
               </div>

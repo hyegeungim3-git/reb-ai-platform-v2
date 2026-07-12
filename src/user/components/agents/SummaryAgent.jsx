@@ -180,7 +180,7 @@ const SummaryAgent=({onBack,domain})=>{
           </div>
           <div>
             <div className="text-[15px] font-black text-slate-800">문서 요약 에이전트</div>
-            <div className="text-xs text-slate-400">문서 업로드 → 멀티 에이전트 분석 → 구조화 요약 생성 (SFR-006)</div>
+            <div className="text-xs text-slate-400">문서 업로드 → 멀티 에이전트 분석 → 구조화 요약 생성</div>
           </div>
         </div>
 
@@ -188,7 +188,7 @@ const SummaryAgent=({onBack,domain})=>{
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <div className="text-xs font-bold text-slate-500 uppercase tracking-wide">입력 방식</div>
-            {/* RFP SFR-13: 문서 비교 요약 모드 */}
+            {/* 문서 비교 요약 모드 */}
             <button
               onClick={()=>setCompareMode(p=>!p)}
               className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all',
@@ -464,7 +464,7 @@ const SummaryAgent=({onBack,domain})=>{
           </div>
         </div>{/* /결과 메타 헤더 */}
 
-        {/* RFP SFR-13: 문서 비교 요약 table */}
+        {/* 문서 비교 요약 table */}
         {compareMode&&(
           <div className="border border-indigo-200 rounded-xl overflow-hidden shadow-sm">
             <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600">
@@ -508,7 +508,7 @@ const SummaryAgent=({onBack,domain})=>{
           </div>
         )}
 
-        {/* RFP SFR-13: 표 형식 요약 */}
+        {/* 표 형식 요약 */}
         {summaryType==='표형식'&&!compareMode&&(
           <div className="border border-teal-200 rounded-xl overflow-hidden shadow-sm">
             <div className="flex items-center gap-2 px-4 py-2.5 bg-teal-600">

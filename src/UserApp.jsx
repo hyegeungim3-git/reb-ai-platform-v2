@@ -337,6 +337,31 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
 
   const handleCitationClick = (cite) => { setRightOpen(true); setPanelView("READER"); setActiveCitation(cite); };
 
+  // 답변 피드백 → localStorage 저장(관리자 'AI 답변 품질 관리'가 병합 표시). SECURE는 무저장 서사 유지
+  const handleFeedback = (msg, rating, reason) => {
+    if (chatTab !== "SECURE") {
+      try {
+        const key = `genos.feedback.${domain.id}`;
+        const arr = JSON.parse(localStorage.getItem(key) || "[]");
+        const idx = messages.findIndex(m => m.id === msg.id);
+        let query = "";
+        for (let i = idx - 1; i >= 0; i--) if (messages[i].role === "user") { query = messages[i].content; break; }
+        arr.unshift({
+          id: `UF-${Date.now()}`, query, answer: (msg.content || "").slice(0, 120),
+          rating, reason: reason || "",
+          confidence: typeof msg.confidence === "number" ? msg.confidence / 100 : null,
+          date: new Date().toISOString().slice(0, 10),
+        });
+        localStorage.setItem(key, JSON.stringify(arr.slice(0, 30)));
+      } catch { /* 저장 실패는 데모 흐름에 영향 없음 */ }
+    }
+    setToast({
+      message: chatTab === "SECURE"
+        ? "피드백이 반영되었습니다 (보안 세션 — 기록은 저장되지 않습니다)"
+        : rating === "good" ? "피드백이 반영되었습니다. 감사합니다!" : "품질 리뷰에 등록되었습니다 — 관리자 > AI 답변 품질 관리",
+    });
+  };
+
   const handleWorkspaceSwitch = (wsId) => {
     setActiveWorkspace(wsId);
     newConversation();
@@ -489,6 +514,7 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
               setShowBuilderModal={setShowBuilderModal} setToast={setToast}
               onErrReport={(msg) => { setErrReportMsgId(msg.id); setErrReportText(''); setShowErrReport(true); }}
               onDocPreview={(doc) => { setDocModalData(doc); setShowDocModal(true); }}
+              onFeedback={handleFeedback}
             />
           )}
 

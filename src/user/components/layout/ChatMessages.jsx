@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import {
   ShieldCheck, ShieldAlert, EyeOff, Server, History, Bot, Workflow,
   FileCheck, Languages, FileText, Search, Sparkles, Clock, Star,
@@ -24,9 +24,18 @@ const ChatMessages = ({
   activeLLM,
   handleSend, handleCitationClick, handleDocDownload,
   setShowBuilderModal, setToast,
-  onErrReport, onDocPreview,
+  onErrReport, onDocPreview, onFeedback,
 }) => {
   const ModeIcon = mc.icon;
+  // 답변 피드백 — 세션 내 표시 상태 (기록 저장은 UserApp onFeedback가 담당)
+  const [fb, setFb] = useState({});          // { msgId: { rating, reason } }
+  const [reasonFor, setReasonFor] = useState(null); // 👎 사유 선택 중인 msgId
+  const FB_REASONS = ["부정확한 내용", "근거 문서 부족", "오래된 정보", "질문 의도 미반영"];
+  const giveFeedback = (msg, rating, reason = null) => {
+    setFb(prev => ({ ...prev, [msg.id]: { rating, reason } }));
+    setReasonFor(null);
+    onFeedback?.(msg, rating, reason);
+  };
   return (
     <div className={cn("flex-1 overflow-y-auto px-4 sm:px-12 pt-12 pb-8 custom-scrollbar relative z-10", isSecure ? "" : "bg-white")}>
       <div className="max-w-3xl mx-auto min-h-full flex flex-col justify-end">
@@ -350,14 +359,42 @@ const ChatMessages = ({
                     <MapIntelCard data={msg.mapIntel} />
                   </Suspense>
                 )}
-                {/* 액션 버튼 */}
+                {/* 액션 버튼 — 피드백 상태가 있으면 상시 노출 (모바일 hover 의존 완화) */}
                 {msg.role === "assistant" && (
-                  <div className="flex items-center gap-1.5 mt-0.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className={cn("flex items-center gap-1.5 mt-0.5 px-1 transition-opacity",
+                    fb[msg.id] || reasonFor === msg.id ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
                     <button aria-label="답변 복사" className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-slate-700 hover:bg-slate-100")} onClick={() => { navigator.clipboard.writeText(msg.content); setToast({ message: "클립보드에 복사되었습니다." }); }}><Copy className="w-4 h-4" /></button>
-                    <button aria-label="도움됨" className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-green-600 hover:bg-green-50")}><ThumbsUp className="w-4 h-4" /></button>
-                    <button aria-label="도움 안 됨" className={cn("p-1.5 rounded-lg transition-colors", isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}><ThumbsDown className="w-4 h-4" /></button>
+                    <button aria-label="도움됨" aria-pressed={fb[msg.id]?.rating === "good"} onClick={() => giveFeedback(msg, "good")}
+                      className={cn("p-1.5 rounded-lg transition-colors",
+                        fb[msg.id]?.rating === "good" ? "text-green-600 bg-green-50" :
+                        isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-green-600 hover:bg-green-50")}>
+                      <ThumbsUp className={cn("w-4 h-4", fb[msg.id]?.rating === "good" && "fill-green-200")} /></button>
+                    <button aria-label="도움 안 됨" aria-pressed={fb[msg.id]?.rating === "bad"} onClick={() => setReasonFor(reasonFor === msg.id ? null : msg.id)}
+                      className={cn("p-1.5 rounded-lg transition-colors",
+                        fb[msg.id]?.rating === "bad" ? "text-red-500 bg-red-50" :
+                        isSecure ? "text-slate-500 hover:text-blue-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}>
+                      <ThumbsDown className={cn("w-4 h-4", fb[msg.id]?.rating === "bad" && "fill-red-200")} /></button>
                     <button onClick={() => onErrReport(msg)} title="오류 신고" className={cn("p-1.5 rounded-lg transition-colors flex items-center gap-1 text-[11px] font-bold", isSecure ? "text-slate-500 hover:text-red-400 hover:bg-slate-800" : "text-slate-400 hover:text-red-500 hover:bg-red-50")}><AlertTriangle className="w-3.5 h-3.5" /><span className="hidden sm:inline">신고</span></button>
                     <span className={cn("text-[11px] ml-1", th.subtext)}>{msg.time}</span>
+                    {fb[msg.id] && (
+                      <span className={cn("text-[10px] font-bold ml-1", isSecure ? "text-slate-500" : "text-slate-400")}>
+                        피드백 반영됨{fb[msg.id].reason ? ` · ${fb[msg.id].reason}` : ""}
+                      </span>
+                    )}
+                  </div>
+                )}
+                {/* 👎 사유 선택 칩 — 선택 시 품질 리뷰(관리자)로 전달 */}
+                {msg.role === "assistant" && reasonFor === msg.id && (
+                  <div className={cn("flex items-center gap-1.5 flex-wrap px-1 py-1.5 rounded-xl border text-[11px] animate-in fade-in duration-150",
+                    isSecure ? "bg-[#0a0f1c] border-slate-700" : "bg-slate-50 border-slate-200")}>
+                    <span className={cn("font-bold px-1.5", isSecure ? "text-slate-400" : "text-slate-500")}>어떤 점이 아쉬웠나요?</span>
+                    {FB_REASONS.map(r => (
+                      <button key={r} onClick={() => giveFeedback(msg, "bad", r)}
+                        className={cn("px-2.5 py-1 rounded-full border font-bold transition-colors",
+                          isSecure ? "border-slate-600 text-slate-300 hover:bg-slate-800" : "border-slate-300 text-slate-600 bg-white hover:border-red-300 hover:text-red-600")}>
+                        {r}
+                      </button>
+                    ))}
                   </div>
                 )}
                 {/* ── 출처 인용 카드 ── */}

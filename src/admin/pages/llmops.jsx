@@ -1000,20 +1000,30 @@ export const TrustManagePage = () => {
 // ==================== SIDEBAR ====================
 export const QualityManagementPage = () => {
   const [selReview,setSelReview]=useState(null);
+  // 사용자 포털 답변 피드백(👍👎, localStorage) 병합 — 전문가 검토 목록 앞에 표시 (피드백 루프)
+  const userRows=(()=>{try{
+    const dom=localStorage.getItem('genos.activeDomain')||'reb';
+    return JSON.parse(localStorage.getItem(`genos.feedback.${dom}`)||'[]').map(f=>({
+      id:f.id, query:f.query||'(질문 미기록)', answer:f.answer, agent:'일반 질의 (사용자 포털)',
+      reviewer:'사용자 피드백', rating:f.rating, confidence:f.confidence??0.8,
+      date:f.date, feedback:f.reason||'',
+    }));
+  }catch{return [];}})();
+  const rows=[...userRows,...MOCK_QUALITY_REVIEWS];
   const ratingIcon=r=>r==='good'?<ThumbsUp size={14} className="text-green-600"/>:r==='bad'?<ThumbsDown size={14} className="text-red-600"/>:<Edit3 size={14} className="text-orange-500"/>;
   const ratingLabel=r=>r==='good'?'정확':r==='bad'?'할루시네이션':'수정 필요';
   const ratingBg=r=>r==='good'?'bg-green-50 text-green-700':r==='bad'?'bg-red-50 text-red-700':'bg-orange-50 text-orange-700';
-  const good=MOCK_QUALITY_REVIEWS.filter(r=>r.rating==='good').length;
-  const edit=MOCK_QUALITY_REVIEWS.filter(r=>r.rating==='edit').length;
-  const bad=MOCK_QUALITY_REVIEWS.filter(r=>r.rating==='bad').length;
+  const good=rows.filter(r=>r.rating==='good').length;
+  const edit=rows.filter(r=>r.rating==='edit').length;
+  const bad=rows.filter(r=>r.rating==='bad').length;
   return (
     <PageShell breadcrumb={['관리자 전용','AI 품질 관리']} title="AI 답변 품질 관리">
       <div className="grid grid-cols-5 gap-4 mb-6">
-        {[{l:'총 검토 건수',v:MOCK_QUALITY_REVIEWS.length,c:'border-blue-500 bg-blue-50',tc:'text-blue-700'},
+        {[{l:'총 검토 건수',v:rows.length,c:'border-blue-500 bg-blue-50',tc:'text-blue-700'},
           {l:'정확',v:good,c:'border-green-500 bg-green-50',tc:'text-green-700'},
           {l:'수정 필요',v:edit,c:'border-orange-500 bg-orange-50',tc:'text-orange-700'},
           {l:'할루시네이션',v:bad,c:'border-red-500 bg-red-50',tc:'text-red-700'},
-          {l:'평균 신뢰도',v:((MOCK_QUALITY_REVIEWS.reduce((s,r)=>s+r.confidence,0)/MOCK_QUALITY_REVIEWS.length)*100).toFixed(0)+'%',c:'border-purple-500 bg-purple-50',tc:'text-purple-700'}
+          {l:'평균 신뢰도',v:((rows.reduce((s,r)=>s+r.confidence,0)/rows.length)*100).toFixed(0)+'%',c:'border-purple-500 bg-purple-50',tc:'text-purple-700'}
         ].map((c,i)=>(
           <div key={i} className={`p-4 rounded-xl border-l-4 bg-white shadow-sm ${c.c}`}>
             <div className="text-xs text-gray-500 mb-1">{c.l}</div>
@@ -1028,7 +1038,7 @@ export const QualityManagementPage = () => {
               <h3 className="font-bold text-sm">전문가 검토 내역</h3>
               <select className="text-xs border rounded px-2 py-1 bg-white"><option>전체</option><option>정확</option><option>수정 필요</option><option>할루시네이션</option></select>
             </div>
-            <div className="divide-y">{MOCK_QUALITY_REVIEWS.map(r=>(
+            <div className="divide-y">{rows.map(r=>(
               <div key={r.id} onClick={()=>setSelReview(r)} className="px-5 py-4 hover:bg-gray-50/50 cursor-pointer">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">

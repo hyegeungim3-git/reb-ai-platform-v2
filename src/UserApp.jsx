@@ -2,9 +2,6 @@ import React, { useState, useEffect, useMemo, useRef, Suspense, lazy } from "rea
 import { ShieldCheck } from "lucide-react";
 
 import { cn, orchList } from "./user/utils.jsx";
-import { initLive, stepLive, liveAlertOf } from "./user/liveEngine.js";
-import { logAudit } from "./user/auditLog.js";
-import { allScenarios } from "./user/scenarios.js";
 import Toast from "./user/components/Toast.jsx";
 import {
   MODES as BASE_MODES, HISTORY as BASE_HISTORY, DOCS as BASE_DOCS,
@@ -335,18 +332,10 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
         const hit = domain.agentRouting.find(r => r.keywords.some(k => q.includes(k)));
         if (hit) {
           const name = hit.agentId.startsWith("orchestration")
-            ? (allScenarios(domain)[Number(hit.agentId.split(":")[1]) || 0]?.title ?? "복합 업무 시나리오")
+            ? (orchList(domain.orchestration)[Number(hit.agentId.split(":")[1]) || 0]?.title ?? "복합 업무 시나리오")
             : (AGENT_TEAMS.find(a => a.id === hit.agentId)?.name ?? "AI 에이전트");
           handoff = { agentId: hit.agentId, name, reason: hit.reason };
         }
-      }
-      // 감사 추적 — SECURE는 무저장 서사 유지
-      if (chatTab !== "SECURE") {
-        logAudit({
-          type: "query", mode, summary: msgText.slice(0, 60),
-          confidence: typeof resp.confidence === "number" ? resp.confidence : null,
-          grounded: (resp.citations?.length || 0) > 0 || !!resp.xai,
-        });
       }
       setIsTyping(false);
       setMessages(prev => {
@@ -378,57 +367,12 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
         localStorage.setItem(key, JSON.stringify(arr.slice(0, 30)));
       } catch { /* 저장 실패는 데모 흐름에 영향 없음 */ }
     }
-    if (chatTab !== "SECURE") logAudit({ type: "feedback", summary: `${rating === "good" ? "도움됨" : "도움 안 됨"}${reason ? ` · ${reason}` : ""}` });
     setToast({
       message: chatTab === "SECURE"
         ? "피드백이 반영되었습니다 (보안 세션 — 기록은 저장되지 않습니다)"
         : rating === "good" ? "피드백이 반영되었습니다. 감사합니다!" : "품질 리뷰에 등록되었습니다 — 관리자 > AI 답변 품질 관리",
     });
   };
-
-  // ── 라이브 데이터 엔진 (팩 liveMetric 공급 시에만 구동) ──
-  // 엔진은 UserApp 수준에서 1초 틱 — 탭 전환·카드 언마운트와 무관하게 상태 유지
-  const liveCfg = domain.liveMetric || null;
-  const [liveState, setLiveState] = useState(() => (liveCfg ? initLive(liveCfg) : null));
-  const [liveSpeed, setLiveSpeed] = useState(1);
-  const liveSpeedRef = useRef(1);
-  liveSpeedRef.current = liveSpeed;
-  const [liveNotifs, setLiveNotifs] = useState([]);
-  // 엔진 상태는 ref가 정본 — setState 업데이터 안에서 부수효과를 내면 StrictMode 이중 호출로 알림이 중복된다
-  // 진행량은 벽시계 경과 기반 — 브라우저가 백그라운드 탭 타이머를 스로틀해도 다음 발화 때 따라잡는다
-  const liveRef = useRef(liveState);
-  const liveLastRef = useRef(Date.now());
-  useEffect(() => {
-    if (!liveCfg) return;
-    liveLastRef.current = Date.now();
-    const t = setInterval(() => {
-      const now = Date.now();
-      let remain = Math.min(((now - liveLastRef.current) / 1000) * liveSpeedRef.current, 600); // 장시간 스로틀 후 과도 점프 상한(10 시뮬레이션분)
-      liveLastRef.current = now;
-      let st = liveRef.current, crossedAny = false, crossVal = null;
-      while (remain > 0) {
-        const dt = Math.min(remain, 60); // 큰 경과는 60초 단위로 분할 (임계·회복 거동 보존)
-        const r = stepLive(st, liveCfg, dt);
-        st = r.next;
-        if (r.crossed) { crossedAny = true; crossVal = st.value; }
-        remain -= dt;
-      }
-      liveRef.current = st;
-      setLiveState(st);
-      if (crossedAny) {
-        const notif = liveAlertOf(liveCfg, crossVal, `live-${Date.now()}`);
-        setLiveNotifs(p => [notif, ...p].slice(0, 5)); // 최근 5건만 유지
-        setToast({ message: `[실시간 알림] ${notif.title}` });
-        logAudit({ type: "live_alert", summary: `${liveCfg.label} ${crossVal.toFixed(liveCfg.decimals ?? 1)}${liveCfg.unit} — ${liveCfg.thresholdLabel} 돌파` });
-      }
-    }, 1000);
-    return () => clearInterval(t);
-  }, [liveCfg]);
-  // 알림 센터·브리핑에 실시간 알림을 정적 알림 앞에 병합
-  const NOTIFS = useMemo(
-    () => [...liveNotifs, ...(domain.notifications || [])],
-    [liveNotifs, domain.notifications]
-  );
 
   // 데스크톱→모바일 뷰포트 전환 시 열려 있던 사이드바·우측 패널이 오버레이로 겹쳐 뜨는 것 방지
   // (matchMedia change와 resize를 병행 — 에뮬레이션 환경에서 change 미발화 대비)
@@ -556,16 +500,16 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
             setShowQnaModal={setShowQnaModal} setShowTutorial={setShowTutorial}
             showNoticeBanner={showNoticeBanner} setShowNoticeBanner={setShowNoticeBanner}
             onExitPortal={onExitPortal}
-            notifications={NOTIFS}
+            notifications={domain.notifications || []}
             onNotifNavigate={(agentId) => { setChatTab("AGENT"); setActiveAgentId(agentId); }}
           />
 
           {/* ── AGENT 탭: 허브 & 개별 에이전트 (lazy loading) ── */}
           {chatTab === "AGENT" && (
             <Suspense fallback={<AgentLoadingFallback />}>
-              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={allScenarios(domain)} /> :
-               activeAgentId.startsWith("orchestration") && allScenarios(domain).length > 0
-                                                      ? <OrchestrationScenario key={activeAgentId} scenario={allScenarios(domain)[Number(activeAgentId.split(":")[1]) || 0] ?? allScenarios(domain)[0]} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
+              {activeAgentId === null               ? <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} /> :
+               activeAgentId.startsWith("orchestration") && orchList(domain.orchestration).length > 0
+                                                      ? <OrchestrationScenario key={activeAgentId} scenario={orchList(domain.orchestration)[Number(activeAgentId.split(":")[1]) || 0] ?? orchList(domain.orchestration)[0]} agents={AGENT_TEAMS} user={USER_INFO} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-chatbot"      ? <ChatbotAgent      domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-report"       ? <ReportAgent       domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-meeting"      ? <MeetingMinutesAgent domain={domain} onBack={() => setActiveAgentId(null)} /> :
@@ -579,7 +523,7 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
                activeAgentId === "agent-translate"    ? <TranslateAgent    domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-review"       ? <DocReviewAgent    domain={domain} onBack={() => setActiveAgentId(null)} /> :
                activeAgentId === "agent-safety"       ? <SafetyPlanAgent   domain={domain} onBack={() => setActiveAgentId(null)} /> :
-               <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={allScenarios(domain)} />}
+               <AgentHub onLaunch={setActiveAgentId} agents={AGENT_TEAMS} orgName={domain.orgName} orchestration={domain.orchestration} />}
             </Suspense>
           )}
 
@@ -599,9 +543,8 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
               onErrReport={(msg) => { setErrReportMsgId(msg.id); setErrReportText(''); setShowErrReport(true); }}
               onDocPreview={(doc) => { setDocModalData(doc); setShowDocModal(true); }}
               onFeedback={handleFeedback}
-              briefingItems={NOTIFS}
+              briefingItems={domain.notifications || []}
               onNavigateAgent={(agentId) => { setChatTab("AGENT"); setActiveAgentId(agentId); }}
-              liveCfg={liveCfg} liveState={liveState} liveSpeed={liveSpeed} setLiveSpeed={setLiveSpeed}
             />
           )}
 

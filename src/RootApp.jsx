@@ -5,7 +5,7 @@
  */
 import React, { useState, useEffect, Suspense, lazy } from "react";
 import { Shield, User, ArrowRight, Lock, CheckCircle2, Layers } from "lucide-react";
-import { DOMAINS, getDomain, getDomainList, getActiveDomainId, setActiveDomainId } from "./domains/index.js";
+import { DOMAINS, DOMAIN_LIST, getActiveDomainId, setActiveDomainId } from "./domains/index.js";
 
 // 코드 스플리팅: 초기 로드 사이즈 축소
 const UserApp = lazy(() => import("./UserApp"));
@@ -21,7 +21,7 @@ const DomainSwitcher = ({ domain, onChange }) => (
     <Layers className="w-4 h-4 text-slate-400 shrink-0" />
     <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider shrink-0">데모 도메인</span>
     <div className="flex items-center gap-1">
-      {getDomainList().map(d => (
+      {DOMAIN_LIST.map(d => (
         <button
           key={d.id}
           onClick={() => onChange(d.id)}
@@ -61,7 +61,7 @@ const PortalSelector = ({ domain, onChangeDomain, onSelectUser, onSelectAdmin })
         <DomainSwitcher domain={domain} onChange={onChangeDomain} />
       </div>
 
-      <main className="relative z-10 w-full max-w-3xl px-6 flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-3xl px-6 flex flex-col items-center">
         {/* Logo & Title */}
         <div className="flex flex-col items-center mb-16 text-center">
           <div className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl mb-6 border-4" style={{ backgroundColor: domain.brandColor, borderColor: `${domain.brandColor}33` }}>
@@ -196,7 +196,7 @@ const PortalSelector = ({ domain, onChangeDomain, onSelectUser, onSelectAdmin })
             모든 데이터는 내부망에서만 처리되며 외부로 전송되지 않습니다.
           </p>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
@@ -217,8 +217,7 @@ const RootApp = () => {
   // "SELECTOR" | "USER" | "ADMIN"
   const [view, setView] = useState("SELECTOR");
   const [domainId, setDomainId] = useState(getActiveDomainId());
-  // 커스텀 팩(스튜디오)이 삭제된 직후에도 안전하도록 REB 폴백
-  const domain = getDomain(domainId) || DOMAINS.reb;
+  const domain = DOMAINS[domainId];
 
   useEffect(() => {
     document.title = `${domain.platformTitle} · ${domain.orgShort} GenOS`;

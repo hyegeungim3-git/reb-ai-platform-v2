@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ShieldCheck, Bot, MessageCircle, HelpCircle, Bell, X, Menu, LayoutGrid, ChevronRight, AlertTriangle, Info, Siren } from "lucide-react";
-import { cn } from "../../utils.jsx";
-import { allScenarios } from "../../scenarios.js";
+import { cn, orchList } from "../../utils.jsx";
 import { MOCK_NOTICES_USER } from "../../data/constants.js";
 
 /* 알림 심각도별 아이콘·색 (팩 notifications[].severity: 'alert'|'warn'|'info') */
@@ -25,7 +24,7 @@ const ChatHeader = ({
   const ModeIcon = mc.icon;
   // 오케스트레이션 활성 시나리오 — activeAgentId "orchestration:<idx>" (구형 "orchestration"은 0번)
   const isOrch = typeof activeAgentId === "string" && activeAgentId.startsWith("orchestration");
-  const orchActive = isOrch ? (allScenarios(domain)[Number(activeAgentId.split(":")[1]) || 0] ?? allScenarios(domain)[0]) : null;
+  const orchActive = isOrch ? (orchList(domain.orchestration)[Number(activeAgentId.split(":")[1]) || 0] ?? orchList(domain.orchestration)[0]) : null;
 
   // 알림 센터 — 팩 notifications 공급 시에만 벨 노출, 읽음 상태는 세션 한정
   const [notifOpen, setNotifOpen] = useState(false);

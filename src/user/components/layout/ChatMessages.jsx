@@ -12,7 +12,6 @@ import { SECURE_SUGGESTIONS as BASE_SECURE_SUGGESTIONS } from "../../data/consta
 // 지도 인텔리전스 카드: recharts 포함 — 지역 질의 응답 시점에만 로드 (초기 번들 분리)
 const MapIntelCard = lazy(() => import("../MapIntelCard.jsx"));
 import XaiPanel from "../XaiPanel.jsx";
-import LiveMetricCard from "../LiveMetricCard.jsx";
 import { renderMdLite } from "../../mdLite.jsx";
 
 /* ================================================================== */
@@ -29,7 +28,6 @@ const ChatMessages = ({
   setShowBuilderModal, setToast,
   onErrReport, onDocPreview, onFeedback,
   briefingItems = [], onNavigateAgent,
-  liveCfg = null, liveState = null, liveSpeed = 1, setLiveSpeed,
 }) => {
   const ModeIcon = mc.icon;
   // 답변 피드백 — 세션 내 표시 상태 (기록 저장은 UserApp onFeedback가 담당)
@@ -170,10 +168,6 @@ const ChatMessages = ({
                     </div>
                   </div>
                 </div>
-                {/* ── 라이브 지표 (팩 liveMetric 공급 시) — 엔진은 UserApp에서 상시 틱 ── */}
-                {mode === "GENERAL" && liveCfg && liveState && (
-                  <LiveMetricCard cfg={liveCfg} state={liveState} speed={liveSpeed} setSpeed={setLiveSpeed} onAction={onNavigateAgent} />
-                )}
                 {/* ── 오늘의 업무 브리핑 — 팩 notifications 재사용, 클릭 시 에이전트/시나리오 딥링크 ── */}
                 {mode === "GENERAL" && briefingItems.length > 0 && (
                   <div className="w-full max-w-2xl mb-4">

@@ -150,16 +150,6 @@ const civic = {
       { id: "gongdan",  name: "공단동",   keywords: ["공단동"],   x: 3, y: 2, value: 398, series: [372, 368, 384, 391, 389, 398], insight: "산업단지 특성상 소음·환경 민원 비중이 높으며, 야간 조업 관련 신고가 여름철에 증가하는 경향이 있습니다." },
     ],
   },
-  // 라이브 지표 — GENERAL 첫 화면 실시간 카드 + 임계 돌파 시 알림 생성 (재난 세계관과 동일 수치대)
-  liveMetric: {
-    label: "강변동 하천 수위", unit: "m", decimals: 2,
-    initial: 2.28, min: 1.9, max: 3.4, window: 48,
-    threshold: 2.5, thresholdLabel: "주의수위 2.5m",
-    drift: 0.003, noise: 0.02,
-    recovery: { at: 3.1, to: 2.2 },
-    alert: { severity: "alert", title: "실시간 수위 경보 — 강변동", body: "하천 수위 {value}m — 주의수위(2.5m) 상향 돌파. 상황보고서 작성을 실행할 수 있습니다.", link: { agentId: "orchestration:1" } },
-    source: "하천 수위 자동계측 · 강변동 관측소(시뮬레이션)",
-  },
   // 채팅→에이전트 핸드오프 — GENERAL 답변 아래 이동 카드 (선행 규칙 우선, 소문자 키워드)
   agentRouting: [
     { keywords: ["호우", "재난", "침수"], agentId: "orchestration:1", reason: "재난 데이터 조회부터 대책본부 상황보고서 1보까지 자동 릴레이로 처리합니다." },

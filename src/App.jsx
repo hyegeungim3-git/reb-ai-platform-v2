@@ -11,8 +11,6 @@ import { DatasetPage, VectorDbPage, AutoLoadPage, CodespacePage, SharedVolumePag
 import { KnowledgeManagementPage, RagPipelinePage } from './admin/pages/knowledge.jsx';
 import { LlmManagePage, GuardrailFilterPage, GuardrailLogPage, TrustManagePage, QualityManagementPage } from './admin/pages/llmops.jsx';
 import { AiActCompliancePage } from './admin/pages/compliance.jsx';
-import { PackStudioPage } from './admin/pages/packstudio.jsx';
-import { ScenarioBuilderPage } from './admin/pages/scenariobuilder.jsx';
 import { SystemMonitorPage, AdminPage, UserPage, ConnectedMonitorPage } from './admin/pages/system.jsx';
 import { LlmTraining, VlmTraining, EmbeddingPage, RerankingPage, LeaderboardPage, EvalMetricsPage } from './admin/pages/training.jsx';
 import { ApprovalPage, QuotaPage, UserManagementPage, AccessLogPage, AccessSecurityPage, WorkLogPage, UsageMonitorPage, HrSyncPage } from './admin/pages/users.jsx';
@@ -69,7 +67,6 @@ const App = ({ onSwitchToUser, onExitPortal, domain }) => {
       {id:'guardrail.log',    label:'탐지 로그'},
     ]},
     {id:'aiact', label:'AI 기본법 대응', icon:Scale},
-    {id:'packstudio', label:'도메인 팩 스튜디오', icon:LayoutGrid},
     {id:'deploy', label:'도구 · 배포', icon:Wrench, children:[
       {id:'deploy.tools.mcp',    label:'MCP 도구'},
       {id:'deploy.tools.server', label:'MCP 서버'},
@@ -80,7 +77,6 @@ const App = ({ onSwitchToUser, onExitPortal, domain }) => {
       {id:'agent.taskflow.builder', label:'태스크플로우 빌더'},
       {id:'agent.taskflow.deploy',  label:'태스크플로우 배포'},
       {id:'agent.workflow',         label:'워크플로우'},
-      {id:'agent.scenario',         label:'시나리오 빌더'},
     ]},
     {id:'app', label:'애플리케이션', icon:Grid, children:[
       {id:'app.chat',     label:'채팅'},
@@ -147,10 +143,9 @@ const App = ({ onSwitchToUser, onExitPortal, domain }) => {
     'eval.leaderboard':<LeaderboardPage/>,'eval.metrics':<EvalMetricsPage/>,
     'guardrail.filter':<GuardrailFilterPage/>,'guardrail.log':<GuardrailLogPage/>,
     'aiact':<AiActCompliancePage/>,
-    'packstudio':<PackStudioPage/>,
     'deploy.tools.mcp':<MCPToolsPage/>,'deploy.tools.server':<MCPServerPage/>,'deploy.tools.prompt':<PromptLibraryPage/>,
     'deploy.serving':<ServingPage/>,
-    'agent.taskflow.builder':<TaskflowBuilderPage/>,'agent.taskflow.deploy':<TaskflowDeployPage/>,'agent.workflow':<WorkflowPage/>,'agent.scenario':<ScenarioBuilderPage/>,
+    'agent.taskflow.builder':<TaskflowBuilderPage/>,'agent.taskflow.deploy':<TaskflowDeployPage/>,'agent.workflow':<WorkflowPage/>,
     'app.chat':<ChatAppPage/>,'app.report':<ReportGenPage/>,'app.analysis':<DataAnalysisPage/>,
     'ops.approval':<ApprovalPage/>,'ops.quota':<QuotaPage/>,
     'admin.manage':<AdminPage/>,'admin.users':<UserManagementPage/>,'admin.knowledge':<KnowledgeManagementPage/>,'admin.rag':<RagPipelinePage/>,

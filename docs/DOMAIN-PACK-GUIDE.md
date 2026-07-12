@@ -27,7 +27,6 @@
 | orchestration (선택 — 생략 시 시나리오 카드 비노출) | AgentHub.jsx(허브 상단 카드) → OrchestrationScenario.jsx | 에이전트 허브 오케스트레이션 시나리오 (4개 에이전트 릴레이 데모) |
 | notifications (선택 — 생략 시 헤더 벨 비노출) | ChatHeader.jsx 알림 센터 드롭다운 + ChatMessages 빈 화면 '오늘의 업무 브리핑' | `[{id, severity:'alert'\|'warn'\|'info', title, body, time, link:{agentId}}]` — link.agentId는 에이전트 id 또는 `orchestration:<idx>` 딥링크 |
 | agentRouting (선택 — 생략 시 핸드오프 카드 비노출) | UserApp handleSend → ChatMessages 답변 하단 카드 | `[{keywords:[소문자], agentId, reason}]` — GENERAL 탭 답변에 '다음 단계' 이동 카드. 선행 규칙 우선, 지도 응답에는 미부착 |
-| liveMetric (선택 — 생략 시 라이브 카드·실시간 알림 비활성) | UserApp 1초 틱 엔진(user/liveEngine.js) → LiveMetricCard + 알림 센터·브리핑 병합 | 스키마·거동은 `src/user/liveEngine.js` 상단 주석이 정본. 임계 상향 돌파 시 alert가 실시간 알림으로 도착, recovery로 고착 방지. 배속 1×/10×/60× |
 
 ## 2. 스키마 레퍼런스
 
@@ -133,8 +132,6 @@ mapIntel: {
 ```js
 // 복합 업무 오케스트레이션 (3단계) — 허브 상단 시나리오 카드 + "요청 1건 → 에이전트 4개 릴레이" 실행 데모. 생략하면 카드 자체가 숨겨짐.
 // 객체 1개(카드 1장) 또는 배열(시나리오별 카드 1장씩)을 모두 허용 — 예: manufacturing.js의 [예지보전, 검사성적서] 2장.
-// ⚠️ 코어의 시나리오 조회는 user/scenarios.js의 allScenarios(domain) 경유 — 관리자 '시나리오 빌더'가 만드는
-//    커스텀 시나리오(genos.customScenarios.<도메인>, 도메인당 최대 3개)가 팩 시나리오 뒤에 이어 붙는다.
 // stages[].agentId는 아래 고정 목록에서. 4단계(OCR→표준화→DB조회→보고서)가 관례이나 개수·순서는 자유.
 // 각 스테이지의 output은 "다음 에이전트의 입력"이 되도록 쓰고, handoff에 무엇을 넘기는지 명시(마지막은 null).
 orchestration: {

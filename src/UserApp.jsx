@@ -3,6 +3,7 @@ import { ShieldCheck } from "lucide-react";
 
 import { cn, orchList } from "./user/utils.jsx";
 import { initLive, stepLive, liveAlertOf } from "./user/liveEngine.js";
+import { logAudit } from "./user/auditLog.js";
 import Toast from "./user/components/Toast.jsx";
 import {
   MODES as BASE_MODES, HISTORY as BASE_HISTORY, DOCS as BASE_DOCS,
@@ -338,6 +339,14 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
           handoff = { agentId: hit.agentId, name, reason: hit.reason };
         }
       }
+      // 감사 추적 — SECURE는 무저장 서사 유지
+      if (chatTab !== "SECURE") {
+        logAudit({
+          type: "query", mode, summary: msgText.slice(0, 60),
+          confidence: typeof resp.confidence === "number" ? resp.confidence : null,
+          grounded: (resp.citations?.length || 0) > 0 || !!resp.xai,
+        });
+      }
       setIsTyping(false);
       setMessages(prev => {
         const newMsgs = [...prev, { id: Date.now() + 1, role: "assistant", time: now, ...resp, ...(handoff ? { handoff } : {}) }];
@@ -368,6 +377,7 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
         localStorage.setItem(key, JSON.stringify(arr.slice(0, 30)));
       } catch { /* 저장 실패는 데모 흐름에 영향 없음 */ }
     }
+    if (chatTab !== "SECURE") logAudit({ type: "feedback", summary: `${rating === "good" ? "도움됨" : "도움 안 됨"}${reason ? ` · ${reason}` : ""}` });
     setToast({
       message: chatTab === "SECURE"
         ? "피드백이 반영되었습니다 (보안 세션 — 기록은 저장되지 않습니다)"
@@ -408,6 +418,7 @@ const UserApp = ({ onSwitchToAdmin, onExitPortal, domain = rebDomain }) => {
         const notif = liveAlertOf(liveCfg, crossVal, `live-${Date.now()}`);
         setLiveNotifs(p => [notif, ...p].slice(0, 5)); // 최근 5건만 유지
         setToast({ message: `[실시간 알림] ${notif.title}` });
+        logAudit({ type: "live_alert", summary: `${liveCfg.label} ${crossVal.toFixed(liveCfg.decimals ?? 1)}${liveCfg.unit} — ${liveCfg.thresholdLabel} 돌파` });
       }
     }, 1000);
     return () => clearInterval(t);

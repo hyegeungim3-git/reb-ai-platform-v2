@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { useAgentSimulation } from "../../hooks/useAgentSimulation.js";
 import { cn } from "../../utils.jsx";
+import { logAudit } from "../../auditLog.js";
 
 /* 에이전트 강조색 — AgentHub COLOR_MAP과 동일 팔레트 (표시용 부분집합) */
 const COLOR_MAP = {
@@ -51,7 +52,21 @@ const OrchestrationScenario = ({ scenario, agents, user, onBack }) => {
   const running = step === 2;
   const finished = step === 3;
 
-  const handleStart = () => { setLogCount({}); sim.start(); };
+  // 감사 추적 — 완주 1회당 1건 (스테이지·HITL 지점·산출 문서번호 포함)
+  const auditRef = useRef(false);
+  useEffect(() => {
+    if (finished && !auditRef.current) {
+      auditRef.current = true;
+      logAudit({
+        type: "orch_complete", summary: scenario.title,
+        stages: stages.map(s => s.agent?.shortName || s.agentId),
+        hitl: stages.filter(s => s.review).map(s => `${s.agent?.shortName || s.agentId}: ${s.review.slice(0, 40)}`),
+        docNo: scenario.result?.docNo || null,
+      });
+    }
+  }, [finished]);
+
+  const handleStart = () => { setLogCount({}); auditRef.current = false; sim.start(); };
 
   // 진행에 따라 활성 스테이지·결과로 자동 스크롤
   useEffect(() => {

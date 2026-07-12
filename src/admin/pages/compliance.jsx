@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { Scale, ShieldAlert, Stamp, ClipboardCheck, CheckCircle2, XCircle, Clock, Eye, AlertTriangle, FileText, Landmark } from 'lucide-react';
+import { Scale, ShieldAlert, Stamp, ClipboardCheck, CheckCircle2, XCircle, Clock, Eye, AlertTriangle, FileText, Landmark, History, RefreshCw, Trash2 } from 'lucide-react';
 import { MOCK_AIACT_SYSTEMS, MOCK_AIACT_LABELING, MOCK_AIACT_ASSESSMENTS, AIACT_STD_PHRASE } from '../mocks.js';
 import { Modal, PageShell, useToast, ToggleSwitch } from '../common.jsx';
+import { readAudit, clearAudit, AUDIT_CAP } from '../../user/auditLog.js';
+import { getActiveDomainId } from '../../domains/index.js';
+
+/* 감사 이벤트 유형 표시 (auditLog.js 이벤트 스키마와 짝) */
+const AUDIT_TYPE = {
+  query:         { label:'질의응답',     cls:'bg-blue-100 text-blue-700' },
+  xai_open:      { label:'XAI 열람',     cls:'bg-violet-100 text-violet-700' },
+  orch_complete: { label:'시나리오 완주', cls:'bg-indigo-100 text-indigo-700' },
+  live_alert:    { label:'실시간 알람',   cls:'bg-rose-100 text-rose-700' },
+  feedback:      { label:'답변 피드백',   cls:'bg-emerald-100 text-emerald-700' },
+};
 
 const STATUS_MAP = {
   '고영향 확인':'bg-red-100 text-red-700',
@@ -36,7 +47,18 @@ export const AiActCompliancePage = () => {
     {id:'systems', label:'고영향 AI 관리', icon:ShieldAlert},
     {id:'labeling', label:'생성물 표시', icon:Stamp},
     {id:'assessment', label:'영향평가 현황', icon:ClipboardCheck},
+    {id:'audit', label:'감사 추적(실데이터)', icon:History},
   ];
+
+  // 감사 추적 — 사용자 포털 실사용 로그 (활성 도메인 기준, SECURE 세션 제외 수집)
+  const [auditEvents, setAuditEvents] = useState(() => readAudit());
+  const refreshAudit = () => setAuditEvents(readAudit());
+  const auQueries = auditEvents.filter(e=>e.type==='query');
+  const auXai = auditEvents.filter(e=>e.type==='xai_open').length;
+  const auOrch = auditEvents.filter(e=>e.type==='orch_complete');
+  const auHitl = auOrch.reduce((s,e)=>s+(e.hitl?.length||0),0);
+  const xaiRate = auQueries.length ? Math.round(auXai/auQueries.length*100) : null;
+  const lowConf = auQueries.filter(e=>typeof e.confidence==='number'&&e.confidence<75).length + auQueries.filter(e=>e.confidence===null&&!e.grounded).length;
 
   return (
     <PageShell breadcrumb={['관리자 전용','AI 기본법 대응']} title="AI 기본법 대응 현황"
@@ -270,6 +292,67 @@ export const AiActCompliancePage = () => {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ── Tab 4: 감사 추적 (사용자 포털 실사용 로그) ── */}
+      {tab==='audit'&&(
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xs text-gray-400">활성 도메인 <span className="font-bold text-gray-600">{getActiveDomainId()}</span> · 보관 상한 {AUDIT_CAP}건(초과 시 오래된 순 삭제) · 보안(SECURE) 세션은 무저장 원칙에 따라 수집 제외</span>
+            <button onClick={refreshAudit} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold text-gray-600 hover:bg-gray-50"><RefreshCw size={13}/>새로고침</button>
+            <button onClick={()=>{clearAudit();refreshAudit();toast('감사 로그를 초기화했습니다.');}} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50"><Trash2 size={13}/>초기화</button>
+          </div>
+          <div className="grid grid-cols-5 gap-4 mb-5">
+            {[
+              ['총 상호작용', auditEvents.length+'건', 'text-blue-600', '전 유형 합계'],
+              ['질의응답', auQueries.length+'건', 'text-gray-700', '일반·검토·번역·보고서'],
+              ['XAI 열람율', xaiRate===null?'—':xaiRate+'%', 'text-violet-600', `판단 근거 열람 ${auXai}건 / 질의 ${auQueries.length}건`],
+              ['시나리오 완주', auOrch.length+'건', 'text-indigo-600', `인적 확인 지점 통과 ${auHitl}회`],
+              ['저신뢰·비근거 질의', lowConf+'건', lowConf>0?'text-amber-600':'text-green-600', '신뢰도 75% 미만 또는 근거 없음'],
+            ].map(([label,val,cls,sub])=>(
+              <div key={label} className="bg-white rounded-xl border p-4">
+                <div className="text-xs text-gray-400 mb-1">{label}</div>
+                <div className={`text-2xl font-extrabold ${cls}`}>{val}</div>
+                <div className="text-xs text-gray-400 mt-1">{sub}</div>
+              </div>
+            ))}
+          </div>
+          <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div className="px-5 py-3 bg-gray-50/80 border-b flex items-center justify-between">
+              <h3 className="font-bold text-sm">최근 이벤트 (최신 30건)</h3>
+              <span className="text-xs text-gray-400">제34조 기록·감독 책무 — 사용자 포털에서 실시간 수집</span>
+            </div>
+            {auditEvents.length===0 ? (
+              <div className="px-5 py-10 text-center text-sm text-gray-400">수집된 이벤트가 없습니다 — 사용자 포털에서 질의·시나리오를 실행하면 여기에 축적됩니다.</div>
+            ) : (
+              <div className="divide-y">
+                {auditEvents.slice(0,30).map(e=>{
+                  const tmeta = AUDIT_TYPE[e.type] || { label:e.type, cls:'bg-gray-100 text-gray-600' };
+                  return (
+                    <div key={e.id} className="px-5 py-3 flex items-start gap-3 text-sm">
+                      <span className={`px-2 py-0.5 rounded-md text-xs font-bold shrink-0 ${tmeta.cls}`}>{tmeta.label}</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-gray-700 truncate">{e.summary}</div>
+                        {e.type==='orch_complete'&&(
+                          <div className="text-xs text-gray-400 mt-0.5 truncate">
+                            릴레이: {(e.stages||[]).join(' → ')}{e.docNo?` · ${e.docNo}`:''}
+                            {e.hitl?.length>0&&<span className="text-amber-600 font-semibold"> · 인적 확인 {e.hitl.length}지점</span>}
+                          </div>
+                        )}
+                        {e.type==='query'&&(
+                          <div className="text-xs text-gray-400 mt-0.5">
+                            {e.mode} · {typeof e.confidence==='number'?`신뢰도 ${e.confidence}%`:'신뢰도 미산출'} · {e.grounded?'근거 기반':'모델 지식'}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-400 font-mono shrink-0">{e.ts}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

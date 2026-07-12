@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Gauge, ChevronDown, FileSearch, UserCheck, Sparkles, CheckCircle2, MinusCircle } from "lucide-react";
 import { cn } from "../utils.jsx";
+import { logAudit } from "../auditLog.js";
 
 /* ================================================================== */
 /* XAI(설명가능한 AI) 답변 푸터 — 신뢰도 게이지·근거 구성·판단 근거     */
@@ -11,6 +12,7 @@ import { cn } from "../utils.jsx";
 /* ================================================================== */
 const XaiPanel = ({ msg, isSecure }) => {
   const [open, setOpen] = useState(false);
+  const openedRef = React.useRef(false);
   const conf = typeof msg.confidence === "number" ? msg.confidence : null;
   const xai = msg.xai || {};
   // 표시용 근거 목록 — 팩 xai.sources 우선, 없으면 클릭형 citations에서 합성
@@ -65,7 +67,12 @@ const XaiPanel = ({ msg, isSecure }) => {
             <UserCheck className="w-3 h-3" /> 담당자 검토 권장
           </span>
         )}
-        <button onClick={() => setOpen(o => !o)} aria-expanded={open}
+        <button aria-expanded={open}
+          onClick={() => setOpen(o => {
+            // 첫 열람만 감사 로그에 기록 (XAI 열람율 지표) — SECURE는 무저장
+            if (!o && !openedRef.current && !isSecure) { openedRef.current = true; logAudit({ type: "xai_open", summary: `신뢰도 ${conf ?? "-"}% 답변의 판단 근거 열람` }); }
+            return !o;
+          })}
           className={cn("ml-auto flex items-center gap-1 font-black shrink-0 transition-colors",
             isSecure ? "text-blue-400 hover:text-blue-300" : "text-indigo-600 hover:text-indigo-800")}>
           왜 이 답변인가
